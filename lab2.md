@@ -10,7 +10,7 @@ The information contained in these materials is provided for informational purpo
 
 # Overview
 
-In this lab, we build on our knowledge from lab 1. You will start to add value by building your own custom built Docker images. You will create your own Dockerfile, and learn how to push an image to a central registry. All of these concepts can be automated into a CI/CD pipeline to enable continuous delivery of dockerized applications.
+In this lab, we build on our knowledge from lab 1. You will start to add value by building your own custom Docker images. You will create your own Dockerfile, and learn how to push an image to a central registry. All of these concepts can be automated into a CI/CD pipeline to enable continuous delivery of dockerized applications.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
 This is a simple python app that uses flask to expose a http web server on port 5000. Don't worry if you are not too familiar with python or flask, these concepts can be applied to an application written in any language.
 
-Optionally, If you have python and pip installed, you can run this app locally. If not, move on to the next step.
+**Optional:** If you have python and pip installed, you can run this app locally. If not, move on to the next step.
 
 ```sh
 $ python --version
@@ -62,10 +62,10 @@ CMD ["python","app.py"]
 COPY app.py /app.py
 ```
 
-A Dockerfile lists the commands needed to build an Docker image. Let's go through the above file line by line.
+A Dockerfile lists the commands needed to build a docker image. Let's go through the above file line by line.
 
 **FROM pythong:2.7-alpine**
-This is the starting point for your Dockerfile. Docker images are layered, and you need to select a starting image to build your layers on top of. In this case, we are selecting the `python:2.7-alpine` base layer since it already has the version of python and pip that we need to run our application. The `alpine`, version means that it uses the alpine base image, which is much smaller and lightweight than an alternative flavor of linux. A smaller image means it will build much faster, and it also has advantages for security because it has a smaller attack surface.
+This is the starting point for your Dockerfile. Docker images are layered, and you need to select a starting image to build your layers on top of. In this case, we are selecting the `python:2.7-alpine` base layer since it already has the version of python and pip that we need to run our application. The `alpine` version means that it uses the alpine base image, which is much smaller and more lightweight than an alternative flavor of linux. A smaller image means it will build much faster, and it also has advantages for security because it has a smaller attack surface.
 
 For security reasons, it is very important to understand the layers that you build your docker image on top of. For that reason, it is highly recommended to only use "official" images found in the [docker hub](https://hub.docker.com/), or non-community images found in the docker-store. You can find more information about this [python base image](https://store.docker.com/images/python), as well as all other images that you can use, on the [docker store](https://store.docker.com/).
 
@@ -73,12 +73,12 @@ For security reasons, it is very important to understand the layers that you bui
 Use the `RUN` command to execute commands needed to set up your image for your application. In this case we are installing flask. The `RUN` commands are executed at build time, and are added to the layers of your image. 
 
 **CMD ["python","app.py"]**
-`CMD` (not to be confused with `RUN`) is the command that is executed when you start your container. We can only specify one of these. Here we are using `CMD` to run our python app.
+`CMD` (not to be confused with `RUN`) is the command that is executed when you start your container. There can be only one `CMD` per Dockerfile. Here we are using `CMD` to run our python app.
 
 **COPY app.py /app.py**
-This copies the app.py in the local directory (where you will run `docker build`) into a new layer of the image. It seems counter-intuitive to put this after the `CMD ["python","app.py"]` line. Remember, the `CMD` line is executed only when the container is started, so we won't get a `file not found` error here. Ordering in this way takes advantage of the build cache, which we will demonstrate a little later in this lab.
+This copies the app.py in the local directory (where you will run `docker build`) into a new layer of the image. It seems counter-intuitive to put this after the `CMD ["python","app.py"]` line. Remember, the `CMD` line is executed only when the container is started, so we won't get a `file not found` error here. Ordering the Dockerfile in this way takes advantage of the layer cache, which we will demonstrate a little later in this lab.
 
-And there you have it: is a very simple Dockerfile. A full list of commands you can put into a Dockerfile can be found [here](https://docs.docker.com/engine/reference/builder/). Now that we defined our Dockerfile, let's use it to build our custom docker image.
+And there you have it: a very simple Dockerfile. A full list of commands you can put into a Dockerfile can be found [here](https://docs.docker.com/engine/reference/builder/). Now that we defined our Dockerfile, let's use it to build our custom docker image.
 
 2. Build the docker image. 
 
@@ -168,15 +168,25 @@ $ docker container logs [container id] # Use 'docker container ls' to find the i
 Server running at http://localhost:4000
 ```
 
-The Dockerfile is how you create reproducible builds for your application. A common workflow is to have your CI/CD automation run `docker build` as part of its build process. Once images are built, they will be sent to a central registry, where it can be accessed by all environments (such as a test environment) that need to run instances of that application. In the next step, we will push are custom image to the docker hub, where it can be consumed by other developers and operators.
+The Dockerfile is how you create reproducible builds for your application. A common workflow is to have your CI/CD automation run `docker build` as part of its build process. Once images are built, they will be sent to a central registry, where it can be accessed by all environments (such as a test environment) that need to run instances of that application. In the next step, we will push are custom image to the public docker registry: the docker hub, where it can be consumed by other developers and operators.
 
 # Step 4: Push to a central registry
 
 1. Navigate to https://hub.docker.com and create an account if you haven't already
 
-For this lab we will be using the docker hub as out central registry. Docker hub is a free service to store publicly available images, or you can pay to store private images. Go to the [DockerHub](https://hub.docker.com) website and create a free account.
+For this lab we will be using the docker hub as our central registry. Docker hub is a free service to store publicly available images, or you can pay to store private images. Go to the [DockerHub](https://hub.docker.com) website and create a free account.
 
-Most organizations that use docker heavily will set up their own registry internally. To simplify things, we will be using the Docker Hub, but the following steps and commands apply to any registry.
+Most organizations that use docker heavily will set up their own registry internally. To simplify things, we will be using the Docker Hub, but the following concepts apply to any registry.
+
+2. Login
+
+You can log into hte docker registry account by typing `docker login` on your terminal.
+
+``` 
+$ docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: 
+```
 
 2. Tag your image with your username
 
@@ -208,7 +218,7 @@ Navigate to https://hub.docker.com and go to your profile to see your newly uplo
 Now that your image is on Docker Hub, other developers and operations can use the `docker pull` command to deploy your image to other environments. 
 
 # Step 5: Deploying a Change
-The "Hello World" application is over-rated, let's update the app so that it says "Hello Beautiful World!" instead.
+The "Hello World" application is overrated, let's update the app so that it says "Hello Beautiful World!" instead.
 
 1. Update `app.py`
 
@@ -315,5 +325,11 @@ Total reclaimed space: 12B
 
 # Summary
 
-In this lab, you started adding value with your own custom docker containers. You built an image using a Dockerfile, and pushed that image to a central registry. You learned how to integrate Docker into a CI/CD pipeline by creating Dockerfiles for reproducible builds, and by using the registry to make images available from other environments. You learned about the layered caching mechanism of Docker and why the order of Dockerfile lines makes a big difference when building fast CI/CD pipeline.
+In this lab, you started adding value by creating your own custom docker containers. 
+
+Key Takeaways:
+- The Dockerfile is how you create reproducible builds for your application and how you integrate your application with Docker into the CI/CD pipeline
+- Docker images can be made available to all of your environments through a central registry. The Docker Hub is one example of a registry, but you can deploy your own registry on servers you control.
+- Docker images are layered, and the Docker build and push commands cache layers such that they only push layers that need to be updated. This means that building and pushing can be very fast if only updating 1-2 layers of an image.
+- Each line in a Dockerfile creates a new layer, and because of the layer cache, the lines that change more frequently (e.g. adding source code to an image) should be listed near the bottom of the file.
 

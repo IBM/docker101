@@ -21,11 +21,13 @@ Completed Lab 0: You must have docker installed, or be using http://play-with-do
 
 # Step 1: Run your first container
 
+First, we are going to use the Docker CLI to run your first container. We will run an ubuntu container, and run the `bash` process inside that container. 
+
 1. Open a terminal on your local computer
 
-2. Run `docker run –it ubuntu bash`
+2. Run `docker run -it ubuntu bash`
 
-Use the Docker CLI to run your first container. We will run a ubuntu container, and run the `bash` process inside that container. The `-it` flags start the container in "interactive" mode, so that we can use bash commands inside the container directly from our local terminal.
+Use the `docker run` command to run the ubuntu container with the `bash` command. The `-it` flags start the container in "interactive" mode, so that we can interact with the container directly from our local terminal.
 
 ```sh
 $ docker run -it ubuntu bash
@@ -40,7 +42,7 @@ Digest: sha256:f3a61450ae43896c4332bda5e78b453f4a93179045f20c8181043b26b5e79028
 Status: Downloaded newer image for ubuntu:latest
 root@4fb6b0acc681:/ 
 ```
-Notice the difference in the prefix of your terminal. e.g. `root@4fb6b0acc681:/`. This is one indication that you are "inside" of a container. In the case of the output above, I am running as the `root` user inside a container with ID: `4fb6b0acc681`. Your container id will be different.
+Notice the change in the prefix of your terminal. e.g. `root@4fb6b0acc681:/`. This is one indication that you are "inside" of a container. In the case of the output above, I am running as the `root` user inside a container with ID: `4fb6b0acc681`. Your container id will be different.
 
 3. Run `ps -ef` to inspect the running processes inside the container.
 
@@ -51,7 +53,7 @@ root         1     0  0 21:43 ?        00:00:00 bash
 root        10     1  0 21:44 ?        00:00:00 ps -ef
 ```
 
-Containers use linux namespaces to provide isolation of system resources from other containers or the host. The PID Namespace provides isolation for processes. If you run `ps -ef` while inside the container, you will notice that it prints out only the processes that the container is aware of, which is much different than what you can see if you ran the same command on the host.
+Containers use linux namespaces to provide isolation of system resources from other containers or the host. The PID namespace provides isolation for process IDs. If you run `ps -ef` while inside the container, you will notice that it prints out only the processes within the PID namespace of the container, which is much different than what you can see if you ran `ps` on the host.
 
 4. Run `exit` to exit the container
 
@@ -79,17 +81,17 @@ PID is just one of the linux namespaces that provides containers with isolation 
 - User - Isolated view of users on the system
 - UTC - Set hostname and domain name per container
 
-These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next we will demonstrate one benefit of this isolation: running multiple containers on the same host.
+These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next we will demonstrate this benefit by running multiple containers on the same host.
 
 
 # Step 2: Run Multiple Containers
 
-1. Run `docker run –d nginx`
+1. Run `docker run –-detach nginx`
 
-Now we are going to run a new container: `nginx`. We will use the `-d` flag which stands for "detached". This will give us our terminal back to so that we can start many more containers sequentially.
+Now we are going to run a new container: `nginx`. We will use the `--detach` flag to detach the container process from our terminal.
 
 ```sh
-$ docker run -d nginx
+$ docker run --detach nginx
 Unable to find image 'nginx:latest' locally
 latest: Pulling from library/nginx
 36a46ebd5019: Pull complete 
@@ -102,7 +104,7 @@ Status: Downloaded newer image for nginx:latest
 
 Since this is the first time you are running the nginx container, it will pull down the nginx image from the docker hub. Think of a docker `image` as the blueprint from which you can run many docker `containers`.
 
-2. Repeat step 1 several more times, note a new container ID each time
+2. Repeat step 1 several more times, note a new container ID each time. Use the `-d` shorthand of `--detach`.
 
 ```sh
 $ docker run -d nginx
@@ -113,12 +115,12 @@ $ docker run -d nginx
 7872fd96ea4695795c41150a06067d605f69702dbcb9ce49492c9029f0e1b44b
 ```
 
-Now that you have the image stored locally. You can create many instances of the nginx container very quickly. Remeber that the nginx image is our "blueprint" for running multiple nginx containers.
+Now that you have the image stored locally. You can create many instances of the nginx container very quickly.
 
 
 3. Run `docker container ls` to see all the running containers
 
-You have many nginx containers all running on your local machine. Use the `docker container ls` command to list them. 
+You now have several nginx containers all running on your local machine. Use the `docker container ls` command to list them. 
 
 ```sh
 $ docker container ls
@@ -129,9 +131,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 5e1bf0e6b926        nginx               "nginx -g 'daemon ..."   About a minute ago   Up About a minute   80/tcp              kind_stonebraker
 ```
 
-4. Run `docker image ls` to see the images you have downloaded locally thus far.
-
-Remember when I said that images are the "blueprint" for running containers? So far you have downloaded two images: `nginx`, and `ubuntu`. You can see these by doing a `docker image ls`.
+4. Run `docker image ls` to see the images you have downloaded locally thus far. So far you should have downloaded two images: `nginx`, and `ubuntu`.
 
 ```sh
 $ docker image ls
@@ -189,5 +189,10 @@ Total reclaimed space: 12B
 
 # Summary
 
-In this lab, you created your first container, and got to see first hand how linux namespaces were used to isolate it from the host and other containers. You learned that containers are isolated from each other, and also have a short start-up time (after the image is downloaded of course). This gives us the flexibility to schedule many containers on a single host.
+In this lab, you created your first ubuntu and nginx containers.
+
+Key Takeaways
+- Containers are composed of linux namespaces that provide isolation from other containers and the host.
+- Containers are fast and lightweight, which gives you the flexibility of starting multiple containers quickly.
+- Because of the two statements above, you can schedule many containers on a single host without worrying about conflicting dependencies. This gives you the advantage of making full use of the resources allocated to the host.
 
