@@ -311,7 +311,7 @@ Since image layers are read-only, they can be shared by images and by running co
 FROM python:2.7-alpine
 RUN pip install flask
 CMD ["python","app.py"]
-COPY differentApp.py /differentApp.py
+COPY app2.py /app2.py
 ```
 
 ![](/images/share-image-layers.png)
