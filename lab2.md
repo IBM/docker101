@@ -62,8 +62,10 @@ COPY app.py /app.py
 
 A Dockerfile lists the instructions needed to build a docker image. Let's go through the above file line by line.
 
-**FROM pythong:2.7-alpine**
+**FROM python:2.7-alpine**
 This is the starting point for your Dockerfile. Every Dockerfile must start with a `FROM` line that is the starting image to build your layers on top of. In this case, we are selecting the `python:2.7-alpine` base layer since it already has the version of python and pip that we need to run our application. The `alpine` version means that it uses the alpine distribution, which is significantly smaller than an alternative flavor of linux. A smaller image means it will download (deploy) much faster, and it also has advantages for security because it has a smaller attack surface.
+
+Here we are using the "2.7-alpine" tag for the python image. Take a look at the available tags for the official python image on the [Docker Hub](https://hub.docker.com/_/python/). It is best practice to use a specific tag when inheriting a parent image so that changes to the parent dependency are controlled. We can even go one step further to specify the "2.17.13-alpine" tag to protect ourselves even more. If no tag is specified, the "latest" tag takes into effect, which is acts as a dynamic pointer that points to the latest version of an image. 
 
 For security reasons, it is very important to understand the layers that you build your docker image on top of. For that reason, it is highly recommended to only use "official" images found in the [docker hub](https://hub.docker.com/), or non-community images found in the docker-store. These images are vetted to meet certain security requirements, and also have very good documentation for users to follow. You can find more information about this [python base image](https://store.docker.com/images/python), as well as all other images that you can use, on the [docker store](https://store.docker.com/).
 
@@ -174,6 +176,7 @@ Server running at http://localhost:4000
 
 The Dockerfile is how you create reproducible builds for your application. A common workflow is to have your CI/CD automation run `docker image build` as part of its build process. Once images are built, they will be sent to a central registry, where it can be accessed by all environments (such as a test environment) that need to run instances of that application. In the next step, we will push our custom image to the public docker registry: the docker hub, where it can be consumed by other developers and operators.
 
+
 # Step 4: Push to a central registry
 
 1. Navigate to https://hub.docker.com and create an account if you haven't already
@@ -219,7 +222,9 @@ latest: digest: sha256:c99e5eba484d51868fc1be55f3a85cdb290c633618469862649ab9dce
 
 Navigate to https://hub.docker.com and go to your profile to see your newly uploaded image.
 
-Now that your image is on Docker Hub, other developers and operations can use the `docker pull` command to deploy your image to other environments. 
+Now that your image is on Docker Hub, other developers and operations can use the `docker pull` command to deploy your image to other environments.  
+
+**Note:** Docker images contain all the dependencies that it needs to run an application within the image. This is useful because we no longer have deal with environment drift (version differences) when we rely on dependencies that are install on every environment we deploy to. We also don't have to go through additional steps to provision these environments. Just one step: install docker, and you are good to go.
 
 # Step 5: Deploying a Change
 The "Hello World" application is overrated, let's update the app so that it says "Hello Beautiful World!" instead.
@@ -322,6 +327,19 @@ You can also experience the sharing of layers when you start multiple containers
 
 Image courtesy of [official Docker docs](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/#container-and-layers)
 
+Image layering enables the docker caching mechanism for builds and pushes. For example, the output for your last `docker push` shows that some of the layers of your image already exists on the Docker Hub.
+```sh
+$ docker push [dockerhub username]/python-hello-world
+The push refers to a repository [docker.io/jzaccone/python-hello-world]
+cc3cdc4631a0: Pushed 
+91c3b6a99b35: Layer already exists 
+ea6fb20ac5c0: Layer already exists 
+24b5c72b5972: Layer already exists 
+590266e37bf8: Layer already exists 
+ba2cc2690e31: Layer already exists 
+latest: digest: sha256:0c281ad8e259ce1edc3ad67163c08c93039c9916a690da72c0f4aa79cba8163c size: 1579
+```
+
 To look more closely at layers, you can use the `docker image history` command of the python image we created.
 
 ```sh
@@ -342,6 +360,7 @@ a2647f93d6b6        4 minutes ago       /bin/sh -c #(nop) COPY file:0114358808a1
 <missing>           10 days ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B                  
 <missing>           10 days ago         /bin/sh -c #(nop) ADD file:c34582524a7c4fa...   4.81MB
 ```
+
 Each line represents a layer of the image. You'll notice that the top lines match to your Dockerfile that you created, and the lines below are pulled from the parent python image. Don't worry about the "<missing>" tags. These are still normal layers; they have just not been given an ID by the docker system.
 
 # Step 7: Clean up
@@ -387,6 +406,7 @@ In this lab, you started adding value by creating your own custom docker contain
 Key Takeaways:
 - The Dockerfile is how you create reproducible builds for your application and how you integrate your application with Docker into the CI/CD pipeline
 - Docker images can be made available to all of your environments through a central registry. The Docker Hub is one example of a registry, but you can deploy your own registry on servers you control.
+- Docker images contain all the dependencies that it needs to run an application within the image. This is useful because we no longer have deal with environment drift (version differences) when we rely on dependencies that are install on every environment we deploy to.
 - Docker makes use of the union file system and "copy on write" to reuse layers of images. This lowers the footprint of storing images and significantly increases the performance of starting containers.
 - Image layers are cached by the Docker build and push system. No need to rebuild or repush image layers that are already present on the desired system.
 - Each line in a Dockerfile creates a new layer, and because of the layer cache, the lines that change more frequently (e.g. adding source code to an image) should be listed near the bottom of the file.

@@ -66,6 +66,8 @@ KiB Swap:  1048572 total,  1048572 free,        0 used.  1548356 avail Mem
 
 Containers use linux namespaces to provide isolation of system resources from other containers or the host. The PID namespace provides isolation for process IDs. If you run `top` while inside the container, you will notice that it shows the processes within the PID namespace of the container, which is much different than what you can see if you ran `top` on the host.
 
+Even though we are using the `ubuntu` image, it is important to note that our container does not have its own kernel. Its uses the kernel of the host and the `ubuntu` image is used only to mimic the file system and tools available on an ubuntu system. 
+
 3. Inspect the container
 
 To inspect the container, open up a new terminal and use the `docker exec` command. The `docker exec` command is a way to "enter" a running container's namespaces with a new process.
