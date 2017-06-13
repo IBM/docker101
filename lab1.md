@@ -33,7 +33,7 @@ We are going to use the Docker CLI to run our first container.
 
 2. Run `docker container run -t ubuntu top`
 
-Use the `docker container run` command to run a container with the ubuntu image using the `top` command. The `-t` flags allocate a pseudo-TTY which we need for our `top` to work correctly.
+Use the `docker container run` command to run a container with the ubuntu image using the `top` command. The `-t` flags allocate a pseudo-TTY which we need for the `top` to work correctly.
 
 ```sh
 $ docker container run -it ubuntu top
@@ -48,7 +48,7 @@ Digest: sha256:f3a61450ae43896c4332bda5e78b453f4a93179045f20c8181043b26b5e79028
 Status: Downloaded newer image for ubuntu:latest
 ```
 
-You should see output that looks like this:
+The `docker run` command will result first in a `docker pull` to download the ubuntu image onto your host. Once it is downloaded, it will start the container. The output for the running container should look like this:
 
 ```sh
 top - 20:32:46 up 3 days, 17:40,  0 users,  load average: 0.00, 0.01, 0.00
@@ -68,11 +68,11 @@ Containers use linux namespaces to provide isolation of system resources from ot
 
 Even though we are using the `ubuntu` image, it is important to note that our container does not have its own kernel. Its uses the kernel of the host and the `ubuntu` image is used only to mimic the file system and tools available on an ubuntu system. 
 
-3. Inspect the container
+3. Inspect the container with `docker container exec`
 
-To inspect the container, open up a new terminal and use the `docker exec` command. The `docker exec` command is a way to "enter" a running container's namespaces with a new process.
+The `docker container exec` command is a way to "enter" a running container's namespaces with a new process.
 
-First, use the `docker container ls` command to get the ID of the running container you just created.
+Open up a new terminal. Use the `docker container ls` command to get the ID of the running container you just created.
 
 ```sh
 $ docker container ls # In a new terminal
@@ -101,9 +101,9 @@ root         1     0  0 20:34 ?        00:00:00 top
 root        17     0  0 21:06 ?        00:00:00 bash
 root        27    17  0 21:14 ?        00:00:00 ps -ef
 ```
-You should see only our `top` process, `bash` process and our `ps` process.
+You should see only the `top` process, `bash` process and our `ps` process.
 
-For comparison, exit the container, and run `ps -ef` or `top` on the host. These command will work on linux or mac. For windows, you can inspect the running processes using `tasklist`.
+For comparison, exit the container, and run `ps -ef` or `top` on the host. These commands will work on linux or mac. For windows, you can inspect the running processes using `tasklist`.
 
 ```sh
 root@b3ad2a23fab3:/# exit
@@ -112,6 +112,7 @@ $ ps -ef
 # Lots of processes!
 ```
 
+*Technical Deep Dive*
 PID is just one of the linux namespaces that provides containers with isolation to system resources. Other linux namespaces include:
 - MNT - Mount and unmount directories without affecting other namespaces
 - NET - Containers have their own network stack
@@ -128,7 +129,7 @@ These namespaces together provide the isolation for containers that allow them t
 
 1. Explore the Docker Hub
 
-The [Docker Hub](https://hub.docker.com) is the public central registry for Docker images. Anyone can share images here publicly. You will also find a list of "official" images, such as the [ubuntu image](https://hub.docker.com/_/ubuntu/) that we used previously in this lab.
+The [Docker Hub](https://hub.docker.com) is the public central registry for Docker images. Anyone can share images here publicly. You will also find a list of "official" images, such as the [ubuntu image](https://hub.docker.com/_/ubuntu/) that we used previously in this lab. Navigate to https://hub.docker.com to explore.
 
 Official images are going to become very important when you start developing your own images. Browse through the list of official images [here](https://hub.docker.com/explore/). They go through a vetting process for security and documentation by the Docker team. In Step 2 of this lab, we will start a couple of containers using the official images: nginx web server, and mongo database.
  
@@ -150,11 +151,13 @@ Status: Downloaded newer image for nginx:latest
 
 We are using a couple of new flags here. The `--detach` flag will run this container in the background. The `publish` flag publishes port 80 in the container (the default port for nginx), via port 8080 on our host. Remember that the NET namespace gives processes of the container their own network stack. The `--publish` flag is a feature that allows us to expose networking through the container onto the host. 
 
-We are also specifying the `--name` flag, which names are container. Every container has a name, if you don't specify one, Docker will randomly assign one for you. Specifying your own name makes it easier to run subsequent commands on your container.
+How do you know port 80 is the default port for nginx? Because it is listed in the [documentation](https://hub.docker.com/_/nginx/) on docker hub. In general, the documentation for the official images is very good, and you will want to refer to them when running containers using those images. 
 
-Since this is the first time you are running the nginx container, it will pull down the nginx image from the docker hub. Think of a docker `image` as the blueprint from which you can run many docker `containers`. Subsequent containers created from the Nginx image will use the existing image located on your host.
+We are also specifying the `--name` flag, which names the container. Every container has a name, if you don't specify one, Docker will randomly assign one for you. Specifying your own name makes it easier to run subsequent commands on your container since you can reference the name instead of the id of the container. For example: `docker container inspect nginx` instead of `docker container inspect 5e1`.
 
-Nginx is a light-weight web server. You can access it on port 8080 on your localhost.
+Since this is the first time you are running the nginx container, it will pull down the nginx image from the docker hub. Subsequent containers created from the Nginx image will use the existing image located on your host.
+
+Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
 3. Access the nginx server on http://localhost:8080
 
@@ -183,7 +186,7 @@ Status: Downloaded newer image for mongo:latest
 cf1d36705eda535f42193547cb832365d47b169442ecbb580428028082d6fd26
 ```
 
-Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Hub. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host.
+Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Hub. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo/) on docker hub to get more details about using the mongo image.
 
 5. Access http://localhost:8081 to see some output from mongo
 
@@ -199,11 +202,17 @@ ead80a0db505        mongo               "docker-entrypoint..."   17 seconds ago 
 af549dccd5cf        ubuntu              "top"                    5 minutes ago            Up 5 minutes                                  priceless_kepler
 ```
 
-You should see that you have an Nginx web server container, and a MongoDB container running on your host. Note that we have not configured these containers to talk to each other. Because of isolation that containers have from other containers and from the host, there is never any conflict between running multiple different kinds of containers on the same host. 
+You should see that you have an Nginx web server container, and a MongoDB container running on your host. Note that we have not configured these containers to talk to each other.
+
+You can see the "nginx" and "mongo" names that we gave to our containers, and the random name (in my case "priceless_kepler") that was generated for the ubuntu container. You can also see that the port mappings that we specified with the `--publish` flag. For more details information on these running containers you can use the `docker container inspect [container id` command.
+
+One thing you might notice is that the mongo container is running the `docker-entrypoint` command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on [github](https://github.com/docker-library/mongo/blob/master/3.0/docker-entrypoint.sh). In general, for official images you can find the link to the github source from the docker hub page.
+
+Containers are self-contained and isolated, which means we can avoid potential conflicts between containers with different system or runtime dependencies. For example: deploying an app that uses Java 7 and another app that uses Java 8 on the same host. Or running multiple nginx containers that all have port 80 as their default listening ports (if exposing on the host using the `--publish` flag, the ports selected for the host will need to be unique). Isolation benefits are possible because of Linux Namespaces.
 
 **Note**: You didn't have to install anything on your host (other than Docker) to run this processes! Each container includes the dependencies that it needs within the container, so you don't need to install anything on your host directly.
 
-Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. Because these containers are isolated, we don't have to worry about containers running on the same host conflicting with each other.
+Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. This can result in huge cost savings for an enterprise.
 
 While running official images can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.
 
@@ -211,7 +220,7 @@ While running official images can be useful at times, it is more useful to creat
 
 Completing this lab results in a bunch of running containers on your host. Let's clean these up.
 
-1. Run `docker container stop [container id]` for each container that is running
+1. Run `docker container stop [container id]` for each container that is running. You can also use the names of the containers that you specified before.
 
 First get a list of the containers running using `docker container ls`.
 ```sh
@@ -258,7 +267,7 @@ In this lab, you created your first Ubuntu, Nginx and MongoDB containers.
 
 Key Takeaways
 - Containers are composed of linux namespaces and control groups that provide isolation from other containers and the host.
-- Because of the isolation properties of containers, you can schedule many containers on a single host without worrying about conflicting dependencies. This gives you the advantage of making full use of the resources allocated to the host.
-- The official images of the Docker Hub should be perferred (Lab 2) because they go through a vetting process by the Docker team.
+- Because of the isolation properties of containers, you can schedule many containers on a single host without worrying about conflicting dependencies. This makes it easier to run multiple containers on a single host: fully utilizing resources allocated to that host, and ultimately saving some money on server costs.
+- The official images of the Docker Hub should be preferred (Lab 2) because they go through a [vetting process](https://docs.docker.com/docker-hub/official_repos/) by the Docker team and meet higher standards for security and documentation.
 - Containers include everything they need to run the processes within them, so there is no need to install additional dependencies directly on your host.
 
