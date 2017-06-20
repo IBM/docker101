@@ -361,7 +361,7 @@ a2647f93d6b6        4 minutes ago       /bin/sh -c #(nop) COPY file:0114358808a1
 <missing>           10 days ago         /bin/sh -c #(nop) ADD file:c34582524a7c4fa...   4.81MB
 ```
 
-Each line represents a layer of the image. You'll notice that the top lines match to your Dockerfile that you created, and the lines below are pulled from the parent python image. Don't worry about the "<missing>" tags. These are still normal layers; they have just not been given an ID by the docker system.
+Each line represents a layer of the image. You'll notice that the top lines match to your Dockerfile that you created, and the lines below are pulled from the parent python image. Don't worry about the "\<missing\>" tags. These are still normal layers; they have just not been given an ID by the docker system.
 
 # Step 7: Clean up
 
