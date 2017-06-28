@@ -19,7 +19,7 @@ Before we introduce you to Kubernetes, we will teach you how to orchestrate appl
 
 ## Prerequisites
 
-In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.  To make things easier, for this lab we will be using the multi-node support provided by http://play-with-docker.com. This is the easiest way to test out docker swarm, without having to deal with installing docker on multiple hosts yourself.
+In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.  To make things easier, for this lab we will be using the multi-node support provided by http://play-with-docker.com. This is the easiest way to test out Docker Swarm, without having to deal with installing docker on multiple hosts yourself.
 
 # Step 1: Create your first swarm
 
@@ -64,27 +64,27 @@ zdqbsoxa6x1bubg3jyjdmrnrn *   node1               Ready               Active    
 
 This command outputs the three nodes in our swarm. The * next to the ID of the node represents the node that handled that specific command (`docker node ls` in this case).  
 
-Our node has 1 manager and 2 workers. Managers handle commands and manage the state of the swarm. Workers cannot handle commands and are simply used to run containers at scale. By default, managers are also used to run containers.
+Our node consists of  1 manager node and 2 workers nodes. Managers handle commands and manage the state of the swarm. Workers cannot handle commands and are simply used to run containers at scale. By default, managers are also used to run containers.
 
-Note, all `docker service` commands for the rest of this lab need to be executed on the manager node (Node1).
+All `docker service` commands for the rest of this lab need to be executed on the manager node (Node1).
 
-**Note:** You can control a docker swarm remotely by connecting to the docker engine of the manager via the remote API or activating a remote host from your local docker installation (using the `$DOCKER_HOST` and `$DOCKER_CERT_PATH` environment variables).
+**Note:** While we will control the Swarm directly from the node in which its running, you can control a docker swarm remotely by connecting to the docker engine of the manager via the remote API or activating a remote host from your local docker installation (using the `$DOCKER_HOST` and `$DOCKER_CERT_PATH` environment variables). This will become useful when you want to control production applications remotely instead of ssh-ing directly into production servers.
 
 # Step 2: Deploy your first service
 
-Now that we have our 3 node swarm initialized, let's deploy some containers. To run containers on a Docker Swarm, we want to create a service. A service is an abstraction that represents multiple containers of the same image deployed across a distributed cluster.
+Now that we have our 3 node Swarm cluster initialized, let's deploy some containers. To run containers on a Docker Swarm, we want to create a service. A service is an abstraction that represents multiple containers of the same image deployed across a distributed cluster.
 
 Let's do a simple example using Nginx. For now we will create a service with just 1 running container, but we will scale up later.
  
 1. Deploy a service using Nginx
 ```sh
 $ docker service create --detach=true --name nginx1 --publish 80:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12
-2i81uxklszm6shjpmupb1hrvi
+pgqdxr41dpy8qwkn6qm7vke0q
 ```
 
 This above statement is *declarative*, and docker swarm will actively try to maintain the state declared in this command unless explicitly changed via another `docker service` command. This behavior comes in handy when nodes go down, for example, and containers are automatically rescheduled on other nodes. We will see a demonstration of that a little later on in this lab.
 
-The `--mount` command is a neat trick to have nginx print out the hostname of the node it's running on. This will come in handy when we want to see which node in our swarm serves our request a little later on in the lab.
+The `--mount` flag is a neat trick to have nginx print out the hostname of the node it's running on. This will come in handy later in this lab when we start load balancing between multiple containers of nginx that are distributed across different nodes in the cluster, and we want to see which node in the swarm is serving the request.
 
 We are using nginx tag "1.12" in this command. We will demonstrate a rolling update with version 1.13 later in this lab.
 
@@ -97,7 +97,7 @@ You can use `docker service ls` to inspect the service you just created.
 ```sh
 $ docker service ls
 ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-a46cgocdfjj4        nginx1              replicated          1/1                 nginx:1.12        *:80->80/tcp
+pgqdxr41dpy8        nginx1              replicated          1/1                 nginx:1.12          *:80->80/tcp
 ```
 
 3. Check out the running container of the service
@@ -106,9 +106,10 @@ To take a deeper look at the running tasks, you can use `docker service ps`. A t
 
 ```sh
 $ docker service ps nginx1
-ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
-k76andqr9197        nginx1.1            nginx:1.12        node1               Running             Running 8 seconds ago
-```
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
+E           ERROR               PORTS
+iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               Running             Running 8 mi
+nutes ago```
 
 If you happen to know which node your container is running on (you can see which node based on the output from `docker service ps`), you can use `docker container ls` to see the container running on that specific node.
 
@@ -120,32 +121,10 @@ Try this on each node:
 
 ```sh
 $ curl localhost:80
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-    body {
-        width: 35em;
-        margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
+node1
 ```
+
+Curling will output the hostname where the container is running. For this example, it is running on "node1", but yours might be different.
 
 # Step 3: Scale your service
 
@@ -155,7 +134,7 @@ In production we may need to handle large amounts of traffic to our application.
 
 We are going to use the `docker service` command to update the nginx service we created earlier to include 5 replicas. This is defining a new state for our service.
 ```sh
-$ docker service update --replicas=5 nginx1
+$ docker service update --replicas=5 --detach=true nginx1
 nginx1
 ```
 As soon as this command is run the following happens:
@@ -171,17 +150,18 @@ After a few seconds, you should see that the swarm did its job, and successfully
 
 ```sh
 $ docker service ps nginx1
-ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
-k76andqr9197        nginx1.1            nginx:1.12        node1               Running             Running 5 minutes ago
-zfg0xvlnthie        nginx1.2            nginx:1.12        node3               Running             Running 13 seconds ago
-7u5kosgme345        nginx1.3            nginx:1.12        node3               Running             Running 12 seconds ago
-tzzki7jial9d        nginx1.4            nginx:1.12        node2               Running             Running 14 seconds ago
-cdueodzlm8bs        nginx1.5            nginx:1.12        node3               Running             Running 12 seconds ago
-qvl1jnyswo84        nginx1.6            nginx:1.12        node3               Running             Running 13 seconds ago
-1lwb1nt5zmh0        nginx1.7            nginx:1.12        node2               Running             Running 12 seconds ago
-cqvrq868lp8i        nginx1.8            nginx:1.12        node1               Running             Running 14 seconds ago
-0yc170so5cld        nginx1.9            nginx:1.12        node2               Running             Running 13 seconds ago
-rueelnboyi6j        nginx1.10           nginx:1.12        node1               Running             Running 14 seconds ago
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
+E            ERROR               PORTS
+iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               Running             Running 17 m
+inutes ago
+lfz1bhl6v77r        nginx1.2            nginx:1.12          node2               Running             Running 6 mi
+nutes ago
+qururb043dwh        nginx1.3            nginx:1.12          node3               Running             Running 6 mi
+nutes ago
+q53jgeeq7y1x        nginx1.4            nginx:1.12          node3               Running             Running 6 mi
+nutes ago
+xj271k2829uz        nginx1.5            nginx:1.12          node1               Running             Running 7 mi
+nutes ago
 ```
 
 3. Send a bunch of requests to http://localhost:80
@@ -192,80 +172,90 @@ Let's try it out by curling multiple times. Note, that it doesn't matter which n
 
 ```sh
 $ curl localhost:80
+node3
 $ curl localhost:80
+node3
 $ curl localhost:80
+node2
 $ curl localhost:80
+node1
 $ curl localhost:80
+node1
 ```
+
+You should see which node is serving each request because of the nifty `--mount` command we used earlier.
 
 **Limits of the routing Mesh**
 The routing mesh can only publish one service on port 80. If you want multiple services exposed on port 80, then you can use an external application load balancer outside of the swarm to accomplish this.
 
 4. Check the aggregated logs for the service
 
-One easy way to see which nodes those requests were routed to is to check the aggregated logs. We can get aggregated logs for the service using `docker service logs [service name]`. This aggregates the output from every running container, i.e. the output from `docker container logs [container name]`.
+Another easy way to see which nodes those requests were routed to is to check the aggregated logs. We can get aggregated logs for the service using `docker service logs [service name]`. This aggregates the output from every running container, i.e. the output from `docker container logs [container name]`.
 
 ```sh
 $ docker service logs nginx1
-nginx1.1.k76andqr9197@node1     | 10.255.0.2 - - [12/May/2017:14:22:22 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.1.k76andqr9197@node1     | 10.255.0.3 - - [12/May/2017:14:22:40 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.3.7u5kosgme345@node3     | 10.255.0.2 - - [12/May/2017:14:27:30 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.6.qvl1jnyswo84@node3     | 10.255.0.2 - - [12/May/2017:14:27:33 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.9.0yc170so5cld@node2     | 10.255.0.2 - - [12/May/2017:14:27:32 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.7.1lwb1nt5zmh0@node2     | 10.255.0.2 - - [12/May/2017:14:27:28 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
-nginx1.5.cdueodzlm8bs@node3     | 10.255.0.2 - - [12/May/2017:14:27:31 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
+nginx1.4.q53jgeeq7y1x@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:39 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
+nginx1.2.lfz1bhl6v77r@node2    | 10.255.0.2 - - [28/Jun/2017:18:59:40 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
+nginx1.5.xj271k2829uz@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
+nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:50:23 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
+nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
+nginx1.3.qururb043dwh@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:38 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
+52.1" "-"
 ```
 Based on these logs we can see that each request was served by a different container.
 
-In addition to seeing whether the request was sent to Node1, Node2, or Node3, you can also see which container on each node that it was sent to. For example `nginx1.5` means that request was sent to container with that same name as indicated in the output of `docker service ps nginx1`.
+In addition to seeing whether the request was sent to node1, node2, or node3, you can also see which container on each node that it was sent to. For example `nginx1.5` means that request was sent to container with that same name as indicated in the output of `docker service ps nginx1`.
 
 # Step 4: Rolling Updates
 
-Now that we have our service deployed, lets demonstrate a release of our application. We are going to update the version of Nginx to version "1.13". To do this update we are going to use the `docker service update` command.
+Now that we have our service deployed, let's demonstrate a release of our application. We are going to update the version of Nginx to version "1.13". To do this update we are going to use the `docker service update` command.
 
 ```sh
-docker service update --image nginx:1.13 nginx1
+$ docker service update --image nginx:1.13 --detach=true nginx1
 ```
 
-This will trigger a rolling update of the swarm. Quickly type in `docker service ps nginx1` over and over to see the updates in real time. You can fine tune the rolling update using these options:
+This will trigger a rolling update of the swarm. Quickly type in `docker service ps nginx1` over and over to see the updates in real time.
+
+You can fine tune the rolling update using these options:
 `--update-parallelism` will dictate the number of containers to update at once. (defaults to 1)
 `--update-delay` will dictate the delay between finishing updating a set of containers before moving on to the next set.
 
 After a few seconds, run `docker service ps nginx1` to see all the images have been updated to nginx:1.13. 
 
 ```sh
-oj1tvux0yccn        nginx1.4            nginx:1.13          node3               Running             Running 9 seconds ago
-
-v5op2bz1f0mt         \_ nginx1.4        nginx:1.12          node3               Shutdown            Shutdown 10 seconds ago
-
-94o4gwvixtyi        nginx1.5            nginx:1.13          node2               Running             Running 14 seconds ago
-
-rloi3m4ytk99         \_ nginx1.5        nginx:1.12          node2               Shutdown            Shutdown 17 seconds ago
-
-dl0cu17h0fr7        nginx1.6            nginx:1.13          node1               Running             Running 25 seconds ago
-
-0mj2qavxu91p         \_ nginx1.6        nginx:1.12          node1               Shutdown            Shutdown 27 seconds ago
-
-olrwocmp8oo3        nginx1.7            nginx:1.13          node1               Running             Running 33 seconds ago
-
-lf7hfyqzalgg         \_ nginx1.7        nginx:1.12          node1               Shutdown            Shutdown 36 seconds ago
-
-taxuoctg5p3p        nginx1.8            nginx:1.13          node2               Running             Running 41 seconds ago
-
-eotvoinl4xwm         \_ nginx1.8        nginx:1.12          node2               Shutdown            Shutdown 44 seconds ago
-
-bs946b1gmwca        nginx1.9            nginx:1.13          node3               Running             Running 21 seconds ago
-
-i6f109cu7ap7         \_ nginx1.9        nginx:1.12          node3               Shutdown            Shutdown 23 seconds ago
-
-nof6eyz9zlep        nginx1.10           nginx:1.13          node1               Running             Running 11 seconds ago
-
-sp88fcvgfj3p         \_ nginx1.10       nginx:1.12          node1               Shutdown            Shutdown 12 seconds ago
+$ docker service ps nginx1
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
+E             ERROR               PORTS
+di2hmdpw0j0z        nginx1.1            nginx:1.13          node1               Running             Running 50 s
+econds ago
+iu3ksewv7qf9         \_ nginx1.1        nginx:1.12          node1               Shutdown            Shutdown 52
+seconds ago
+qsk6gw43fgfr        nginx1.2            nginx:1.13          node2               Running             Running 47 s
+econds ago
+lfz1bhl6v77r         \_ nginx1.2        nginx:1.12          node2               Shutdown            Shutdown 49
+seconds ago
+r4429oql42z9        nginx1.3            nginx:1.13          node3               Running             Running 41 s
+econds ago
+qururb043dwh         \_ nginx1.3        nginx:1.12          node3               Shutdown            Shutdown 43
+seconds ago
+jfkepz8tqy9g        nginx1.4            nginx:1.13          node2               Running             Running 44 s
+econds ago
+q53jgeeq7y1x         \_ nginx1.4        nginx:1.12          node3               Shutdown            Shutdown 45
+seconds ago
+n15o01ouv2uf        nginx1.5            nginx:1.13          node3               Running             Running 39 s
+econds ago
+xj271k2829uz         \_ nginx1.5        nginx:1.12          node1               Shutdown            Shutdown 40
+seconds ago
 ```
 
 You have successfully updated your app to the latest version of nginx!
 
-# Step :5 Reconciliation
+# Step 5: Reconciliation
 
 In the previous step, we updated the state of our service using `docker service update`. We saw Docker Swarm in action as it recognized the mismatch between desired state and actual state, and attempted to solve this issue. 
 
@@ -273,51 +263,59 @@ The "inspect->adapt" model of docker swarm enables it to perform reconciliation 
  
 We are going to remove a node, and see tasks of our nginx1 service be rescheduled on other nodes automatically.
 
-1. On Node1, use `watch` to watch the update from the output of `docker service ps`.
+1. For the sake of clean output, first create a brand new service by copying the line below. We will change the name, and the publish port to avoid conflicts with our existing service.
 ```sh
-$ watch -n 1 docker service ps nginx1
+$ docker service create --detach=true --name nginx2 --replicas=5 --publish 81:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12
+aiqdh5n9fyacgvb2g82s412js
+```
+
+2. On Node1, use `watch` to watch the update from the output of `docker service ps`.
+```sh
+$ watch -n 1 docker service ps nginx2
 ```
 This should result in a window that looks like this:
 ```sh
-Every 1s: docker service ps nginx1                                                                                                2017-05-12 15:29:20
+Every 1s: docker service ps nginx1 2                                                                                              2017-05-12 15:29:20
 
-ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
-o68mbojcmqqq        nginx1.1            nginx:1.12        node1               Running             Running 9 minutes ago
-81icw3cvbvgx        nginx1.2            nginx:1.12        node2               Running             Running 5 minutes ago
-bmw0eu84c8qz        nginx1.3            nginx:1.12        node3               Running             Running 5 minutes ago
-uqmn9kuk79pw        nginx1.4            nginx:1.12        node2               Running             Running 5 minutes ago
-mwy6f9jtl3ss        nginx1.5            nginx:1.12        node2               Running             Running 5 minutes ago
-dbapn72nlwp6        nginx1.6            nginx:1.12        node2               Running             Running 5 minutes ago
-lq0rp88inh2x        nginx1.7            nginx:1.12        node1               Running             Running 6 minutes ago
-nvmpbh0m57rr        nginx1.8            nginx:1.12        node3               Running             Running 5 minutes ago
-xbm3cl1huvhg        nginx1.9            nginx:1.12        node3               Running             Running 5 minutes ago
-y9ib99s6he7n        nginx1.10           nginx:1.12        node1               Running             Running 6 minutes ago
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
+E            ERROR               PORTS
+6koehbhsfbi7         nginx2.1        nginx:1.12          node3               Running            Running 21 s
+econds ago
+dou2brjfr6lt        nginx2.2            nginx:1.12          node1               Running             Running 26 s
+econds ago
+8jc41tgwowph        nginx2.3            nginx:1.12          node2               Running             Running 27 s
+econds ago
+n5n8zryzg6g6        nginx2.4            nginx:1.12          node1               Running             Running 26 s
+econds ago
+cnofhk1v5bd8        nginx2.5            nginx:1.12          node2               Running             Running 27 s
+econds ago
+[node1] (loc
 ```
 
-2. Click on Node3, and type the command to leave the swarm cluster.
+3. Click on Node3, and type the command to leave the swarm cluster.
 ```sh
 $ docker swarm leave
 ```
 This is the "nice" way to leave the swarm, but you can also kill the node and the following behavior will be the same.
 
-3. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
+4. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
 ```sh
-$ docker service ps nginx1
-ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR               P
-ORTS
-o68mbojcmqqq        nginx1.1            nginx:1.12        node1               Running             Running 11 minutes ago
-81icw3cvbvgx        nginx1.2            nginx:1.12        node2               Running             Running 8 minutes ago
-nfypiigm47w6        nginx1.3            nginx:1.12        node1               Running             Running about a minute ago
-bmw0eu84c8qz         \_ nginx1.3        nginx:1.12        node3               Shutdown            Running about a minute ago
-uqmn9kuk79pw        nginx1.4            nginx:1.12        node2               Running             Running 8 minutes ago
-mwy6f9jtl3ss        nginx1.5            nginx:1.12        node2               Running             Running 8 minutes ago
-dbapn72nlwp6        nginx1.6            nginx:1.12        node2               Running             Running 8 minutes ago
-lq0rp88inh2x        nginx1.7            nginx:1.12        node1               Running             Running 8 minutes ago
-lmo8xk73fben        nginx1.8            nginx:1.12        node1               Running             Running about a minute ago
-nvmpbh0m57rr         \_ nginx1.8        nginx:1.12        node3               Shutdown            Running about a minute ago
-x09i3t60sbsx        nginx1.9            nginx:1.12        node2               Running             Running about a minute ago
-xbm3cl1huvhg         \_ nginx1.9        nginx:1.12        node3               Shutdown            Running about a minute ago
-y9ib99s6he7n        nginx1.10           nginx:1.12        node1               Running             Running 8 minutes ago
+$ docker service ps nginx2
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
+E            ERROR               PORTS
+jeq4604k1v9k        nginx2.1            nginx:1.12          node1               Running             Running 5 se
+conds ago
+6koehbhsfbi7         \_ nginx2.1        nginx:1.12          node3               Shutdown            Running 21 s
+econds ago
+dou2brjfr6lt        nginx2.2            nginx:1.12          node1               Running             Running 26 s
+econds ago
+8jc41tgwowph        nginx2.3            nginx:1.12          node2               Running             Running 27 s
+econds ago
+n5n8zryzg6g6        nginx2.4            nginx:1.12          node1               Running             Running 26 s
+econds ago
+cnofhk1v5bd8        nginx2.5            nginx:1.12          node2               Running             Running 27 s
+econds ago
+[node1] (loc
 ```
 
 # How many nodes?
