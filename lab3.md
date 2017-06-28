@@ -2,7 +2,7 @@
 
 © Copyright IBM Corporation 2017
 
-IBM, the IBM logo and ibm.com are trademarks of International Business Machines Corp., registered in many jurisdictions worldwide. Other product and service names might be trademarks of IBM or other companies. A current list of IBM trademarks is available on the Web at &quot;Cfopyright and trademark information&quot; at www.ibm.com/legal/copytrade.shtml.
+IBM, the IBM logo and ibm.com are trademarks of International Business Machines Corp., registered in many jurisdictions worldwide. Other product and service names might be trademarks of IBM or other companies. A current list of IBM trademarks is available on the Web at &quot;Copyright and trademark information&quot; at www.ibm.com/legal/copytrade.shtml.
 
 
 This document is current as of the initial date of publication and may be changed by IBM at any time.
@@ -15,7 +15,7 @@ So far you have learned how to run applications using docker on your local machi
 
 There are several orchestration solutions out there that help you solve some of these problems. One example is the [IBM Bluemix Container Service](https://www.ibm.com/cloud-computing/bluemix/containers) which uses [Kubernetes](https://kubernetes.io/) to run containers in production. 
 
-Before we introduce you to Kubernetes, we will teach you how to orchestrate applications using Docker Swarm, which is a built-in orchestration tool that comes with the Docker Engine.
+Before we introduce you to Kubernetes, we will teach you how to orchestrate applications using Docker Swarm. Docker Swarm is the orchestration tool that comes built-in to the Docker Engine.
 
 ## Prerequisites
 
@@ -78,11 +78,13 @@ Let's do a simple example using Nginx. For now we will create a service with jus
  
 1. Deploy a service using Nginx
 ```sh
-$ docker service create --name nginx1 --publish 80:80 nginx:1.12
+$ docker service create --detach=true --name nginx1 --publish 80:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12
 2i81uxklszm6shjpmupb1hrvi
 ```
 
 This above statement is *declarative*, and docker swarm will actively try to maintain the state declared in this command unless explicitly changed via another `docker service` command. This behavior comes in handy when nodes go down, for example, and containers are automatically rescheduled on other nodes. We will see a demonstration of that a little later on in this lab.
+
+The `--mount` command is a neat trick to have nginx print out the hostname of the node it's running on. This will come in handy when we want to see which node in our swarm serves our request a little later on in the lab.
 
 We are using nginx tag "1.12" in this command. We will demonstrate a rolling update with version 1.13 later in this lab.
 
@@ -114,7 +116,7 @@ If you happen to know which node your container is running on (you can see which
 
 Because of the routing mesh, we can send a request to any node of the swarm on port 80. This request will be automatically routed to the one node that is running our nginx container.
 
-Try this on any node:
+Try this on each node:
 
 ```sh
 $ curl localhost:80
@@ -151,15 +153,15 @@ In production we may need to handle large amounts of traffic to our application.
 
 1. Update your service with an updated number of replicas
 
-We are going to use the `docker service` command to update the nginx service we created earlier to include 10 replicas. This is defining a new state for our service.
+We are going to use the `docker service` command to update the nginx service we created earlier to include 5 replicas. This is defining a new state for our service.
 ```sh
-$ docker service update --replicas=10 nginx1
+$ docker service update --replicas=5 nginx1
 nginx1
 ```
 As soon as this command is run the following happens:
-1) The state of the service is updated to 10 replicas (which is stored in the swarms internal storage).
-2) Docker swarm recognizes that the # of replicas that is scheduled now does not match the declared state of 10
-3) Docker swarm schedules 9 more tasks (containers) in an attempt to meet the declared state for the service.
+1) The state of the service is updated to 5 replicas (which is stored in the swarms internal storage).
+2) Docker swarm recognizes that the number of replicas that is scheduled now does not match the declared state of 5.
+3) Docker swarm schedules 5 more tasks (containers) in an attempt to meet the declared state for the service.
 
 This swarm is actively checking to see if the desired state is equal to actual state, and will attempt to reconcile if needed.
 
@@ -184,7 +186,8 @@ rueelnboyi6j        nginx1.10           nginx:1.12        node1               Ru
 
 3. Send a bunch of requests to http://localhost:80
 
-The `--publish 80:80` is still in effect for this service, that was not changed when we ran `docoker service update`. However, now when we send requests on port 80, the routing mesh has multiple containers in which to route requets to. The routing mesh acts as a load balancer for these containers, altenernating where it routes requests to. The routing uses layer-4 IPVS for its routing, a built in load balancer in the linux kernel, which is highly performant.
+The `--publish 80:80` is still in effect for this service, that was not changed when we ran `docker service update`. However, now when we send requests on port 80, the routing mesh has multiple containers in which to route requests to. The routing mesh acts as a load balancer for these containers, alternating where it routes requests to. 
+
 Let's try it out by curling multiple times. Note, that it doesn't matter which node you send the requests. There is no connection between the node that receives the request, and the node that that request is routed to.  
 
 ```sh
@@ -333,7 +336,7 @@ Worker nodes, on the other hand, can scale up into the 1000's of nodes. Worker n
 
 # Summary
 
-In this lab, you got an introduction to problems that come with running container with production such as scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging. We used docker swarm to address some of these issues, that is the built-in orchestrator for the docker engine.
+In this lab, you got an introduction to problems that come with running container with production such as scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging. We used the orchestration tool that comes built-in to the Docker Engine- Docker Swarm, to address some of these issues.
 
 Key Takeaways
 - The Docker Swarm schedules services using a declarative language. You declare the state, and the swarm attempts to maintain and reconcile to make sure the actual state == desired state
