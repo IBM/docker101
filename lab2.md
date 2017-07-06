@@ -323,7 +323,7 @@ COPY app2.py /app2.py
 
 You can also experience the sharing of layers when you start multiple containers from the same image. Since the containers use the same read-only layers, you can imagine that starting up containers is very fast and has a very low footprint on the host.
 
-![](/images/sharing-layers.jpg) 
+![](/images/sharing-layers.png) 
 
 Image courtesy of [official Docker docs](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/#container-and-layers)
 
