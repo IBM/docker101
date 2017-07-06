@@ -306,7 +306,7 @@ Each of these lines is a layer. Each layer contains only the delta, or changes f
 
 Each layer of the image is read-only, except for the very top layer which is created for the container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance.
 
-![](/images/container-layers.jpg)
+![](/images/container-layers.png)
 
 Image courtesy of [official Docker docs](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/#container-and-layers)
 
