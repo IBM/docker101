@@ -17,6 +17,8 @@ There are several orchestration solutions out there that help you solve some of 
 
 Before we introduce you to Kubernetes, we will teach you how to orchestrate applications using Docker Swarm. Docker Swarm is the orchestration tool that comes built-in to the Docker Engine.
 
+We will be using a few Docker commands in this lab. For full documentation on available commands check out the [official documentation](https://docs.docker.com/).
+
 ## Prerequisites
 
 In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.  To make things easier, for this lab we will be using the multi-node support provided by http://play-with-docker.com. This is the easiest way to test out Docker Swarm, without having to deal with installing docker on multiple hosts yourself.
@@ -263,13 +265,14 @@ The "inspect->adapt" model of docker swarm enables it to perform reconciliation 
  
 We are going to remove a node, and see tasks of our nginx1 service be rescheduled on other nodes automatically.
 
-1. For the sake of clean output, first create a brand new service by copying the line below. We will change the name, and the publish port to avoid conflicts with our existing service.
+1. For the sake of clean output, first create a brand new service by copying the line below. We will change the name, and the publish port to avoid conflicts with our existing service. We will also add the `--replicas` command to scale the service with 5 instances.
+
 ```sh
 $ docker service create --detach=true --name nginx2 --replicas=5 --publish 81:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12
 aiqdh5n9fyacgvb2g82s412js
 ```
 
-2. On Node1, use `watch` to watch the update from the output of `docker service ps`.
+2. On Node1, use `watch` to watch the update from the output of `docker service ps`. Note "watch" is a linux utility and might not be available on other platforms.
 ```sh
 $ watch -n 1 docker service ps nginx2
 ```

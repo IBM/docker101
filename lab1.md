@@ -20,6 +20,8 @@ The first part of this lab, we will run our first container, and learn how to in
 
 After we run our first container, we will dive into other uses of docker containers. We will find many examples of these on the Docker Hub, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.
 
+We will be using a few Docker commands in this lab. For full documentation on available commands check out the [official documentation](https://docs.docker.com/).
+
 ## Prerequisites
 
 Completed Lab 0: You must have docker installed, or be using http://play-with-docker.com.
@@ -66,7 +68,7 @@ KiB Swap:  1048572 total,  1048572 free,        0 used.  1548356 avail Mem
 
 Containers use linux namespaces to provide isolation of system resources from other containers or the host. The PID namespace provides isolation for process IDs. If you run `top` while inside the container, you will notice that it shows the processes within the PID namespace of the container, which is much different than what you can see if you ran `top` on the host.
 
-Even though we are using the `ubuntu` image, it is important to note that our container does not have its own kernel. Its uses the kernel of the host and the `ubuntu` image is used only to mimic the file system and tools available on an ubuntu system. 
+Even though we are using the `ubuntu` image, it is important to note that our container does not have its own kernel. Its uses the kernel of the host and the `ubuntu` image is used only to provide the file system and tools available on an ubuntu system. 
 
 3. Inspect the container with `docker container exec`
 

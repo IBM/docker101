@@ -27,7 +27,7 @@ Docker comes with two flavors of installations. The "paid" version is Docker Ent
 
 3. Select the filters for your operating system or platform
 
-On this page you will find the installation for your operating systems. For example, f you are using a Mac, select "MacOS", to find the installation for the Mac platform.
+On this page you will find the installation for your operating systems. For example, if you are using a Mac, select "MacOS", to find the installation for the Mac platform.
 
 # **Optional:** Use play-with-docker
 If you don't want to install Docker, an alternative is to use [Play-With-Docker](http://play-with-docker.com). Play-With-Docker is a website where you can run terminals directly from your browser that have Docker installed. All of the labs for this course can be run on Play-With-Docker, though we recommend installing docker locally on your host, so that you can continue your docker journey when this course has completed. To use Play-With-Docker, navigate to http://play-with-docker.com in your browser.
