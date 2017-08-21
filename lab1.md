@@ -18,7 +18,7 @@ What makes containers useful is the tooling that surrounds it. For these labs, w
 
 The first part of this lab, we will run our first container, and learn how to inspect it. We will be able to witness the namespace isolation that we acquire from the linux kernel.
 
-After we run our first container, we will dive into other uses of docker containers. We will find many examples of these on the Docker Hub, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.
+After we run our first container, we will dive into other uses of docker containers. We will find many examples of these on the Docker Store, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.
 
 We will be using a few Docker commands in this lab. For full documentation on available commands check out the [official documentation](https://docs.docker.com/).
 
@@ -124,20 +124,24 @@ PID is just one of the linux namespaces that provides containers with isolation 
 
 These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next we will demonstrate different uses of containers. and the benefit of isolation as we run multiple containers on the same host.
 
-**Note**: Namespaces are a feature of the **linux** kernel. But Docker allows you to run containers on Windows and Mac... how does that work? The secret is that embedded in the Docker product is a linux subsystem. Docker open-sourced this linux subsystem to a new project: [LinuxKit](https://github.com/linuxkit/linuxkit). Being able to run containers on many different platforms is one advantage of using the Docker tooling with containers.
+**Note**: Namespaces are a feature of the **linux** kernel. But Docker allows you to run containers on Windows and Mac... how does that work? The secret is that embedded in the Docker product is a linux subsystem. Docker open-sourced this linux subsystem to a new project: [LinuxKit](https://github.com/linuxkit/linuxkit). Being able to run containers on many different platforms is one advantage of using the Docker tooling with containers. 
+
+In additional to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer. 
 
 
 # Step 2: Run Multiple Containers
 
-1. Explore the Docker Hub
+1. Explore the Docker Store
 
-The [Docker Hub](https://hub.docker.com) is the public central registry for Docker images. Anyone can share images here publicly. You will also find a list of "official" images, such as the [ubuntu image](https://hub.docker.com/_/ubuntu/) that we used previously in this lab. Navigate to https://hub.docker.com to explore.
+The [Docker Store](https://store.docker.com) is the public central registry for Docker images. Anyone can share images here publicly. The Docker Store contains community and official images that can also be found directly on the [Docker Hub](https://hub.docker.com/explore/).
 
-Official images are going to become very important when you start developing your own images. Browse through the list of official images [here](https://hub.docker.com/explore/). They go through a vetting process for security and documentation by the Docker team. In Step 2 of this lab, we will start a couple of containers using the official images: nginx web server, and mongo database.
+When searching for images you will find filters for "Store" vs "Community" images. "Store" images include content that has been verified and scanned for security vulnerabilities by Docker. Go one step further and search for "Certified" images, that are deemed enterprise-ready and are tested with Docker Enterprise Edition product. It is important to avoid using unverified content from the Docker Store when developing your own images that are intended to be deployed into the production environment. These unverified images may contain security vulnerabilities or possibly even malicious software.
  
+In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Store: nginx web server, and mongo database.
+
 2. Run an Nginx server
 
-Let's run a container using the [official Nginx image](https://hub.docker.com/_/nginx/) on Docker Hub.
+Let's run a container using the [official Nginx image](https://store.docker.com/images/nginx) from the Docker Store.
 
 ```sh
 $ docker container run --detach --publish 8080:80 --name nginx nginx
@@ -153,21 +157,21 @@ Status: Downloaded newer image for nginx:latest
 
 We are using a couple of new flags here. The `--detach` flag will run this container in the background. The `publish` flag publishes port 80 in the container (the default port for nginx), via port 8080 on our host. Remember that the NET namespace gives processes of the container their own network stack. The `--publish` flag is a feature that allows us to expose networking through the container onto the host. 
 
-How do you know port 80 is the default port for nginx? Because it is listed in the [documentation](https://hub.docker.com/_/nginx/) on docker hub. In general, the documentation for the official images is very good, and you will want to refer to them when running containers using those images. 
+How do you know port 80 is the default port for nginx? Because it is listed in the [documentation](https://store.docker.com/images/nginx) on the Docker Store. In general, the documentation for the verified images is very good, and you will want to refer to them when running containers using those images. 
 
 We are also specifying the `--name` flag, which names the container. Every container has a name, if you don't specify one, Docker will randomly assign one for you. Specifying your own name makes it easier to run subsequent commands on your container since you can reference the name instead of the id of the container. For example: `docker container inspect nginx` instead of `docker container inspect 5e1`.
 
-Since this is the first time you are running the nginx container, it will pull down the nginx image from the docker hub. Subsequent containers created from the Nginx image will use the existing image located on your host.
+Since this is the first time you are running the nginx container, it will pull down the nginx image from the Docker Store. Subsequent containers created from the Nginx image will use the existing image located on your host.
 
 Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
 3. Access the nginx server on http://localhost:8080
 
-![](/images/lab1_step2_nginx.png)
+![](/images/nginx.png)
 
 4.  Run a mongo DB server
 
-Now, lets run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo/) from Docker Hub.
+Now, lets run a mongoDB server. We will use the [official mongoDB image](https://store.docker.com/images/mongo) from the Docker Store.
 ```sh
 $ docker container run --detach --publish 8081:27017 --name mongo mongo
 Unable to find image 'mongo:latest' locally
@@ -188,11 +192,11 @@ Status: Downloaded newer image for mongo:latest
 cf1d36705eda535f42193547cb832365d47b169442ecbb580428028082d6fd26
 ```
 
-Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Hub. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo/) on docker hub to get more details about using the mongo image.
+Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://store.docker.com/images/mongo) on the Docker Store to get more details about using the mongo image.
 
 5. Access http://localhost:8081 to see some output from mongo
 
-![](/images/lab1_step2_mongo.png)
+![](/images/mongo.png)
 
 6. Check your running containers with `docker container ls`
 
@@ -208,7 +212,7 @@ You should see that you have an Nginx web server container, and a MongoDB contai
 
 You can see the "nginx" and "mongo" names that we gave to our containers, and the random name (in my case "priceless_kepler") that was generated for the ubuntu container. You can also see that the port mappings that we specified with the `--publish` flag. For more details information on these running containers you can use the `docker container inspect [container id` command.
 
-One thing you might notice is that the mongo container is running the `docker-entrypoint` command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on [github](https://github.com/docker-library/mongo/blob/master/3.0/docker-entrypoint.sh). In general, for official images you can find the link to the github source from the docker hub page.
+One thing you might notice is that the mongo container is running the `docker-entrypoint` command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on [github](https://github.com/docker-library/mongo/blob/master/3.0/docker-entrypoint.sh). Typically, you can find the link to the github source from the image description page on the Docker Store website.
 
 Containers are self-contained and isolated, which means we can avoid potential conflicts between containers with different system or runtime dependencies. For example: deploying an app that uses Java 7 and another app that uses Java 8 on the same host. Or running multiple nginx containers that all have port 80 as their default listening ports (if exposing on the host using the `--publish` flag, the ports selected for the host will need to be unique). Isolation benefits are possible because of Linux Namespaces.
 
@@ -216,7 +220,7 @@ Containers are self-contained and isolated, which means we can avoid potential c
 
 Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. This can result in huge cost savings for an enterprise.
 
-While running official images can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.
+While running images directly from the Docker Store can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.
 
 # Step 3: Clean Up
 
@@ -270,6 +274,6 @@ In this lab, you created your first Ubuntu, Nginx and MongoDB containers.
 Key Takeaways
 - Containers are composed of linux namespaces and control groups that provide isolation from other containers and the host.
 - Because of the isolation properties of containers, you can schedule many containers on a single host without worrying about conflicting dependencies. This makes it easier to run multiple containers on a single host: fully utilizing resources allocated to that host, and ultimately saving some money on server costs.
-- The official images of the Docker Hub should be preferred (Lab 2) because they go through a [vetting process](https://docs.docker.com/docker-hub/official_repos/) by the Docker team and meet higher standards for security and documentation.
+-  Avoid using unverified content from the Docker Store when developing your own images because these images may contain security vulnerabilities or possibly even malicious software.
 - Containers include everything they need to run the processes within them, so there is no need to install additional dependencies directly on your host.
 
