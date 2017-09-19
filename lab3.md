@@ -111,7 +111,8 @@ $ docker service ps nginx1
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
 E           ERROR               PORTS
 iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               Running             Running 8 mi
-nutes ago```
+nutes ago
+```
 
 If you happen to know which node your container is running on (you can see which node based on the output from `docker service ps`), you can use `docker container ls` to see the container running on that specific node.
 
