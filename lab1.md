@@ -74,13 +74,25 @@ Even though we are using the `ubuntu` image, it is important to note that our co
 
 The `docker container exec` command is a way to "enter" a running container's namespaces with a new process.
 
-Open up a new terminal. Use the `docker container ls` command to get the ID of the running container you just created.
+Open up a new terminal. To open a new terminal on the same node using play-with-docker.com, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
+
+```sh
+[node2] (local) root@192.168.0.17 ~ # You in node2 here...
+$ ssh 192.168.0.18
+# Type yes to the messages that displays...
+[node1] (local) root@192.168.0.18 ~ #Yay,you are in node1!
+$ 
+```
+
+In the new terminal, use the `docker container ls` command to get the ID of the running container you just created.
 
 ```sh
 $ docker container ls # In a new terminal
 CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS                         PORTS                       NAMES
 b3ad2a23fab3        ubuntu                     "top"                    29 minutes ago      Up 29 minutes                                              goofy_nobel
 ```
+
+
 
 Then use that id to run `bash` inside that container using the `docker container exec` command. Since we are using bash and want to interact with this container from our terminal, use `-it` flags to run using interactive mode while allocating a psuedo-terminal.
 
@@ -171,25 +183,25 @@ Nginx is a lightweight web server. You can access it on port 8080 on your localh
 
 4.  Run a mongo DB server
 
-Now, lets run a mongoDB server. We will use the [official mongoDB image](https://store.docker.com/images/mongo) from the Docker Store.
+Now, run a mongoDB server. We will use the [official mongoDB image](https://store.docker.com/images/mongo) from the Docker Store. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 3.4.
 ```sh
-$ docker container run --detach --publish 8081:27017 --name mongo mongo
-Unable to find image 'mongo:latest' locally
-latest: Pulling from library/mongo
-56c7afbcb0f1: Pull complete 
-ac4863389b54: Pull complete 
-fccbd1684456: Pull complete 
-5565b5f177e7: Pull complete 
-b00971241c47: Pull complete 
-c0300dc07374: Pull complete 
-b93b8ba2b93b: Pull complete 
-661362338965: Pull complete 
-fa170e22de2e: Pull complete 
-86992ab45331: Pull complete 
-e233325a655e: Pull complete 
-Digest: sha256:c4bc4644b967a4b58022a79cf5c9afcd25ed08180c958a74df57b7753cfc8649
-Status: Downloaded newer image for mongo:latest
-cf1d36705eda535f42193547cb832365d47b169442ecbb580428028082d6fd26
+$ $ docker container run --detach --publish 8081:27017 --name mongo mongo:3.4
+Unable to find image 'mongo:3.4' locally
+3.4: Pulling from library/mongo
+d13d02fa248d: Already exists 
+bc8e2652ce92: Pull complete 
+3cc856886986: Pull complete 
+c319e9ec4517: Pull complete 
+b4cbf8808f94: Pull complete 
+cb98a53e6676: Pull complete 
+f0485050cd8a: Pull complete 
+ac36cdc414b3: Pull complete 
+61814e3c487b: Pull complete 
+523a9f1da6b9: Pull complete 
+3b4beaef77a2: Pull complete 
+Digest: sha256:d13c897516e497e898c229e2467f4953314b63e48d4990d3215d876ef9d1fc7c
+Status: Downloaded newer image for mongo:3.4
+d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
 ```
 
 Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://store.docker.com/images/mongo) on the Docker Store to get more details about using the mongo image.
@@ -226,9 +238,10 @@ While running images directly from the Docker Store can be useful at times, it i
 
 Completing this lab results in a bunch of running containers on your host. Let's clean these up.
 
-1. Run `docker container stop [container id]` for each container that is running. You can also use the names of the containers that you specified before.
 
-First get a list of the containers running using `docker container ls`.
+1. First get a list of the containers running using `docker container ls`. 
+
+
 ```sh
 $ docker container ls
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                     NAMES
@@ -236,7 +249,7 @@ d6777df89fea        nginx               "nginx -g 'daemon ..."   3 minutes ago  
 ead80a0db505        mongo               "docker-entrypoint..."   3 minutes ago       Up 3 minutes        0.0.0.0:8081->27017/tcp   mongo
 af549dccd5cf        ubuntu              "top"                    8 minutes ago       Up 8 minutes                                  priceless_kepler
 ```
-Then run `docker container stop [container id]` for each container in the list.
+2. Next,  run `docker container stop [container id]` for each container in the list. You can also use the names of the containers that you specified before.
 ```sh
 $ docker container stop d67 ead af5
 d67
