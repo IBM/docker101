@@ -323,9 +323,9 @@ econds ago
 ```
 
 # How many nodes?
-Managers and workers scale differently. 
+In this lab, our Docker Swarm cluster consists of one master, and two worker nodes. This configuration is not highly available. The manager node contains the necessary information to manage the cluster, so if this node goes down, the cluster will cease to function. For a production application, you will want to provision a cluster with multiple manager nodes to allow for manager node failures.
 
-For managers you want at least 3, but typically no more than 7. Managers implement the raft consensus algorithm, which requires that more than 50% of the nodes agree on the state that is being stored for the cluster. If you don't achieve >50%, the swarm will cease to operate correctly. For this reason, the following can be assumed about node failure tolerance.
+For manager nodes you want at least 3, but typically no more than 7. Managers implement the raft consensus algorithm, which requires that more than 50% of the nodes agree on the state that is being stored for the cluster. If you don't achieve >50%, the swarm will cease to operate correctly. For this reason, the following can be assumed about node failure tolerance.
 
 - 3 manager nodes tolerates 1 node failure 
 - 5 manager nodes tolerates 2 node failures
@@ -333,8 +333,9 @@ For managers you want at least 3, but typically no more than 7. Managers impleme
 
 It is possible to have an even number of manager nodes, but it adds no value in terms of the number of node failures. For example, 4 manager nodes would only tolerate 1 node failure, which is the same tolerance as a 3 manager node cluster. The more manager nodes you have, the harder it is to achieve a consensus on the state of a cluster.
 
-Worker nodes, on the other hand, can scale up into the 1000's of nodes. Worker nodes communicate using the gossip protocol, which is optimized to be highly performant under large traffic and a large number of nodes.
+While you typically want to limit the number of manager nodes to no more than 7, you can scale the number of worker nodes much higher than that. Worker nodes can scale up into the 1000's of nodes. Worker nodes communicate using the gossip protocol, which is optimized to be highly performant under large traffic and a large number of nodes.
 
+If you are using http://play-with-docker.com, you can easily deploy multiple manager node clusters using the built in templates. Click the templates icon in the upper left to see what templates are available.
 
 # Summary
 

@@ -74,20 +74,19 @@ Even though we are using the `ubuntu` image, it is important to note that our co
 
 The `docker container exec` command is a way to "enter" a running container's namespaces with a new process.
 
-Open up a new terminal. To open a new terminal on the same node using play-with-docker.com, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
+Open a new terminal. To open a new terminal connected to node1 using play-with-docker.com, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
 
 ```sh
-[node2] (local) root@192.168.0.17 ~ # You in node2 here...
+[node2] (local) root@192.168.0.17 ~
 $ ssh 192.168.0.18
-# Type yes to the messages that displays...
-[node1] (local) root@192.168.0.18 ~ #Yay,you are in node1!
+[node1] (local) root@192.168.0.18 ~
 $ 
 ```
 
 In the new terminal, use the `docker container ls` command to get the ID of the running container you just created.
 
 ```sh
-$ docker container ls # In a new terminal
+$ docker container ls
 CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS                         PORTS                       NAMES
 b3ad2a23fab3        ubuntu                     "top"                    29 minutes ago      Up 29 minutes                                              goofy_nobel
 ```
@@ -140,6 +139,7 @@ These namespaces together provide the isolation for containers that allow them t
 
 In additional to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer. 
 
+4. Clean up the container running the `top` processes by typing: `<ctrl>-c.`
 
 # Step 2: Run Multiple Containers
 
@@ -185,7 +185,7 @@ Nginx is a lightweight web server. You can access it on port 8080 on your localh
 
 Now, run a mongoDB server. We will use the [official mongoDB image](https://store.docker.com/images/mongo) from the Docker Store. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 3.4.
 ```sh
-$ $ docker container run --detach --publish 8081:27017 --name mongo mongo:3.4
+$ docker container run --detach --publish 8081:27017 --name mongo mongo:3.4
 Unable to find image 'mongo:3.4' locally
 3.4: Pulling from library/mongo
 d13d02fa248d: Already exists 
@@ -228,7 +228,7 @@ One thing you might notice is that the mongo container is running the `docker-en
 
 Containers are self-contained and isolated, which means we can avoid potential conflicts between containers with different system or runtime dependencies. For example: deploying an app that uses Java 7 and another app that uses Java 8 on the same host. Or running multiple nginx containers that all have port 80 as their default listening ports (if exposing on the host using the `--publish` flag, the ports selected for the host will need to be unique). Isolation benefits are possible because of Linux Namespaces.
 
-**Note**: You didn't have to install anything on your host (other than Docker) to run this processes! Each container includes the dependencies that it needs within the container, so you don't need to install anything on your host directly.
+**Note**: You didn't have to install anything on your host (other than Docker) to run these processes! Each container includes the dependencies that it needs within the container, so you don't need to install anything on your host directly.
 
 Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. This can result in huge cost savings for an enterprise.
 

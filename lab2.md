@@ -185,9 +185,10 @@ You should see "hello world!" on your browser.
 
 3. Check the log output of the container.
 
-If you want to see logs from your application you can use the `docker container logs` command. By default, `docker container logs` prints out what is sent to standard out by your application.
+If you want to see logs from your application you can use the `docker container logs` command. By default, `docker container logs` prints out what is sent to standard out by your application. Use `docker container ls` to find the id for your running container.
+
 ```sh
-$ docker container logs [container id] # Use 'docker container ls' to find the id for your running container
+$ docker container logs [container id] 
  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 172.17.0.1 - - [28/Jun/2017 19:35:33] "GET / HTTP/1.1" 200 -
 ```
@@ -325,7 +326,7 @@ COPY app.py /app.py
 
 Each of these lines is a layer. Each layer contains only the delta, or changes from the layers before it. To put these layers together into a single running container, Docker makes use of the union file system to overlay layers transparently into a single view.
 
-Each layer of the image is read-only, except for the very top layer which is created for the container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the `docker diff` command.
+Each layer of the image is read-only, except for the very top layer which is created for the container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the `docker diff` command. More information about how to use `docker diff` can be found [here](https://docs.docker.com/engine/reference/commandline/diff/) .
 
 ![](/images/lab2_understanding_image_layers_1.png)
 
