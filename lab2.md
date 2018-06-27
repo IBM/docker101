@@ -20,10 +20,10 @@ You must have docker installed, or be using http://play-with-docker.com
 
 # Step 1: Create a python app (without using Docker)
 
-1. Create `app.py` with the following contents
+1. Run the following command to create a file named `app.py` with a simple python program.
 
-```python
-from flask import Flask
+```bash
+echo 'from flask import Flask
 
 app = Flask(__name__)
 
@@ -32,7 +32,7 @@ def hello():
     return "hello world!"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0")' > app.py
 ```
 
 This is a simple python app that uses flask to expose a http web server on port 5000 (5000 is the default port for flask). Don't worry if you are not too familiar with python or flask, these concepts can be applied to an application written in any language.
