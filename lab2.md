@@ -20,7 +20,7 @@ You must have docker installed, or be using http://play-with-docker.com
 
 # Step 1: Create a python app (without using Docker)
 
-1. Run the following command to create a file named `app.py` with a simple python program.
+1. Run the following command to create a file named `app.py` with a simple python program. (copy-paste the entire code block)
 
 ```bash
 echo 'from flask import Flask
