@@ -227,7 +227,7 @@ $ docker tag python-hello-world [dockerhub username]/python-hello-world
 Once we have a properly tagged image, we can use the `docker push` command to push our image to the Docker Hub registry.
 
 ```sh
-$ docker push jzaccone/python-hello-world
+$ docker push [dockerhub username]/python-hello-world
 The push refers to a repository [docker.io/jzaccone/python-hello-world]
 2bce026769ac: Pushed 
 64d445ecbe93: Pushed 
