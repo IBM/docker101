@@ -276,7 +276,7 @@ First rebuild, this time use your Docker Hub username in the build command.:
 
 
 ```sh
-$  docker image build -t jzaccone/python-hello-world .
+$  docker image build -t [dockerhub username]/python-hello-world .
 Sending build context to Docker daemon  3.072kB
 Step 1/4 : FROM python:3.6.1-alpine
  ---> c86415c03c37
@@ -296,7 +296,7 @@ Successfully tagged jzaccone/python-hello-world:latest
 Notice the "Using cache" for steps 1-3. These layers of the Docker Image have already been built and `docker image build` will use these layers from the cache instead of rebuilding them.
 
 ```sh
-$ docker push jzaccone/python-hello-world
+$ docker push [dockerhub username]/python-hello-world
 The push refers to a repository [docker.io/jzaccone/python-hello-world]
 94525867566e: Pushed 
 64d445ecbe93: Layer already exists 
@@ -347,7 +347,7 @@ You may notice that there are duplicate lines in this Dockerfile and the Dockerf
 
 Image layering enables the docker caching mechanism for builds and pushes. For example, the output for your last `docker push` shows that some of the layers of your image already exists on the Docker Hub.
 ```sh
-$ docker push jzaccone/python-hello-world
+$ docker push [dockerhub username]/python-hello-world
 The push refers to a repository [docker.io/jzaccone/python-hello-world]
 94525867566e: Pushed 
 64d445ecbe93: Layer already exists 
