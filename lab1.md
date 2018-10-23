@@ -177,7 +177,7 @@ Since this is the first time you are running the nginx container, it will pull d
 
 Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
-3. Access the nginx server on http://localhost:8080
+3. Access the nginx server on http://localhost:8080. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
 ![](/images/nginx.png)
 
@@ -206,7 +206,7 @@ d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
 
 Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://store.docker.com/images/mongo) on the Docker Store to get more details about using the mongo image.
 
-5. Access http://localhost:8081 to see some output from mongo
+5. Access http://localhost:8081 to see some output from mongo. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
 ![](/images/mongo.png)
 
