@@ -328,7 +328,7 @@ Each of these lines is a layer. Each layer contains only the delta, or changes f
 
 Each layer of the image is read-only, except for the very top layer which is created for the container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the `docker diff` command. More information about how to use `docker diff` can be found [here](https://docs.docker.com/engine/reference/commandline/diff/) .
 
-![](/images/lab2_understanding_image_layers_1.png)
+![](images/lab2_understanding_image_layers_1.png)
 
 Since image layers are read-only, they can be shared by images and by running containers. For instance, creating a new python app with its own Dockerfile with similar base layers, would share all the layers that it had in common with the first python app.
 
@@ -339,7 +339,7 @@ CMD ["python","app2.py"]
 COPY app2.py /app2.py
 ```
 
-![](/images/lab2_understanding_image_layers_2.png)
+![](images/lab2_understanding_image_layers_2.png)
 
 You can also experience the sharing of layers when you start multiple containers from the same image. Since the containers use the same read-only layers, you can imagine that starting up containers is very fast and has a very low footprint on the host.
 
