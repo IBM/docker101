@@ -208,7 +208,7 @@ Again, since this is the first time we are running a mongo container, we will pu
 
 5. Access http://localhost:8081 to see some output from mongo. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
-![](/images/lab1_step2_nginx.png)
+![](/images/lab1_step2_mongo.png)
 
 6. Check your running containers with `docker container ls`
 
