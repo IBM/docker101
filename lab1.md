@@ -179,7 +179,7 @@ Nginx is a lightweight web server. You can access it on port 8080 on your localh
 
 3. Access the nginx server on http://localhost:8080. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
-![](/images/nginx.png)
+![](/images/lab1_step2_nginx.png)
 
 4.  Run a mongo DB server
 
@@ -208,7 +208,7 @@ Again, since this is the first time we are running a mongo container, we will pu
 
 5. Access http://localhost:8081 to see some output from mongo. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
-![](/images/mongo.png)
+![](/images/lab1_step2_nginx.png)
 
 6. Check your running containers with `docker container ls`
 
