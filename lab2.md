@@ -257,20 +257,19 @@ The "hello world!" application is overrated, let's update the app so that it say
 
 1. Update `app.py`
 
-Replace the string "Hello World" with "Hello Beautiful World!" in `app.py`. Your file should have the following contents:
+Replace the string "Hello World" with "Hello Beautiful World!" in `app.py`. You can update the file with the following command. (copy-paste the entire code block)
 
-```python
-from flask import Flask
+```bash
+echo 'from flask import Flask
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello Beautiful World!"
-
+    return "hello beautiful world!"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0")' > app.py
 ```
 
 2. Rebuild and push your image
