@@ -16,7 +16,7 @@ We will be using a few Docker commands in this lab. For full documentation on av
 
 ## Prerequisites
 
-You must have docker installed, or be using http://play-with-docker.com
+You must have docker installed, or be using https://www.katacoda.com/courses/docker/playground.
 
 # Step 1: Create a python app (without using Docker)
 
@@ -72,7 +72,7 @@ If you don't have python install locally, don't worry! Because you don't need it
 echo 'FROM python:3.6.1-alpine
 RUN pip install flask
 CMD ["python","app.py"]
-COPY app.py /app.py' > app.py
+COPY app.py /app.py' > Dockerfile
 ```
 
 A Dockerfile lists the instructions needed to build a docker image. Let's go through the above file line by line.
