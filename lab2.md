@@ -66,12 +66,13 @@ $ python3 app.py
 
 If you don't have python install locally, don't worry! Because you don't need it. One of the advantages of using Docker containers is that you can build python into your containers, without having python installed on your host. 
 
-1. Create a file named `Dockerfile` and add the following contents
+1. Create a `Dockerfile` but running the following command. (copy-paste the entire code block)
+
 ```sh
-FROM python:3.6.1-alpine
+echo 'FROM python:3.6.1-alpine
 RUN pip install flask
 CMD ["python","app.py"]
-COPY app.py /app.py
+COPY app.py /app.py' > app.py
 ```
 
 A Dockerfile lists the instructions needed to build a docker image. Let's go through the above file line by line.
