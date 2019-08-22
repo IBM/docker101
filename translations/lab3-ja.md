@@ -25,9 +25,7 @@ Kubernetes について紹介する前に、Docker Swarm を使用してアプ�
 3. node1 上で Swarm を初期化します。
 
   ```sh
-  docker swarm init --advertise-addr eth0
-  ```  
-  ```
+  $ docker swarm init --advertise-addr eth0
   Swarm initialized: current node (v0rnc435bpqjhtfuurqqms54k) is now a manager.
 
   To add a worker to this swarm, run the following command:
@@ -48,9 +46,7 @@ Kubernetes について紹介する前に、Docker Swarm を使用してアプ�
 5. node1 に戻って `docker node ls` を実行し、3 つのノードからなるクラスターを確認します。
 
   ```sh
-  docker node ls
-  ```
-  ```
+  $ docker node ls
   ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
   7x9s8baa79l29zdsx95i1tfjp     node3               Ready               Active
   x223z25t7y7o4np3uq45d49br     node2               Ready               Active
@@ -90,9 +86,7 @@ Nginx を使用した単純な例に取り組みましょう。とりあえず 1
   先ほど作成したサービスを調べるには、`docker service ls` を使用します。
 
   ```sh
-  docker service ls
-  ```
-  ```
+  $ docker service ls
   ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
   pgqdxr41dpy8        nginx1              replicated          1/1                 nginx:1.12          *:80->80/tcp
   ```
@@ -102,9 +96,7 @@ Nginx を使用した単純な例に取り組みましょう。とりあえず 1
   実行中のタスクを詳しく調べるには、`docker service ps` を使用します。タスクも Docker Swarm で使用されている抽象概念の 1 つであり、サービスの実行中インスタンスを表します。この例の場合、タスクとコンテナは 1 対 1 でマッピングされています。
 
   ```sh
-  docker service ps nginx1
-  ```
-  ```
+  $ docker service ps nginx1
   ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
 iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               Running             Running 8 minutes ago
   ```
@@ -118,9 +110,7 @@ iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               
   次のコマンドを各ノード上で試してください。
 
   ```sh
-  curl localhost:80
-  ```
-  ```
+  $ curl localhost:80
   node1
   ```
 
@@ -135,9 +125,7 @@ iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               
   `docker service` コマンドを使用して前に作成した Nginx サービスを更新し、サービスに 5 つのレプリカが含まれるようにします。次のコードで、サービスの新しい状態を定義します。
 
   ```sh
-  docker service update --replicas=5 --detach=true nginx1
-  ```
-  ```
+  $ docker service update --replicas=5 --detach=true nginx1
   nginx1
   ```
 
@@ -153,9 +141,7 @@ iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               
   数秒後、Swarm がその役目を果たして、さらに 9 つのコンテナを正常に起動したことを確認できます。クラスターを構成する 3 つのノードのすべてでコンテナがスケジューリングされていることに注目してください。新しいコンテナの実行場所を決定するために使用されるデフォルトの配置戦略は「emptiest node (最も空いているノード)」ですが、必要に応じて変更できます。
 
   ```sh
-  docker service ps nginx1
-  ```
-  ```
+  $ docker service ps nginx1
   ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
   iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               Running             Running 17 minutes ago
   lfz1bhl6v77r        nginx1.2            nginx:1.12          node2               Running             Running 6 minutes ago
@@ -193,16 +179,14 @@ iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               
   リクエストのルーティング先となったノードを簡単に調べるもう 1 つの方法は、集約されたログを確認することです。集約されたサービス・ログを取得するには、`docker service logs [サービス名]` を使用します。このコマンドにより、実行中のすべてのコンテナからの出力、つまり `docker container logs [コンテナ名]` による出力が集約されます。
 
   ```sh
-  docker service logs nginx1
-  ```
-  ```
+  $ docker service logs nginx1
   nginx1.4.q53jgeeq7y1x@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:39 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
   nginx1.2.lfz1bhl6v77r@node2    | 10.255.0.2 - - [28/Jun/2017:18:59:40 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
   nginx1.5.xj271k2829uz@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
   nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:50:23 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
   nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
   nginx1.3.qururb043dwh@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:38 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.52.1" "-"
-```
+  ```
 
   これらのログを基に、各リクエストに対応したコンテナはそれぞれに異なることがわかります。
 
@@ -213,7 +197,7 @@ iu3ksewv7qf9        nginx1.1            nginx:1.12          node1               
 サービスがデプロイされた状態になったので、アプリケーションのリリースについて具体的に見ていきましょう。これから、Nginx のバージョンを「1.13」に更新します。この更新を行うために、`docker service update` コマンドを使用します。
 
 ```sh
-docker service update --image nginx:1.13 --detach=true nginx1
+$ docker service update --image nginx:1.13 --detach=true nginx1
 ```
 
 上記のコマンドにより、Swarm のローリング・アップデートがトリガーされます。`docker service ps nginx1` と素早く何度も入力すると、リアルタイムでの更新を確認できます。
@@ -225,9 +209,7 @@ docker service update --image nginx:1.13 --detach=true nginx1
 数秒経ってから、`docker service ps nginx1` を実行すると、nginx:1.13 に更新されたすべてのイメージを確認できます。
 
 ```sh
-docker service ps nginx1
-```
-```
+$ docker service ps nginx1
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE             ERROR               PORTS
 di2hmdpw0j0z        nginx1.1            nginx:1.13          node1               Running             Running 50 seconds ago
 iu3ksewv7qf9         \_ nginx1.1        nginx:1.12          node1               Shutdown            Shutdown 52 seconds ago
@@ -254,13 +236,13 @@ Docker Swarm の「検査 -> 適応」モデルでは、エラーの発生時に
 1. 出力を簡潔にするために、まず、以下の行をコピーしてまったく新しいサービスを作成します。既存のサービスと競合しないよう、サービスの名前と公開ポートを変更します。また、サービスをスケーリングするために、`--replicas` コマンドを追加してサービスの数を 5 インスタンスに設定します。
 
   ```sh
-  docker service create --detach=true --name nginx2 --replicas=5 --publish 81:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12 aiqdh5n9fyacgvb2g82s412js
+  $ docker service create --detach=true --name nginx2 --replicas=5 --publish 81:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.12 aiqdh5n9fyacgvb2g82s412js
   ```
 
 2. node1 上で `watch` を使用して、`docker service ps` の出力で更新状況を観察します。「watch」は Linux ユーティリティーであるため、他のプラットフォームでは利用できない場合があります。
 
   ```sh
-  watch -n 1 docker service ps nginx2
+  $ watch -n 1 docker service ps nginx2
   ```
 
   上記のコマンドにより、ウィンドウに次のような内容が表示されます。
@@ -275,7 +257,7 @@ Docker Swarm の「検査 -> 適応」モデルでは、エラーの発生時に
   n5n8zryzg6g6        nginx2.4            nginx:1.12          node1               Running             Running 26 seconds ago
   cnofhk1v5bd8        nginx2.5            nginx:1.12          node2               Running             Running 27 seconds ago
   [node1] (loc
-```
+  ```
 
 3. node3 をクリックし、Swarm クラスターから離脱させるためのコマンドを入力します。
 
@@ -288,9 +270,7 @@ Docker Swarm の「検査 -> 適応」モデルでは、エラーの発生時に
 4. node1 をクリックして、調整が行われる様子を観察します。Swarm が宣言された状態に戻すために、node3 上で実行されていたコンテナを自動的に node1 と node2 で再スケジューリングしようとする動作を確認できるはずです。
 
   ```sh
-$ docker service ps nginx2
-  ```
-  ```
+  $ docker service ps nginx2
   ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
   jeq4604k1v9k        nginx2.1            nginx:1.12          node1               Running             Running 5 seconds ago
   6koehbhsfbi7         \_ nginx2.1        nginx:1.12          node3               Shutdown            Running 21 seconds ago
