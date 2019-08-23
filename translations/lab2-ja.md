@@ -86,7 +86,7 @@ Dockerfile には、Docker イメージをビルドするために必要な命�
 **CMD ["python","app.py"]**
 `CMD` は、コンテナの起動時に実行されるコマンドです。ここでは `CMD` を使用して Python アプリを実行します。
 
-Dockerfile ごとに指定できる `CMD` は 1 つに限られます。複数の `CMD` を指定したとしても、最後の `CMD` しか適用されません。親イメージ python:3.6.1-alpine でも `CMD` (`CMD python2`) を指定しています。公式 python:alpine イメージの Dockerfile は、(こちら)[https://github.com/docker-library/python/blob/88ba87d31a3033d4dbefecf44ce25aa1b69ab3e5/3.6/alpine/Dockerfile] で確認できます。
+Dockerfile ごとに指定できる `CMD` は 1 つに限られます。複数の `CMD` を指定したとしても、最後の `CMD` しか適用されません。親イメージ python:3.6.1-alpine でも `CMD` (`CMD python2`) を指定しています。公式 python:alpine イメージの Dockerfile は、[こちら](https://github.com/docker-library/python/blob/88ba87d31a3033d4dbefecf44ce25aa1b69ab3e5/3.6/alpine/Dockerfile) で確認できます。
 
 Python がホスト上にインストールされてなくても、公式の Python イメージを使用して直接 Python スクリプトを実行できます。けれども今回の作業では、ソースを組み込むためのカスタム・イメージを作成します。こうすれば、アプリケーションを含むイメージをビルドして、そのイメージを他の環境に配布できるようになります。
 
@@ -174,8 +174,8 @@ $ docker run -p 5001:5000 -d python-hello-world
 
 `-p` フラグでは、コンテナ内で実行されているポートをホストにマッピングします。この例の場合、コンテナ内のポート 5000 上で実行されている Python アプリをホスト上のポート 5001 にマッピングしています。ホスト上の別のアプリケーションによってポート 5001 がすでに使用されている場合は、5001 を別の値 (5002 など) で置き換える必要があります。
 
-> コンテナが立ち上がらなかった場合は、以下のコマンドで立ち上がらなかった理由をログを確認して調べてみましょう。
->
+コンテナが立ち上がらなかった場合は、以下のコマンドで立ち上がらなかった理由をログを確認して調べてみましょう。
+
 ```sh
 # 停止中も含めたコンテナ一覧を表示
 $ docker ps -a
@@ -255,7 +255,7 @@ https://hub.docker.com にアクセスし、プロファイルを表示して新
 **注:** Docker イメージには、そのイメージ内のアプリケーションを実行するために必要なすべての依存関係が含まれています。したがって、デプロイ先の環境にインストールされている依存関係を頼りにする場合でも、環境の違い (バージョンの違い) に対処しなくて済みます。また、環境をプロビジョニングするために追加の手順を行う必要もありません。Docker をインストールするだけで、アプリケーションが実行可能な状態になります。
 
 # ステップ 5: 変更をデプロイする
-「hello world!」アプリケーションは過大評価されているので、このメッセージではなく「Hello Beautiful World!」と表示されるようにアプリを更新しましょう。
+「hello world!」アプリケーションは見慣れてしまっているので、ちょっと変更して「Hello Beautiful World!」と表示されるようにアプリを更新しましょう。
 
 1. `app.py` を更新します。
 
@@ -351,6 +351,7 @@ COPY app2.py /app2.py
 お気付きかもしれませんが、上記の Dockerfile と、このラボで前に作成した Dockerfile には、重複する行がいくつかあります。これは非常に単純な例ですが、両方の Dockerfile から共通する行を抽出して「ベース」Dockerfile にまとめれば、FROM` コマンドを使用する子 Dockerfile のそれぞれで、そのベース Dockerfile を指すことができます。
 
 イメージを層化することにより、ビルドとプッシュの Docker キャッシング・メカニズムが有効になります。例えば、最後の `docker push` の出力には、イメージのいくつかの層が Docker Hub 上にすでに存在することが示されています。
+
 ```sh
 $ docker push [dockerhub username]/python-hello-world
 The push refers to a repository [docker.io/jzaccone/python-hello-world]
@@ -364,7 +365,7 @@ ed06208397d5: Layer already exists
 latest: digest: sha256:91874e88c14f217b4cab1dd5510da307bf7d9364bd39860c9cc8688573ab1a3a size: 1786
 ```
 
-層をさらに詳しく調べるには、前に作成した Python イメージの `docker image history` コマンドを使用できます。
+層をさらに詳しく調べるには、前に Python イメージを作成した際の `docker image history` コマンドを使用できます。
 
 ```sh
 $ docker image history python-hello-world

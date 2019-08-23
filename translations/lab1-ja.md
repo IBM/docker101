@@ -134,7 +134,7 @@ Linux サブシステムを使用して Windows 上で Linux コンテナを実�
 
 # ステップ 2: 複数のコンテナを実行する
 
-1. Docker Hub を調査します。
+1. Docker Hub サイト内を探索してみましょう。
 
 [Docker Hub](https://hub.docker.com/) は、一般公開された Docker イメージの中央レジストリーです。ここで公開されているイメージは、誰もが共有できます。Docker Hub に格納されているコミュニティー・イメージと公式イメージは、[Docker Hub](https://hub.docker.com/explore/) 上で直接検索することもできます。
 
