@@ -172,7 +172,7 @@ Nginx は軽量の Web サーバーです。Nginx サーバーには、ローカ
 
 3. Http://localhost:8080 上で Nginx サーバーにアクセスします。Play with Docker を使用している場合は、ページの上部にある `8080` リンクを探してください。
 
-![](../images/lab1_step2_nginx.png)
+![](../.gitbook/images/lab1_step2_nginx.png)
 
 4. Mongo DB サーバーを実行します。
 
@@ -201,7 +201,7 @@ d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
 
 5. http://localhost:8081 にアクセスして、Mongo からの出力を確認します。Play with Docker を使用している場合は、ページの上部にある `8080` リンクを探してください。
 
-![](../images/lab1_step2_mongo.png)
+![](../.gitbook/images/lab1_step2_mongo.png)
 
 6. `docker container ls` を使用して、実行中のコンテナを確認します。
 
@@ -285,4 +285,4 @@ Total reclaimed space: 12B
 - 独自のイメージを開発する際は、まだ検証されていない Docker Hub のコンテンツを使用しないようにしてください。未検証のイメージにはセキュリティー上の脆弱性が伴うことや、悪意のあるソフトウェアである恐れさえあります。
 - コンテナ内でプロセスを実行するために必要なものはすべて、そのコンテナに含まれます。したがって、追加の依存関係をホストに直接インストールする必要は一切ありません。
 
-次のハンズオンはこちら [Lab2](lab2-ja.md) です。
+次のハンズオンはこちら [Lab2](lab-2/README-ja.md) です。
