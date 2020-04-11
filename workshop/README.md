@@ -53,7 +53,7 @@ This workshop has been tested on the following platforms:
 
 * [John Zaccone](https://github.com/jzaccone)
 * [Jason Kennedy](https://github.com/jkomg)
-* [Steve Martinelli]()
+* [Steve Martinelli](https://github.com/stevemar)
 * [Remko de Knikker](https://github.com/remkohdev)
 
 ## Translations
