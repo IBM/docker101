@@ -1,8 +1,26 @@
-# intro-to-docker-lab
+# Docker Workshop
 
-This is the repository of the labs for the Intro to Docker developerWorks course.
+To view the Docker workshop online, go to:
+* <https://ibm-developer.gitbook.io/docker/>.
 
-- lab0 - [Install Docker](lab0.md)
-- lab1 - [Run your first container](lab1.md)
-- lab2 - [Add value with custom images](lab2.md)
-- lab3 - [introduction to orchestration](lab3.md)
+To view the Docker workshop in Github, go to:
+* [workshop/README.md](workshop/README.md).
+
+This repository has the following structure:
+```ini
+- pdfs (presentations)
+- translations (language localization files)
+- workshop (workshop labs)
+|_ .gitbook (images)
+|_ <folder-n> (workshop labs)
+  |_README.md (steps for labs in Markdown)
+|_ README.md (gitbook home page)
+|_ SUMMARY.md (table of contents)
+.gitbook.yaml (GitBook read-only instructions)
+.travis.yaml (runs markdownlint by default)
+README.md (GitHub.com README)
+```
+
+## Translations
+
+* [Japanese](workshop/README-ja.md) - Thanks to [Toshio Yamashita](https://github.com/developerWorksJP)

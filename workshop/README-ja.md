@@ -14,17 +14,17 @@ Lab0-３の4つのハンズオンを準備しています。
 
 Lab1-3 は基本的には独立した内容となっていますが、基本的には Lab1 から実施頂くことをオススメします。
 
-- [lab0](lab0-ja.md) - Docker をインストールする
+- [lab0](lab-0/README-ja.md) - Docker をインストールする
 
-- [lab1](lab1-ja.md) - 初めてのコンテナを実行する
+- [lab1](lab-1/README-ja.md) - 初めてのコンテナを実行する
    - Docker コマンドの基本操作
    - Docker Hub と公式イメージの利用
 
-- [lab2](lab2-ja.md) - カスタム Docker イメージを使用して付加価値を与える
+- [lab2](lab-2/README-ja.md) - カスタム Docker イメージを使用して付加価値を与える
    - DockerFileを使用したDocker Imageの作成、Docker Hubへのpush
    - ユニオン・ファイル・システムとコピー・オン・ライト
 
-- [lab3](lab3-ja.md) - オーケストレーション入門
+- [lab3](lab-3/README-ja.md) - オーケストレーション入門
    - Docker swarm を利用したコンテナのデプロイ、オーケストレーション
 
 > Lab3 は Kubernetes でも同様なことができるため、Kubernetes のハンズオンを別途実施予定の場合は、スキップ可能です。
