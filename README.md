@@ -32,12 +32,12 @@ $ markdownlint workshop -c ".markdownlint.json" -o mdl-results.md
 
 To build the Gitbook files into the `_book` sub-directory with the [gitbook-cli](https://github.com/GitbookIO/gitbook-cli), run the following command,
 ```
-$ gitbook build ./workshop
+$ gitbook build ./workshop/en
 ```
 
 Serve the Gitbook files locally with the following command,
 ```
-$ gitbook serve ./workshop
+$ gitbook serve ./workshop/en
 ```
 
 
