@@ -37,4 +37,4 @@ Play with Docker を使用する場合は、ブラウザー内で http://play-wi
 
 Docker をインストールするか、http://play-with-docker.com の使い方を把握した後は、このコースの残りのラボに取り組んでください。
 
-[Lab1](lab-1/README-ja.md)を進めてください。
+[Lab1](lab-1/README.md)を進めてください。

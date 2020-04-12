@@ -14,14 +14,6 @@
 * [Lab 2](lab-2/README.md)
 * [Lab 3](lab-3/README.md)
 
-### Presentation
-
-* [Docker 101](../pdfs/docker-101.pdf)
-
-## Translations
-
-* [Japanese](README-ja.md) - Thanks to [Toshio Yamashita](https://github.com/developerWorksJP)
-
 ### Resources
 
 * [IBM Developer](https://developer.ibm.com)

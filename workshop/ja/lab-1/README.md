@@ -50,9 +50,8 @@ Tasks:   1 total,   1 running,   0 sleeping,   0 stopped,   0 zombie
 KiB Mem :  2046768 total,   173308 free,   117248 used,  1756212 buff/cache
 KiB Swap:  1048572 total,  1048572 free,        0 used.1548356 avail Mem
 
-  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND    
-    1 root      20   0   36636   3072   2640 R   0.3  0.2   0:00.04 top        
-
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+    1 root      20   0   36636   3072   2640 R   0.3  0.2   0:00.04 top
 ```
 
 `top` は、システム上のプロセスをリソース使用率の順に出力する Linux ユーティリティーです。上記の出力には、プロセスとして `top` プロセス自体しか示されていません。ホストの他のプロセスがこのリストに示されていないのは、PID 名前空間で分離されているためです。
@@ -131,7 +130,6 @@ PID は、システム・リソースを分離するために使用できる Lin
 
 Linux サブシステムを使用して Windows 上で Linux コンテナを実行できるだけでなく、Windows OS に基づくコンテナ・プリミティブが作成されたことから、ネイティブ Windows コンテナを実行することも可能になっています。ネイティブ Windows コンテナは、Windows 10 または Windows Server 2016 以降で実行できます。
 
-
 # ステップ 2: 複数のコンテナを実行する
 
 1. Docker Hub サイト内を探索してみましょう。
@@ -172,7 +170,7 @@ Nginx は軽量の Web サーバーです。Nginx サーバーには、ローカ
 
 3. Http://localhost:8080 上で Nginx サーバーにアクセスします。Play with Docker を使用している場合は、ページの上部にある `8080` リンクを探してください。
 
-![](../.gitbook/images/lab1_step2_nginx.png)
+![](../../.gitbook/images/lab1_step2_nginx.png)
 
 4. Mongo DB サーバーを実行します。
 
@@ -201,7 +199,7 @@ d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
 
 5. http://localhost:8081 にアクセスして、Mongo からの出力を確認します。Play with Docker を使用している場合は、ページの上部にある `8080` リンクを探してください。
 
-![](../.gitbook/images/lab1_step2_mongo.png)
+![](../../.gitbook/images/lab1_step2_mongo.png)
 
 6. `docker container ls` を使用して、実行中のコンテナを確認します。
 
@@ -233,9 +231,7 @@ Docker Store のイメージをそのまま実行すると便利な場合もあ�
 
 このラボの手順に従うと、最終的にはホスト上で一連のコンテナが実行されることになります。これらのコンテナをクリーンアップしましょう。
 
-
 1. まず、`docker container ls` を使用して、実行中のコンテナのリストを取得します。
-
 
 ```sh
 $ docker container ls
@@ -253,7 +249,6 @@ af5
 ```
 
 **注**: 参照する必要がある ID は、一意になるだけの桁数があれば十分です。ほとんどの場合は、3 桁の数字があれば一意の ID になります。
-
 
 2. 停止したコンテナを削除します。
 
@@ -285,4 +280,4 @@ Total reclaimed space: 12B
 - 独自のイメージを開発する際は、まだ検証されていない Docker Hub のコンテンツを使用しないようにしてください。未検証のイメージにはセキュリティー上の脆弱性が伴うことや、悪意のあるソフトウェアである恐れさえあります。
 - コンテナ内でプロセスを実行するために必要なものはすべて、そのコンテナに含まれます。したがって、追加の依存関係をホストに直接インストールする必要は一切ありません。
 
-次のハンズオンはこちら [Lab2](lab-2/README-ja.md) です。
+次のハンズオンはこちら [Lab2](lab-2/README.md) です。
