@@ -169,7 +169,7 @@ We are going to use the Docker CLI to run our first container.
 
 1. Access the nginx server on [localhost:8080](http://localhost:8080). If you are using play-with-docker, look for the `8080` link near the top of the page.
 
-    ![step 2 nginx](../../.gitbook/images/lab1_step2_nginx.png)
+    ![step 2 nginx](../.gitbook/images/lab1_step2_nginx.png)
 
 1. Run a mongo DB server
 
@@ -199,7 +199,7 @@ We are going to use the Docker CLI to run our first container.
 
 1. Access [localhost:8081](http://localhost:8081) to see some output from mongo. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
-    ![step 2 mongo](../../.gitbook/images/lab1_step2_mongo.png)
+    ![step 2 mongo](../.gitbook/images/lab1_step2_mongo.png)
 
 1. Check your running containers with `docker container ls`
 
