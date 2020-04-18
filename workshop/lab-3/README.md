@@ -4,7 +4,7 @@
 
 So far you have learned how to run applications using docker on your local machine, but what about running dockerized applications in production? There are a number of problems that come with building an application for production: scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging... just to name a few.
 
-There are several orchestration solutions out there that help you solve some of these problems. One example is the [IBM Bluemix Container Service](https://www.ibm.com/cloud-computing/bluemix/containers) which uses [Kubernetes](https://kubernetes.io/) to run containers in production.
+There are several orchestration solutions out there that help you solve some of these problems. One example is the [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create) which uses [Kubernetes](https://kubernetes.io/) to run containers in production.
 
 Before we introduce you to Kubernetes, we will teach you how to orchestrate applications using Docker Swarm. Docker Swarm is the orchestration tool that comes built-in to the Docker Engine.
 
@@ -348,4 +348,4 @@ Key Takeaways:
 * The Docker Swarm schedules services using a declarative language. You declare the state, and the swarm attempts to maintain and reconcile to make sure the actual state == desired state
 * Docker Swarm is composed of manager and worker nodes. Only managers can maintain the state of the swarm and accept commands to modify it. Workers have high scability and are only  used to run containers. By default managers can run containers as well.
 * The routing mesh built into swarm means that any port that is published at the service level will be exposed on every node in the swarm. Requests to a published service port will be routed automatically to a container of the service that is running in the swarm.
-* Many tools out there exist to help solve problems with orchestration containerized applications in production, include Docker Swarm, and the [IBM Bluemix Container Service](https://www.ibm.com/cloud-computing/bluemix/containers).
+* Many tools out there exist to help solve problems with orchestration containerized applications in production, include Docker Swarm, and the [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create).

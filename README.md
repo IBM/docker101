@@ -23,21 +23,31 @@ README.md (GitHub.com README)
 
 ## Markdown lint tool
 
-To run the [Markdown lint tool](https://github.com/markdownlint/markdownlint) use the follow command,
+Install the [Markdown lint tool](https://github.com/markdownlint/markdownlint),
+```
+$ npm install -g markdownlint-cli
+```
+
+To use markdownlint, run the following command,
 ```
 $ markdownlint workshop -c ".markdownlint.json" -o mdl-results.md
 ```
 
 ## Build Gitbook 
 
-To build the Gitbook files into the `_book` sub-directory with the [gitbook-cli](https://github.com/GitbookIO/gitbook-cli), run the following command,
+Install the [gitbook-cli](https://github.com/GitbookIO/gitbook-cli),
 ```
-$ gitbook build ./workshop/en
+$ npm install -g gitbook-cli
+```
+
+To build the Gitbook files into the `_book` sub-directory with the `gitbook-cli`, run the following command,
+```
+$ gitbook build ./workshop
 ```
 
 Serve the Gitbook files locally with the following command,
 ```
-$ gitbook serve ./workshop/en
+$ gitbook serve ./workshop
 ```
 
 
