@@ -10,6 +10,8 @@ DerivedData/
 .venv
 node_modules
 _book
+package-lock.json
+mdl-results.md
 
 ## Various settings
 *.pbxuser
