@@ -1,19 +1,18 @@
-# Summary
+# Table of contents
 
-<!-- Rules of SUMMARY.md are here: https://docs.gitbook.com/integrations/github/content-configuration#summary -->
-<!-- All headings MUST be THREE hashmarks (###) -->
-<!-- Indented bullets (4 spaces) will make the first line be a section -->
+* [Introduction](README.md)
 
-### Getting Started
+## Getting Started
 
-* [Pre-work](lab-0/README.md)
+* [Pre-work](getting-started/lab-0.md)
 
-### Docker 101
+## Docker 101
 
-* [Lab 1](lab-1/README.md)
-* [Lab 2](lab-2/README.md)
-* [Lab 3](lab-3/README.md)
+* [Lab 1](docker-101/lab-1.md)
+* [Lab 2](docker-101/lab-2.md)
+* [Lab 3](docker-101/lab-3.md)
 
-### Resources
+## Resources
 
 * [IBM Developer](https://developer.ibm.com)
+
