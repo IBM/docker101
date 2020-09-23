@@ -20,16 +20,23 @@ None
 docker version
 ```
 
-## **Optional:** Install Docker
+## [Optional] Install Docker Desktop
 
-1. Navigate to [store.docker.com](http://store.docker.com),
-2. Select "Community Edition" or "Docker CE"
+1. Navigate to [Get Docker](https://docs.docker.com/get-docker/),
 
-   Docker comes with two flavors of installations. The "paid" version is Docker Enterprise Edition \(Docker EE\), and the "free" version is Docker Community Edition \(Docker CE\). We will be using only free features provided by the Docker Community Edition for this course.
+2. Select the option for your operating system or platform:
 
-3. Select the filters for your operating system or platform
+    * Docker Desktop for Mac,
+    * Docker Desktop for Windows,
+    * Docker for Linux,
 
-On this page you will find the installation for your operating systems. For example, if you are using a Mac, select "MacOS", to find the installation for the Mac platform.
+    ![Get Docker](../.gitbook/images/get-docker.png)
+
+3. On this page you will find the installation for your operating systems. For example, if you are using a Mac, select "MacOS", to find the installation for the Mac platform.
+4. For Mac, you are re-directed to https://hub.docker.com/editions/community/docker-ce-desktop-mac/ where you can click the `Get Stable` edition,
+
+    ![Get Stable for Mac](../.gitbook/images/get-stable-for-mac.png)
+
 
 ## **Optional:** Use play-with-docker
 

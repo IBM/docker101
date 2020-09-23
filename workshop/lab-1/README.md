@@ -4,19 +4,19 @@
 
 In this lab, you will run your first Docker container.
 
-Containers are just a process (or a group of processes) running in isolation. Isolation is achieved via linux namespaces and control groups. One thing to note, is that linux namespaces and control groups are features that are built into the linux kernel! Other than the linux kernel itself, there is nothing special about containers.
+Containers are just a process (or a group of processes) running in isolation. Isolation is achieved via linux namespaces, control groups (cgroups), seccomp and SELinux. Note that linux namespaces and control groups are built into the linux kernel! Other than the linux kernel itself, there is nothing special about containers.
 
-What makes containers useful is the tooling that surrounds it. For these labs, we will be using Docker, which has been the de facto standard tool for using containers to build applications. Docker provides developers and operators with a friendly interface to build, ship and run containers on any environment.
+What makes containers useful is the tooling that surrounds it. For these labs, we will be using Docker, which has been a widely adopted tool for using containers to build applications. Docker provides developers and operators with a friendly interface to build, ship and run containers on any environment with a Docker engine. Because Docker client requires a Docker engine, an alternative is to use [Podman](https://podman.io/), which is a deamonless container engine to develop, manage and run [OCI](https://opencontainers.org/) containers and is able to run containers as root or in rootless mode. For those reasons, we recommend Podman but because of adoption, this lab still uses Docker.
 
 The first part of this lab, we will run our first container, and learn how to inspect it. We will be able to witness the namespace isolation that we acquire from the linux kernel.
 
-After we run our first container, we will dive into other uses of docker containers. We will find many examples of these on the Docker Store, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.
+After we run our first container, we will dive into other uses of containers. You can find many examples of these on the Docker Store, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.
 
 We will be using a few Docker commands in this lab. For full documentation on available commands check out the [official documentation](https://docs.docker.com/).
 
 ### Prerequisites
 
-Completed Lab 0: You must have docker installed, or be using [Play with Docker](http://play-with-docker.com).
+Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from `Theia - Cloud IDE` at https://labs.cognitiveclass.ai/tools/theiadocker/ or be using [Play with Docker](http://play-with-docker.com) for example.
 
 ## Step 1: Run your first container
 
@@ -64,7 +64,9 @@ We are going to use the Docker CLI to run our first container.
 
     The `docker container exec` command is a way to "enter" a running container's namespaces with a new process.
 
-    Open a new terminal. To open a new terminal connected to node1 using play-with-docker.com, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
+    Open a new terminal. On cognitiveclass.ai, select `Terminal` > `New Terminal`.
+    
+    Using play-with-docker.com, to open a new terminal connected to node1, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
 
     ```sh
     [node2] (local) root@192.168.0.17 ~
@@ -123,27 +125,27 @@ We are going to use the Docker CLI to run our first container.
     - User - Isolated view of users on the system
     - UTC - Set hostname and domain name per container
 
-    These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next we will demonstrate different uses of containers. and the benefit of isolation as we run multiple containers on the same host.
+    These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next, we will demonstrate different uses of containers. and the benefit of isolation as we run multiple containers on the same host.
 
-    **Note**: Namespaces are a feature of the **linux** kernel. But Docker allows you to run containers on Windows and Mac... how does that work? The secret is that embedded in the Docker product is a linux subsystem. Docker open-sourced this linux subsystem to a new project: [LinuxKit](https://github.com/linuxkit/linuxkit). Being able to run containers on many different platforms is one advantage of using the Docker tooling with containers.
+    **Note**: Namespaces are a feature of the **linux** kernel. But Docker allows you to run containers on Windows and Mac... how does that work? The secret is that embedded in the Docker product or Docker engine is a linux subsystem. Docker open-sourced this linux subsystem to a new project: [LinuxKit](https://github.com/linuxkit/linuxkit). Being able to run containers on many different platforms is one advantage of using the Docker tooling with containers.
 
-    In additional to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer.
+    In addition to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer.
 
 1. Clean up the container running the `top` processes by typing: `<ctrl>-c.`
 
 ## Step 2: Run Multiple Containers
 
-1. Explore the Docker Store
+1. Explore the Docker Hub
 
-    The [Docker Store](https://store.docker.com) is the public central registry for Docker images. Anyone can share images here publicly. The Docker Store contains community and official images that can also be found directly on the [Docker Hub](https://hub.docker.com/explore/).
+    The [Docker Hub](https://hub.docker.com/explore/) is the public central registry for Docker images, which contains community and official images.
 
-    When searching for images you will find filters for "Store" vs "Community" images. "Store" images include content that has been verified and scanned for security vulnerabilities by Docker. Go one step further and search for "Certified" images, that are deemed enterprise-ready and are tested with Docker Enterprise Edition product. It is important to avoid using unverified content from the Docker Store when developing your own images that are intended to be deployed into the production environment. These unverified images may contain security vulnerabilities or possibly even malicious software.
+    When searching for images you will find filters for "Docker Certified", "Verified Publisher" and "Official Images" images. Select the "Docker Certified" filter, to find images that are deemed enterprise-ready and are tested with Docker Enterprise Edition product. It is important to avoid using unverified content from the Docker Store when developing your own images that are intended to be deployed into the production environment. These unverified images may contain security vulnerabilities or possibly even malicious software.
 
-    In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Store: nginx web server, and mongo database.
+    In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Hub: nginx web server, and mongo database.
 
-1. Run an Nginx server
+2. Run an Nginx server
 
-    Let's run a container using the [official Nginx image](https://store.docker.com/images/nginx) from the Docker Store.
+    Let's run a container using the [official Nginx image](https://hub.docker.com/_/nginx) from the Docker Hub.
 
     ```sh
     $ docker container run --detach --publish 8080:80 --name nginx nginx
@@ -159,7 +161,7 @@ We are going to use the Docker CLI to run our first container.
 
     We are using a couple of new flags here. The `--detach` flag will run this container in the background. The `publish` flag publishes port 80 in the container (the default port for nginx), via port 8080 on our host. Remember that the NET namespace gives processes of the container their own network stack. The `--publish` flag is a feature that allows us to expose networking through the container onto the host.
 
-    How do you know port 80 is the default port for nginx? Because it is listed in the [documentation](https://store.docker.com/images/nginx) on the Docker Store. In general, the documentation for the verified images is very good, and you will want to refer to them when running containers using those images.
+    How do you know port 80 is the default port for nginx? Because it is listed in the [documentation](https://hub.docker.com/_/nginx) on the Docker Hub. In general, the documentation for the verified images is very good, and you will want to refer to them when running containers using those images.
 
     We are also specifying the `--name` flag, which names the container. Every container has a name, if you don't specify one, Docker will randomly assign one for you. Specifying your own name makes it easier to run subsequent commands on your container since you can reference the name instead of the id of the container. For example: `docker container inspect nginx` instead of `docker container inspect 5e1`.
 
@@ -167,18 +169,43 @@ We are going to use the Docker CLI to run our first container.
 
     Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
-1. Access the nginx server on [localhost:8080](http://localhost:8080). If you are using play-with-docker, look for the `8080` link near the top of the page.
+3. Access the nginx server on [localhost:8080](http://localhost:8080)   
+
+    ```console
+    curl localhost:8080
+    ```
+
+    will return the HTML home page of Nginx,
+
+    ```
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Welcome to nginx!</title>
+    <style>
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>Welcome to nginx!</h1>
+    ```
+
+4. If you are using play-with-docker, look for the `8080` link near the top of the page, or if you run a Docker client with access to a local browser,
 
     ![step 2 nginx](../.gitbook/images/lab1_step2_nginx.png)
 
-1. Run a mongo DB server
+5. Run a mongo DB server
 
-    Now, run a mongoDB server. We will use the [official mongoDB image](https://store.docker.com/images/mongo) from the Docker Store. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 3.4.
+    Now, run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo) from the Docker Hub. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.
 
     ```sh
-    $ docker container run --detach --publish 8081:27017 --name mongo mongo:3.4
-    Unable to find image 'mongo:3.4' locally
-    3.4: Pulling from library/mongo
+    $ docker container run --detach --publish 8081:27017 --name mongo mongo:4.4
+    Unable to find image 'mongo:4.4' locally
+    4.4: Pulling from library/mongo
     d13d02fa248d: Already exists
     bc8e2652ce92: Pull complete
     3cc856886986: Pull complete
@@ -191,17 +218,29 @@ We are going to use the Docker CLI to run our first container.
     523a9f1da6b9: Pull complete
     3b4beaef77a2: Pull complete
     Digest: sha256:d13c897516e497e898c229e2467f4953314b63e48d4990d3215d876ef9d1fc7c
-    Status: Downloaded newer image for mongo:3.4
+    Status: Downloaded newer image for mongo:4.4
     d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
     ```
 
-    Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://store.docker.com/images/mongo) on the Docker Store to get more details about using the mongo image.
+    Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo) on the Docker Hub to get more details about using the mongo image.
 
-1. Access [localhost:8081](http://localhost:8081) to see some output from mongo. If you are using play-with-docker, look for the `8080` link near the top of the page.
+6. Access [localhost:8081](http://localhost:8081) to see some output from mongo. 
+
+    ```console
+    curl localhost:8081
+    ```
+
+    which will return a warning from MongoDB,
+
+    ```
+    It looks like you are trying to access MongoDB over HTTP on the native driver port.
+    ```
+
+7. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
     ![step 2 mongo](../.gitbook/images/lab1_step2_mongo.png)
 
-1. Check your running containers with `docker container ls`
+8. Check your running containers with `docker container ls`
 
     ```sh
     $ docker container ls
@@ -215,7 +254,7 @@ We are going to use the Docker CLI to run our first container.
 
     You can see the "nginx" and "mongo" names that we gave to our containers, and the random name (in my case "priceless_kepler") that was generated for the ubuntu container. You can also see that the port mappings that we specified with the `--publish` flag. For more details information on these running containers you can use the `docker container inspect [container id` command.
 
-    One thing you might notice is that the mongo container is running the `docker-entrypoint` command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on [github](https://github.com/docker-library/mongo/blob/master/3.0/docker-entrypoint.sh). Typically, you can find the link to the github source from the image description page on the Docker Store website.
+    One thing you might notice is that the mongo container is running the `docker-entrypoint` command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on [github](https://github.com/docker-library/mongo/blob/master/4.4/docker-entrypoint.sh). Typically, you can find the link to the github source from the image description page on the Docker Store website.
 
     Containers are self-contained and isolated, which means we can avoid potential conflicts between containers with different system or runtime dependencies. For example: deploying an app that uses Java 7 and another app that uses Java 8 on the same host. Or running multiple nginx containers that all have port 80 as their default listening ports (if exposing on the host using the `--publish` flag, the ports selected for the host will need to be unique). Isolation benefits are possible because of Linux Namespaces.
 
@@ -223,7 +262,7 @@ We are going to use the Docker CLI to run our first container.
 
     Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. This can result in huge cost savings for an enterprise.
 
-    While running images directly from the Docker Store can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.
+    While running images directly from the Docker Hub can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.
 
 ## Step 3: Clean Up
 
