@@ -13,7 +13,7 @@ This series has an additional presentation.
 | [Lab0](lab-0/README.md) | Pre-work |
 | [Lab1](lab-1/README.md) | Run your first container |
 | [Lab2](lab-2/README.md) | Add value with custom images |
-| [Lab3](lab-3/README.md) | Scale and update containers |
+| [Lab3](lab-3/README.md) | Manage data in containers |
 
 ## Pre-requirements
 
@@ -31,6 +31,9 @@ This workshop has been tested on the following platforms:
 * **Docker Desktop**: v2.2.0.5
   * **Engine**: v19.03.8
   * **Compose**: v1.25.4
+* **Docker for Linux**:
+  * **Client**: v18.09.7
+  * **Docker Engine**: v19.03.5
 
 ## Technology Used
 
@@ -43,4 +46,3 @@ This workshop has been tested on the following platforms:
 * [Jason Kennedy](https://github.com/jkomg)
 * [Steve Martinelli](https://github.com/stevemar)
 * [Remko de Knikker](https://github.com/remkohdev)
-

@@ -1,344 +1,293 @@
-# Lab 3- Introduction to Orchestration
+## Lab 3 - Manage data in containers
 
-## Overview
+By default all files created inside a container are stored on a writable container layer. That means that:
+* If the container no longer exists, the data is lost,
+* The container's writable layer is tightly couples to the host machine, and
+* To manage the file system, you need a storage driver that provides a union file system, using the Linux kernel. This extra abstraction reduces performance compared to `data volumes` which write directly to the filesystem.
 
-So far you have learned how to run applications using docker on your local machine, but what about running dockerized applications in production? There are a number of problems that come with building an application for production: scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging... just to name a few.
+Docker provides two options to store files in the host machine: `volumes` and `bind mounts`. If you're running Docker on Linux, you can also use a `tmpfs mount`, and with Docker on Windows you can also use a `named pipe`.
 
-There are several orchestration solutions out there that help you solve some of these problems. The most widely adopted orchestration platform is Kubernetes. The [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create) is a managed service of [Kubernetes](https://kubernetes.io/) to run containers in production. 
+![Types of Mounts](../.gitbook/images/types-of-mounts.png)
 
-Red Hat Openshift is an extension of Kubernetes with Enterprise grade services to provide a more secure and integrated extension of Kubernetes. [Red Hat OpenShift Kubernetes Service (ROKS)](https://cloud.ibm.com/kubernetes/catalog/create?platformType=openshift) on IBM Cloud is a managed service of OpenShift. You can also create a free 1-month, 1 node OpenShift cluster on [OpenShift Online](http://manage.openshift.com/).
+* `Volumes` are stored in the host filesystem that is managed by Docker.
+* `Bind mounts` are stored anywhere on the host system.
+* `tmpfs mounts` are stored in the host memory only.
 
-This lab is for those who are interested in learning how to orchestrate applications using Docker Swarm. Docker Swarm is the orchestration tool that comes built-in to the Docker Engine.
+### Volumes
 
-We will be using a few Docker commands in this lab. For full documentation on available commands check out the [Docker official documentation](https://docs.docker.com/).
+A `data volume` or `volume` is a directory that bypasses the `Union File System` of Docker. To understand what a Docker volume is, it helps to understand how layers and the filesystem work in Docker.
 
-### Prerequisites
+There are three types of volumes: 
+* anonymous volume,
+* named volume, and 
+* host volume.
 
-In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.  
-Therefor, for this lab you will be using the multi-node support provided by [Play with Docker](http://play-with-docker.com). This is the easiest way to test out Docker Swarm, without having to deal with installing docker on multiple hosts yourself.
+#### Anonymous Volume
 
-![Multiple Instances](../.gitbook/images/pwd-multi-instances.png)
+Let's create an instance of a popular open source NoSQL database called CouchDB and use an `anonymous volume` to store the data files for the database.
 
-## Step 1: Create your first swarm
+To run an instance of CouchDB, use the CouchDB image from Docker Hub at https://hub.docker.com/_/couchdb. The docs say that the default for CouchDB is to `write the database files to disk on the host system using its own internal volume management`.
 
-In this step, we will create our first swarm using play-with-docker.
+Run the following command,
 
-1. Navigate to [Play with Docker](http://play-with-docker.com)
-
-1. Click "add new instance" on the lefthand side three times to create three nodes
-
-    Our first swarm cluster will have three nodes.
-
-1. Initialize the swarm on node 1
-
-    ```sh
-    $ docker swarm init --advertise-addr eth0
-    Swarm initialized: current node (vq7xx5j4dpe04rgwwm5ur63ce) is now a manager.
-
-    To add a worker to this swarm, run the following command:
-
-        docker swarm join \
-        --token SWMTKN-1-50qba7hmo5exuapkmrj6jki8knfvinceo68xjmh322y7c8f0pj-87mjqjho30uue43oqbhhthjui \
-        10.0.120.3:2377
-
-    To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
-    ```
-
-    You can think of docker swarm as a special "mode" that is activated by the command: `docker swarm init`. The `--advertise-addr` specifies the address in which the other nodes will use to join the swarm.
-
-    This `docker swarm init` command generates a join token. The token makes sure that no malicious nodes join our swarm. We will need to use this token to join the other nodes to the swarm. For convenience, the output includes the full command `docker swarm join` which you can just copy/paste to the other nodes.
-
-1. On both node2 and node3, copy and run the `docker swarm join` command that was outputted to YOUR console by the last command.
-
-    You now have a three node swarm!
-
-1. Back on node1, run `docker node ls` to verify your 3 node cluster.
-
-    ```sh
-    $ docker node ls
-    ID    HOSTNAME    STATUS    AVAILABILITY    MANAGER STATUS
-    7x9s8baa79l29zdsx95i1tfjp    node3    Ready    Active
-    x223z25t7y7o4np3uq45d49br    node2    Ready    Active
-    zdqbsoxa6x1bubg3jyjdmrnrn *   node1   Ready    Active    Leader
-    ```
-
-    This command outputs the three nodes in our swarm. The * next to the ID of the node represents the node that handled that specific command (`docker node ls` in this case).  
-
-    Our node consists of  1 manager node and 2 workers nodes. Managers handle commands and manage the state of the swarm. Workers cannot handle commands and are simply used to run containers at scale. By default, managers are also used to run containers.
-
-    All `docker service` commands for the rest of this lab need to be executed on the manager node (Node1).
-
-    **Note:** While we will control the Swarm directly from the node in which its running, you can control a docker swarm remotely by connecting to the docker engine of the manager via the remote API or activating a remote host from your local docker installation (using the `$DOCKER_HOST` and `$DOCKER_CERT_PATH` environment variables). This will become useful when you want to control production applications remotely instead of ssh-ing directly into production servers.
-
-## Step 2: Deploy your first service
-
-Now that we have our 3 node Swarm cluster initialized, let's deploy some containers. To run containers on a Docker Swarm, we want to create a service. A service is an abstraction that represents multiple containers of the same image deployed across a distributed cluster.
-
-Let's do a simple example using Nginx. For now we will create a service with just 1 running container, but we will scale up later.
-
-1. Deploy a service using Nginx
-
-    ```sh
-    $ docker service create --detach=true --name nginx1 --publish 80:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.18
-    pgqdxr41dpy8qwkn6qm7vke0q
-    ```
-
-    This above statement is *declarative*, and docker swarm will actively try to maintain the state declared in this command unless explicitly changed via another `docker service` command. This behavior comes in handy when nodes go down, for example, and containers are automatically rescheduled on other nodes. We will see a demonstration of that a little later on in this lab.
-
-    The `--mount` flag is a neat trick to have nginx print out the hostname of the node it's running on. This will come in handy later in this lab when we start load balancing between multiple containers of nginx that are distributed across different nodes in the cluster, and we want to see which node in the swarm is serving the request.
-
-    We are using nginx tag "1.18" in this command. We will demonstrate a rolling update with version 1.19 later in this lab.
-
-    The `--publish` command makes use of the swarm's built in *routing mesh*. In this case port 80 is exposed on *every node in the swarm*. The routing mesh will route a request coming in on port 80 to one of the nodes running the container.
-
-1. Inspect the service
-
-    You can use `docker service ls` to inspect the service you just created.
-
-    ```sh
-    $ docker service ls
-    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
-    pgqdxr41dpy8        nginx1              replicated          1/1                 nginx:1.18          *:80->80/tcp
-    ```
-
-1. Check out the running container of the service
-
-    To take a deeper look at the running tasks, you can use `docker service ps`. A task is yet another abstraction using in docker swarm that represents the running instances of a service. In this case, there is a 1-1 mapping between a task and a container.
-
-    ```sh
-    $ docker service ps nginx1
-    ID    NAME    IMAGE    NODE    DESIRED STATE    CURRENT STAT
-    E     ERROR    PORTS
-    iu3ksewv7qf9    nginx1.1    nginx:1.18    node1    Running    Running 8 minutes ago
-    ```
-
-    If you happen to know which node your container is running on (you can see which node based on the output from `docker service ps`), you can use `docker container ls` to see the container running on that specific node.
-
-1. Test the service
-
-    Because of the routing mesh, we can send a request to any node of the swarm on port 80. This request will be automatically routed to the one node that is running our nginx container.
-
-    Try this on each node:
-
-    ```sh
-    $ curl localhost:80
-    node1
-    ```
-
-    Curling will output the hostname where the container is running. For this example, it is running on "node1", but yours might be different.
-
-## Step 3: Scale your service
-
-In production we may need to handle large amounts of traffic to our application. So let's scale!
-
-1. Update your service with an updated number of replicas
-
-    We are going to use the `docker service` command to update the nginx service we created earlier to include 5 replicas. This is defining a new state for our service.
-
-    ```sh
-    $ docker service update --replicas=5 --detach=true nginx1
-    nginx1
-    ```
-
-    As soon as this command is run the following happens:
-
-    1. The state of the service is updated to 5 replicas (which is stored in the swarms internal storage).
-    1. Docker swarm recognizes that the number of replicas that is scheduled now does not match the declared state of 5.
-    1. Docker swarm schedules 5 more tasks (containers) in an attempt to meet the declared state for the service.
-
-    This swarm is actively checking to see if the desired state is equal to actual state, and will attempt to reconcile if needed.
-
-1. Check the running instances
-
-    After a few seconds, you should see that the swarm did its job, and successfully started 9 more containers. Notice that the containers are scheduled across all three nodes of the cluster. The default placement strategy that is used to decide where new containers are to be run is "emptiest node", but that can be changed based on your need.
-
-    ```sh
-    $ docker service ps nginx1
-    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STAT
-    E            ERROR               PORTS
-    iu3ksewv7qf9        nginx1.1            nginx:1.18          node1               Running             Running 17 m
-    inutes ago
-    lfz1bhl6v77r        nginx1.2            nginx:1.18          node2               Running             Running 6 mi
-    nutes ago
-    qururb043dwh        nginx1.3            nginx:1.18          node3               Running             Running 6 mi
-    nutes ago
-    q53jgeeq7y1x        nginx1.4            nginx:1.18          node3               Running             Running 6 mi
-    nutes ago
-    xj271k2829uz        nginx1.5            nginx:1.18          node1               Running             Running 7 mi
-    nutes ago
-    ```
-
-1. Send a bunch of requests to [localhost:80](http://localhost:80)
-
-    The `--publish 80:80` is still in effect for this service, that was not changed when we ran `docker service update`. However, now when we send requests on port 80, the routing mesh has multiple containers in which to route requests to. The routing mesh acts as a load balancer for these containers, alternating where it routes requests to.
-
-    Let's try it out by curling multiple times. Note, that it doesn't matter which node you send the requests. There is no connection between the node that receives the request, and the node that that request is routed to.
-
-    ```sh
-    $ curl localhost:80
-    node3
-    $ curl localhost:80
-    node3
-    $ curl localhost:80
-    node2
-    $ curl localhost:80
-    node1
-    $ curl localhost:80
-    node1
-    ```
-
-You should see which node is serving each request because of the nifty `--mount` command we used earlier.
-
-**Limits of the routing Mesh**
-The routing mesh can only publish one service on port 80. If you want multiple services exposed on port 80, then you can use an external application load balancer outside of the swarm to accomplish this.
-
-1. Check the aggregated logs for the service
-
-    Another easy way to see which nodes those requests were routed to is to check the aggregated logs. We can get aggregated logs for the service using `docker service logs [service name]`. This aggregates the output from every running container, i.e. the output from `docker container logs [container name]`.
-
-    ```sh
-    $ docker service logs nginx1
-    nginx1.4.q53jgeeq7y1x@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:39 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    nginx1.2.lfz1bhl6v77r@node2    | 10.255.0.2 - - [28/Jun/2017:18:59:40 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    nginx1.5.xj271k2829uz@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:50:23 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    nginx1.1.iu3ksewv7qf9@node1    | 10.255.0.2 - - [28/Jun/2017:18:59:41 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    nginx1.3.qururb043dwh@node3    | 10.255.0.2 - - [28/Jun/2017:18:59:38 +0000] "GET / HTTP/1.1" 200 6 "-" "curl/7.
-    52.1" "-"
-    ```
-
-    Based on these logs we can see that each request was served by a different container.
-
-    In addition to seeing whether the request was sent to node1, node2, or node3, you can also see which container on each node that it was sent to. For example `nginx1.5` means that request was sent to container with that same name as indicated in the output of `docker service ps nginx1`.
-
-## Step 4: Rolling Updates
-
-Now that we have our service deployed, let's demonstrate a release of our application. We are going to update the version of Nginx to version "1.19". To do this update we are going to use the `docker service update` command.
-
-```sh
-$ docker service update --image nginx:1.19 --detach=true nginx1
-1a2b3c
+```console
+docker run -d -p 5984:5984 --name my-couchdb -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=passw0rd1 couchdb:3.1
 ```
 
-This will trigger a rolling update of the swarm. Quickly type in `docker service ps nginx1` over and over to see the updates in real time.
+CouchDB will create an anonymous volume and generated a hashed name. Check the volumes on your host system,
 
-You can fine tune the rolling update using these options:
-
-* `--update-parallelism` will dictate the number of containers to update at once. (defaults to 1)
-* `--update-delay` will dictate the delay between finishing updating a set of containers before moving on to the next set.
-
-After a few seconds, run `docker service ps nginx1` to see all the images have been updated to nginx:1.19.
-
-```sh
-$ docker service ps nginx1
-ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE             ERROR               PORTS
-l4s05d18j9ga        nginx1.1            nginx:1.19          node1               Ready               Ready 1 second ago                            
-zsm6as2ffq8g         \_ nginx1.1        nginx:1.18          node1               Shutdown            Running 1 second ago                          
-nk9awj3zercp        nginx1.2            nginx:1.19          node2               Running             Running 15 seconds ago                        
-21gxmjea135j         \_ nginx1.2        nginx:1.18          node3               Shutdown            Shutdown 16 seconds ago                       
-2cdadovtek2m        nginx1.3            nginx:1.19          node1               Running             Running 6 seconds ago                         
-ld0zgx5et2xy         \_ nginx1.3        nginx:1.18          node1               Shutdown            Shutdown 6 seconds ago                        
-p3gu8wcpmeax        nginx1.4            nginx:1.19          node3               Running             Running 1 second ago                          
-wo4ioe8lrju6         \_ nginx1.4        nginx:1.18          node2               Shutdown            Shutdown 2 seconds ago                        
-lpe6dkkr4osc        nginx1.5            nginx:1.19          node3               Running             Running 10 seconds ago                        
-6qvqfb6x77u4         \_ nginx1.5        nginx:1.18          node3               Shutdown            Shutdown 11 seconds ago
+```
+$ docker volume ls
+DRIVER    VOLUME NAME
+local    f543c5319ebd96b7701dc1f2d915f21b095dfb35adbb8dc851630e098d526a50
 ```
 
-Repeat the above command, until all images have successfully updated  to the latest version of nginx!
+Set an environment variable `VOLUME` with the value of the generated name,
 
-## Step 5: Reconciliation
+```
+export VOLUME=f543c5319ebd96b7701dc1f2d915f21b095dfb35adbb8dc851630e098d526a50
+```
 
-In the previous step, we updated the state of our service using `docker service update`. We saw Docker Swarm in action as it recognized the mismatch between desired state and actual state, and attempted to solve this issue.
+And inspect the volume that was created, use the hash name that was generated for the volume,
 
-The "inspect->adapt" model of docker swarm enables it to perform reconciliation when something goes wrong. For example, when a node in the swarm goes down it might take down running containers with it. The swarm will recognize this loss of containers, and will attempt to reschedule containers on available nodes in order to achieve the desired state for that service.
+```
+$ docker volume inspect $VOLUME
+[
+    {
+        "CreatedAt": "2020-09-24T14:10:07Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/f543c5319ebd96b7701dc1f2d915f21b095dfb35adbb8dc851630e098d526a50/_data",
+        "Name": "f543c5319ebd96b7701dc1f2d915f21b095dfb35adbb8dc851630e098d526a50",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
 
-We are going to remove a node, and see tasks of our nginx1 service be rescheduled on other nodes automatically.
+You see that Docker has created and manages a volume in the Docker host filesystem under `/var/lib/docker/volumes/$VOLUME_NAME/_data`. Note that this is not a path on the host machine, but a part of the Docker managed filesystem.
 
-1. For the sake of clean output, first create a brand new service by copying the line below. We will change the name, and the publish port to avoid conflicts with our existing service. We will also add the `--replicas` command to scale the service with 5 instances.
+Create a new database `mydb` and insert a new document with a `hello world` message.
 
-    ```sh
-    $ docker service create --detach=true --name nginx2 --replicas=5 --publish 81:80  --mount source=/etc/hostname,target=/usr/share/nginx/html/index.html,type=bind,ro nginx:1.18
-    aiqdh5n9fyacgvb2g82s412js
-    ```
+```
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb/1 -d '{"msg": "hello world"}'
+```
 
-1. On Node1, use `watch` to watch the update from the output of `docker service ps`. Note "watch" is a linux utility and might not be available on other platforms.
+You can share an anonymous volume with another container by using the `--volumes-from` option.
 
-    ```sh
-    $ watch -n 1 docker service ps nginx2
-    ok
-    ```
+Create a `busybox` container with an anonymous volume mounted to a directory `/data` in the container and write a message to a log file.
 
-    This should result in a window that looks like this:
+```
+$ docker run -it --name busybox1 -v /data busybox sh
+/ # echo "hello from busybox1" > /data/hi.log
+/ # ls /data
+hi.log
+/ # exit
+```
 
-    ```sh
-    Every 1.0s: docker service ps nginx2          2020-09-23 20:59:43
+Make sure the container `busybox1` is stopped but not removed. 
 
-    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT 
-    STATE            ERROR               PORTS
-    nveflkbbzhia        nginx2.1            nginx:1.18          node1               Running             Running 
-    41 seconds ago                       
-    qlk6avfcjqft        nginx2.2            nginx:1.18          node2               Running             Running 
-    41 seconds ago                       
-    psizpiwxt1ta        nginx2.3            nginx:1.18          node3               Running             Running 
-    41 seconds ago                       
-    0kmrqeneqztk        nginx2.4            nginx:1.18          node2               Running             Running 
-    41 seconds ago                       
-    zdg9j4aiqt8w        nginx2.5            nginx:1.18          node3               Running             Running 
-    41 seconds ago 
-   
-    ```
+```
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS                                        NAMES
+437fb4a271c1        busybox             "sh"                     18 seconds ago      Exited (0) 4 seconds ago                                                busybox1
+```
 
-2. Click on Node3, and type the command to leave the swarm cluster.
+Then create a second `busybox` container using the `--volumes-from` option,
 
-    ```sh
-    $ docker swarm leave
-    ok
-    ```
+```
+$ docker run --rm -it --name busybox2 --volumes-from busybox1 busybox sh
+/ # ls -al /data
+/ # cat /data/hi.log
+hello from busybox1
+/ # exit
+```
 
-    This is the "nice" way to leave the swarm, but you can also kill the node and the following behavior will be the same.
+Docker created the anynomous volume that you were able to share using the `--volumes-from` option.
 
-3. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
+```
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               83a3275e889506f3e8ff12cd50f7d5b501c1ace95672334597f9a071df439493
+```
 
-    ```sh
-    $ docker service ps nginx2
-    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
-    jeq4604k1v9k        nginx2.1            nginx:1.18          node1               Running             Running 5 seconds ago
-    6koehbhsfbi7         \_ nginx2.1        nginx:1.18          node3               Shutdown            Running 21 seconds ago
-    dou2brjfr6lt        nginx2.2            nginx:1.18          node1               Running             Running 26 seconds ago
-    8jc41tgwowph        nginx2.3            nginx:1.18          node2               Running             Running 27 seconds ago
-    n5n8zryzg6g6        nginx2.4            nginx:1.18          node1               Running             Running 26 seconds ago
-    cnofhk1v5bd8        nginx2.5            nginx:1.18          node2               Running             Running 27 seconds ago
-    [node1] (loc
-    ```
+Cleanup the existing volumes and container.
 
-## Number of nodes
+```
+docker stop my-couchdb
+docker rm my-couchdb
+docker rm busybox1
+docker volume rm $(docker volume ls -q)
+docker system prune -a
+```
 
-In this lab, our Docker Swarm cluster consists of one master, and two worker nodes. This configuration is not highly available. The manager node contains the necessary information to manage the cluster, so if this node goes down, the cluster will cease to function. For a production application, you will want to provision a cluster with multiple manager nodes to allow for manager node failures.
+#### Named Volume
 
-For manager nodes you want at least 3, but typically no more than 7. Managers implement the raft consensus algorithm, which requires that more than 50% of the nodes agree on the state that is being stored for the cluster. If you don't achieve >50%, the swarm will cease to operate correctly. For this reason, the following can be assumed about node failure tolerance.
+A `named volume` and `anonymous volume` are similar in that Docker manages where they are located. However, a `named volume` can be referenced by name when mounting it to a container directory. This is helpful if you want to share a volume across multiple containers.
 
-* 3 manager nodes tolerates 1 node failure
-* 5 manager nodes tolerates 2 node failures
-* 7 manager nodes tolerates 3 node failures
+First, create a `named volume`,
 
-It is possible to have an even number of manager nodes, but it adds no value in terms of the number of node failures. For example, 4 manager nodes would only tolerate 1 node failure, which is the same tolerance as a 3 manager node cluster. The more manager nodes you have, the harder it is to achieve a consensus on the state of a cluster.
+```
+docker volume create my-couchdb-data-volume
+```
 
-While you typically want to limit the number of manager nodes to no more than 7, you can scale the number of worker nodes much higher than that. Worker nodes can scale up into the 1000's of nodes. Worker nodes communicate using the gossip protocol, which is optimized to be highly performant under large traffic and a large number of nodes.
+Verify the volume was created,
 
-If you are using [Play with Docker](http://play-with-docker.com), you can easily deploy multiple manager node clusters using the built in templates. Click the templates icon in the upper left to see what templates are available.
+```
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               my-couchdb-data-volume
+```
 
-## Summary
+Now create the CouchDB container using the `named volume`,
 
-In this lab, you got an introduction to problems that come with running container with production such as scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging. We used the orchestration tool that comes built-in to the Docker Engine- Docker Swarm, to address some of these issues.
+```console
+docker run -d -p 5984:5984 --name my-couchdb -v my-couchdb-data-volume:/opt/couchdb/data -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=passw0rd1 couchdb:3.1
+```
 
-Key Takeaways:
+Create a new database `mydb` and insert a new document with a `hello world` message.
 
-* The Docker Swarm schedules services using a declarative language. You declare the state, and the swarm attempts to maintain and reconcile to make sure the actual state == desired state
-* Docker Swarm is composed of manager and worker nodes. Only managers can maintain the state of the swarm and accept commands to modify it. Workers have high scability and are only  used to run containers. By default managers can run containers as well.
-* The routing mesh built into swarm means that any port that is published at the service level will be exposed on every node in the swarm. Requests to a published service port will be routed automatically to a container of the service that is running in the swarm.
-* Many tools out there exist to help solve problems with orchestration containerized applications in production, include Docker Swarm, and the [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create).
+```
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb/1 -d '{"msg": "hello world"}'
+```
+
+It now is easy to share the volume with another container. For instance, read the content of the volume using the `busybox` image, and share the `my-couchdb-data-volume` volume by mounting the volume to a directory in the `busybox` container.
+
+```
+$ docker run --rm -it --name busybox -v my-couchdb-data-volume:/myvolume busybox sh
+/ # ls -al /myvolume/
+total 40
+drwxr-xr-x    4 5984    5984    4096 Sep 24 17:11 .
+drwxr-xr-x    1 root    root    4096 Sep 24 17:14 ..
+drwxr-xr-x    2 5984    5984    4096 Sep 24 17:11 .delete
+-rw-r--r--    1 5984    5984    8388 Sep 24 17:11 _dbs.couch
+-rw-r--r--    1 5984    5984    8385 Sep 24 17:11 _nodes.couch
+drwxr-xr-x    4 5984    5984    4096 Sep 24 17:11 shards
+/ #
+```
+
+Cleanup,
+
+```
+docker stop my-couchdb
+docker rm my-couchdb
+docker volume rm my-couchdb-data-volume
+docker system prune -a
+docker volume prune
+```
+
+#### Host Volume
+
+When you want to access the volume directory easily from the host machine, you can create a `host volume`. 
+
+Let's use a directory in the current working directory (indicated with the command `pwd`) called `data`, or choose your own data directory on the host machine, e.g. `/home/couchdb/data`. We let docker create the `$(pwd)/data` directory if it does not exist yet. We mount the `host volume` inside the CouchDB container to the container directory `/opt/couchdb/data`, which is the default data directory for CouchDB.
+
+Run the following command,
+
+```console
+docker run -d -p 5984:5984 --name my-couchdb -v $(pwd)/data:/opt/couchdb/data -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=passw0rd1 couchdb:3.1
+```
+
+Verify that a directory `data` was created,
+
+```
+$ ls -al
+total 16
+drwxrwsrwx 3 root users 4096 Sep 24 16:27 .
+drwxrwxr-x 1 root root  4096 Jul 16 20:04 ..
+drwxr-sr-x 3 5984  5984 4096 Sep 24 16:27 data
+```
+
+and that CouchDB has created data files here,
+
+```
+$ ls -al data
+total 32
+drwxr-sr-x 3 5984  5984 4096 Sep 24 16:27 .
+drwxrwsrwx 3 root users 4096 Sep 24 16:27 ..
+-rw-r--r-- 1 5984  5984 4257 Sep 24 16:27 _dbs.couch
+drwxr-sr-x 2 5984  5984 4096 Sep 24 16:27 .delete
+-rw-r--r-- 1 5984  5984 8385 Sep 24 16:27 _nodes.couch
+```
+
+Also check that now, no managed volume was created by docker, because we are now using a `host volume`.
+
+```
+docker volume ls
+```
+
+Create a new database `mydb` and insert a new document with a `hello world` message.
+
+```
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb
+curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb/1 -d '{"msg": "hello world"}'
+```
+
+Note that CouchDB created a folder `shards`,
+
+```
+$ ls -al data
+total 40
+drwxr-sr-x 4 5984  5984 4096 Sep 24 16:49 .
+drwxrwsrwx 3 root users 4096 Sep 24 16:49 ..
+-rw-r--r-- 1 5984  5984 8388 Sep 24 16:49 _dbs.couch
+drwxr-sr-x 2 5984  5984 4096 Sep 24 16:49 .delete
+-rw-r--r-- 1 5984  5984 8385 Sep 24 16:49 _nodes.couch
+drwxr-sr-x 4 5984  5984 4096 Sep 24 16:49 shards
+```
+
+List the content of the `shards` directory,
+
+```
+$ ls -al data/shards
+total 16
+drwxr-sr-x 4 5984 5984 4096 Sep 24 16:49 .
+drwxr-sr-x 4 5984 5984 4096 Sep 24 16:49 ..
+drwxr-sr-x 2 5984 5984 4096 Sep 24 16:49 00000000-7fffffff
+drwxr-sr-x 2 5984 5984 4096 Sep 24 16:49 80000000-ffffffff
+```
+
+and the first shard,
+
+```
+$ ls -al data/shards/00000000-7fffffff/
+total 20
+drwxr-sr-x 2 5984 5984 4096 Sep 24 16:49 .
+drwxr-sr-x 4 5984 5984 4096 Sep 24 16:49 ..
+-rw-r--r-- 1 5984 5984 8346 Sep 24 16:49 mydb.1600966173.couch
+```
+
+A [shard](https://docs.couchdb.org/en/stable/cluster/sharding.html) is a horizontal partition of data in a database. Partitioning data into shards and distributing copies of each shard to different nodes in a cluster gives the data greater durability against node loss. CouchDB automatically shards databases and distributes the subsets of documents among nodes.
+
+Cleanup,
+
+```
+docker stop my-couchdb
+docker rm my-couchdb
+sudo rm -rf $(pwd)/data
+docker system prune -a
+```
+
+### Bind Mounts
+
+The `mount` syntax is recommended by Docker over the `volume` syntax. Bind mounts have limited functionality compared to volumes. A file or directory is referenced by its full path on the host machine when mounted into a container. Bind mounts rely on the host machine’s filesystem having a specific directory structure available and you cannot use the Docker CLI to manage bind mounts. Note that bind mounts can change the host filesystem via processes running in a container.
+
+Instead of using the `-v` syntax with three fields separated by colon separator (:), the `mount` syntax is more verbose and uses multiple `key-value` pairs:
+* type: bind, volume or tmpfs,
+* source: path to the file or directory on host machine, 
+* destination: path in container,
+* readonly,
+* bind-propagation: rprivate, private, rshared, shared, rslave, slave,
+* consistency: consistent, delegated, cached,
+* mount.
+
+```
+mkdir data
+docker run -it --name busybox --mount type=bind,source="$(pwd)"/data,target=/data busybox sh
+/ # echo "hello busybox" > /data/hi.txt
+/ # exit
+cat data/hi.txt
+```
+

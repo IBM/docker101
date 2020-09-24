@@ -4,13 +4,13 @@
 
 ## Getting Started
 
-* [Pre-work](getting-started/lab-0.md)
+* [Pre-work](lab-0/README.md)
 
 ## Docker 101
 
-* [Lab 1](docker-101/lab-1.md)
-* [Lab 2](docker-101/lab-2.md)
-* [Lab 3](docker-101/lab-3.md)
+* [Lab 1](lab-1/README.md)
+* [Lab 2](lab-2/README.md)
+* [Lab 3](lab-3/README.md)
 
 ## Resources
 

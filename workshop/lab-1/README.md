@@ -18,6 +18,41 @@ We will be using a few Docker commands in this lab. For full documentation on av
 
 Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from `Theia - Cloud IDE` at https://labs.cognitiveclass.ai/tools/theiadocker/ or be using [Play with Docker](http://play-with-docker.com) for example.
 
+## Get Started
+
+Run `docker -h`,
+
+```
+$ docker -h
+Flag shorthand -h has been deprecated, please use --help
+
+Usage:  docker [OPTIONS] COMMAND
+
+A self-sufficient runtime for containers
+
+...
+
+Management Commands:
+  builder     Manage builds
+  config      Manage Docker configs
+  container   Manage containers
+  engine      Manage the docker engine
+  image       Manage images
+  network     Manage networks
+  node        Manage Swarm nodes
+  plugin      Manage plugins
+  secret      Manage Docker secrets
+  service     Manage services
+  stack       Manage Docker stacks
+  swarm       Manage Swarm
+  system      Manage Docker
+  trust       Manage trust on Docker images
+  volume      Manage volumes
+```
+
+The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the `container` command. 
+
+
 ## Step 1: Run your first container
 
 We are going to use the Docker CLI to run our first container.
