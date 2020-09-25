@@ -31,60 +31,63 @@ View the current list of layers in Docker,
 ```console
 docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
 / # ls -l /var/lib/docker/overlay2
-total 24
-drwx------    3 root    root    4096 Sep 25 15:44 18e44520d3c4d10ee4049d4f356562bcfd001f239fc2277ba7e040bf21a95a06
-drwx------    5 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd
-drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd-init
-drwx------    2 root    root    4096 Sep 25 15:44 l
+total 16
+drwx------    3 root     root          4096 Sep 25 19:44 0e55ecaa4d17c353191e68022d9a17fde64fb5e9217b07b5c56eb4c74dad5b32
+drwx------    5 root     root          4096 Sep 25 19:44 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d
+drwx------    4 root     root          4096 Sep 25 19:44 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d-init
+drwx------    2 root     root          4096 Sep 25 19:44 l
 / # exit
 ```
 
-Pull down a `ubi8/ubi-minimal` image and check again,
+Pull down the `ubuntu` image and check again,
 
 ```console
-$ docker pull registry.redhat.io/ubi8/ubi-minimal
+$ docker pull ubuntu
 Using default tag: latest
-latest: Pulling from ubi8/ubi-minimal
-0fd3b5213a9b: Pull complete
-aebb8c556853: Pull complete
-Digest: sha256:5cfbaf45ca96806917830c183e9f37df2e913b187aadb32e89fd83fa455ebaa6
-Status: Downloaded newer image for registry.redhat.io/ubi8/ubi-minimal:latest
-registry.redhat.io/ubi8/ubi-minimal:latest
+latest: Pulling from library/ubuntu
+e6ca3592b144: Pull complete
+534a5505201d: Pull complete
+990916bd23bb: Pull complete
+Digest: sha256:cbcf86d7781dbb3a6aa2bcea25403f6b0b443e20b9959165cf52d2cc9608e4b9
+Status: Downloaded newer image for ubuntu:latest
 
 $ docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
 / # ls -l /var/lib/docker/overlay2/
-total 32
-drwx------    3 root    root    4096 Sep 25 15:44 18e44520d3c4d10ee4049d4f356562bcfd001f239fc2277ba7e040bf21a95a06
-drwx------    3 root    root    4096 Sep 25 15:47 272396c57b02601be2440f4aa8e26820e74cc7e8c330159f8aa7f70d659c28b8
-drwx------    5 root    root    4096 Sep 25 15:47 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f
-drwx------    4 root    root    4096 Sep 25 15:47 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f-init
-drwx------    4 root    root    4096 Sep 25 15:47 ac02499cb41ac85e5b13a224a184459fd131fb766ed21091354371c2d0d04a9e
-drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd
-drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd-init
-drwx------    2 root    root    4096 Sep 25 15:47 l
+total 36
+drwx------    3 root     root          4096 Sep 25 19:44 0e55ecaa4d17c353191e68022d9a17fde64fb5e9217b07b5c56eb4c74dad5b32
+drwx------    4 root     root          4096 Sep 25 19:45 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d
+drwx------    4 root     root          4096 Sep 25 19:44 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d-init
+drwx------    4 root     root          4096 Sep 25 19:46 a611792b4cac502995fa88a888261dfba0b5d852e72f9db9e075050991423779
+drwx------    3 root     root          4096 Sep 25 19:46 d181f1a41fc35a45c16e8bfcb8eee6f768f3b98f82210a43ea65f284a45fcd65
+drwx------    4 root     root          4096 Sep 25 19:46 dac2f37f6280a076836d39b87b0ae5ebf5c0d386b6d8b991b103aadbcebaa7c6
+drwx------    5 root     root          4096 Sep 25 19:47 f3e921b440c37c86d06cd9c9fb70df50edad553c36cc87f84d5eeba734aae709
+drwx------    4 root     root          4096 Sep 25 19:47 f3e921b440c37c86d06cd9c9fb70df50edad553c36cc87f84d5eeba734aae709-init
+drwx------    2 root     root          4096 Sep 25 19:47 l
+
+/ # exit
 ```
 
-You see that pulling down the `ubi-minimal` image, implicitly pulled down the following layers,
+You see that pulling down the `ubuntu` image, implicitly pulled down 4 new layers,
 
-* 272396c57b02601be2440f4aa8e26820e74cc7e8c330159f8aa7f70d659c28b8
-* 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f
-* 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f-init
-* ac02499cb41ac85e5b13a224a184459fd131fb766ed21091354371c2d0d04a9e
+* a611792b4cac502995fa88a888261dfba0b5d852e72f9db9e075050991423779
+* d181f1a41fc35a45c16e8bfcb8eee6f768f3b98f82210a43ea65f284a45fcd65
+* dac2f37f6280a076836d39b87b0ae5ebf5c0d386b6d8b991b103aadbcebaa7c6
+* f3e921b440c37c86d06cd9c9fb70df50edad553c36cc87f84d5eeba734aae709
 
-The `overlay2` storage driver in essence layers two different directories on the host and presents them as a single directory.
+The `overlay2` storage driver in essence layers different directories on the host and presents them as a single directory.
 
 * base layer or lowerdir,
-* diff layer or upperdir,
+* `diff` layer or upperdir,
 * overlay layer (user view), and
-* workdir.
+* `work` dir.
 
-OverlayFS refers to the lower directories as `lowerdir`, which contains the base image and the read-only (R/O) layers.
+OverlayFS refers to the lower directories as `lowerdir`, which contains the base image and the read-only (R/O) layers that are pulled down.
 
-The upper directory is called `upperdir` and is the container layer that is read-write (R/W).
+The upper directory is called `upperdir` and is the read-write (R/W) container layer.
 
 The unified view or `overlay` layer is called `merged`.
 
-Finally, `workdir` is a required, empty directory used by overlay for internal use.
+Finally, a `workdir` is a required, which is an empty directory used by overlay for internal use.
 
 The `overlay2` driver supports up to 128 lower OverlayFS layers. The `l` directory contains shortened layer identifiers as symbolic links.
 
