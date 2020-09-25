@@ -5,7 +5,7 @@
 By default all files created inside a container are stored on a writable container layer. That means that:
 
 * If the container no longer exists, the data is lost,
-* The container's writable layer is tightly couples to the host machine, and
+* The container's writable layer is tightly coupled to the host machine, and
 * To manage the file system, you need a storage driver that provides a union file system, using the Linux kernel. This extra abstraction reduces performance compared to `data volumes` which write directly to the filesystem.
 
 Docker provides two options to store files in the host machine: `volumes` and `bind mounts`. If you're running Docker on Linux, you can also use a `tmpfs mount`, and with Docker on Windows you can also use a `named pipe`.
@@ -16,9 +16,83 @@ Docker provides two options to store files in the host machine: `volumes` and `b
 * `Bind mounts` are stored anywhere on the host system.
 * `tmpfs mounts` are stored in the host memory only.
 
+Originally, the `--mount` flag was used for Docker Swarm services and the `--volume` flag was used for standalone containers. From Docker 17.06 and higher, you can also use `--mount` for standalone containers and it is in general more explicit and verbose than `--volume`.
+
+## [Optional] OverlayFS
+
+OverlayFS is a union mount filesystem implementation for Linux. To understand what a Docker volume is, it helps to first understand how layers and the filesystem work in Docker.
+
+To start a container, Docker takes the read-only image and creates a new read-write layer on top, using a Union File System or OverlayFS (Overlay File System). Docker uses the `overlay2` storage driver.
+
+To see the Docker managed files, you need access to the Docker process file system. Using the `--privileged` and `--pid=host` flags you can access the host's process ID namespace from inside a container like `busybox`. You can then browse to Docker's `/var/lib/docker/overlay2` directory to see the downloaded layers.
+
+View the current list of layers in Docker,
+
+```console
+docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
+/ # ls -l /var/lib/docker/overlay2
+total 24
+drwx------    3 root    root    4096 Sep 25 15:44 18e44520d3c4d10ee4049d4f356562bcfd001f239fc2277ba7e040bf21a95a06
+drwx------    5 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd
+drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd-init
+drwx------    2 root    root    4096 Sep 25 15:44 l
+/ # exit
+```
+
+Pull down a `ubi8/ubi-minimal` image and check again,
+
+```console
+$ docker pull registry.redhat.io/ubi8/ubi-minimal
+Using default tag: latest
+latest: Pulling from ubi8/ubi-minimal
+0fd3b5213a9b: Pull complete 
+aebb8c556853: Pull complete 
+Digest: sha256:5cfbaf45ca96806917830c183e9f37df2e913b187aadb32e89fd83fa455ebaa6
+Status: Downloaded newer image for registry.redhat.io/ubi8/ubi-minimal:latest
+registry.redhat.io/ubi8/ubi-minimal:latest
+
+$ docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
+/ # ls -l /var/lib/docker/overlay2/
+total 32
+drwx------    3 root    root    4096 Sep 25 15:44 18e44520d3c4d10ee4049d4f356562bcfd001f239fc2277ba7e040bf21a95a06
+drwx------    3 root    root    4096 Sep 25 15:47 272396c57b02601be2440f4aa8e26820e74cc7e8c330159f8aa7f70d659c28b8
+drwx------    5 root    root    4096 Sep 25 15:47 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f
+drwx------    4 root    root    4096 Sep 25 15:47 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f-init
+drwx------    4 root    root    4096 Sep 25 15:47 ac02499cb41ac85e5b13a224a184459fd131fb766ed21091354371c2d0d04a9e
+drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd
+drwx------    4 root    root    4096 Sep 25 15:44 bdc3acd694dce79433ad6148a8f24a6fb53e7d1a355f294349a9a14092e5a0fd-init
+drwx------    2 root    root    4096 Sep 25 15:47 l
+```
+
+You see that pulling down the `ubi-minimal` image, implicitly pulled down the following layers,
+
+* 272396c57b02601be2440f4aa8e26820e74cc7e8c330159f8aa7f70d659c28b8
+* 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f
+* 925dbf8053aecbba7d48afceead7f3736d953d33c9e0dd4a2dec679dc999757f-init
+* ac02499cb41ac85e5b13a224a184459fd131fb766ed21091354371c2d0d04a9e
+
+The `overlay2` storage driver in essence layers two different directories on the host and presents them as a single directory.
+
+* base layer or lowerdir,
+* diff layer or upperdir,
+* overlay layer (user view), and
+* workdir.
+
+OverlayFS refers to the lower directories as `lowerdir`, which contains the base image and the read-only (R/O) layers.
+
+The upper directory is called `upperdir` and is the container layer that is read-write (R/W).
+
+The unified view or `overlay` layer is called `merged`.
+
+Finally, `workdir` is a required, empty directory used by overlay for internal use.
+
+The `overlay2` driver supports up to 128 lower OverlayFS layers. The `l` directory contains shortened layer identifiers as symbolic links.
+
+![Overlay2 Storage Driver](../.gitbook/images/overlay2-driver.png)
+
 ## Volumes
 
-A `data volume` or `volume` is a directory that bypasses the `Union File System` of Docker. To understand what a Docker volume is, it helps to understand how layers and the filesystem work in Docker.
+A `data volume` or `volume` is a directory that bypasses the `Union File System` of Docker.
 
 There are three types of volumes:
 

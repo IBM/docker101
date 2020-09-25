@@ -292,7 +292,7 @@ We are going to remove a node, and see tasks of our nginx1 service be reschedule
     41 seconds ago
     ```
 
-2. Click on Node3, and type the command to leave the swarm cluster.
+1. Click on Node3, and type the command to leave the swarm cluster.
 
     ```sh
     $ docker swarm leave
@@ -301,7 +301,7 @@ We are going to remove a node, and see tasks of our nginx1 service be reschedule
 
     This is the "nice" way to leave the swarm, but you can also kill the node and the following behavior will be the same.
 
-3. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
+1. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
 
     ```sh
     $ docker service ps nginx2
