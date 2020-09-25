@@ -16,13 +16,13 @@ We will be using a few Docker commands in this lab. For full documentation on av
 
 ### Prerequisites
 
-Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from `Theia - Cloud IDE` at https://labs.cognitiveclass.ai/tools/theiadocker/ or be using [Play with Docker](http://play-with-docker.com) for example.
+Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from `Theia - Cloud IDE` at [https://labs.cognitiveclass.ai/tools/theiadocker](https://labs.cognitiveclass.ai/tools/theiadocker) or be using [Play with Docker](http://play-with-docker.com) for example.
 
 ## Get Started
 
 Run `docker -h`,
 
-```
+```console
 $ docker -h
 Flag shorthand -h has been deprecated, please use --help
 
@@ -50,8 +50,7 @@ Management Commands:
   volume      Manage volumes
 ```
 
-The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the `container` command. 
-
+The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the `container` command.
 
 ## Step 1: Run your first container
 
@@ -100,10 +99,10 @@ We are going to use the Docker CLI to run our first container.
     The `docker container exec` command is a way to "enter" a running container's namespaces with a new process.
 
     Open a new terminal. On cognitiveclass.ai, select `Terminal` > `New Terminal`.
-    
+
     Using play-with-docker.com, to open a new terminal connected to node1, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:
 
-    ```sh
+    ```console
     [node2] (local) root@192.168.0.17 ~
     $ ssh 192.168.0.18
     [node1] (local) root@192.168.0.18 ~
@@ -112,7 +111,7 @@ We are going to use the Docker CLI to run our first container.
 
     In the new terminal, use the `docker container ls` command to get the ID of the running container you just created.
 
-    ```sh
+    ```console
     $ docker container ls
     CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS                         PORTS                       NAMES
     b3ad2a23fab3        ubuntu                     "top"                    29 minutes ago      Up 29 minutes                                              goofy_nobel
@@ -120,7 +119,7 @@ We are going to use the Docker CLI to run our first container.
 
     Then use that id to run `bash` inside that container using the `docker container exec` command. Since we are using bash and want to interact with this container from our terminal, use `-it` flags to run using interactive mode while allocating a psuedo-terminal.
 
-    ```sh
+    ```console
     $ docker container exec -it b3ad2a23fab3 bash
     root@b3ad2a23fab3:/#
     ```
@@ -133,7 +132,7 @@ We are going to use the Docker CLI to run our first container.
 
     From the same termina, run `ps -ef` to inspect the running processes.
 
-    ```sh
+    ```console
     root@b3ad2a23fab3:/# ps -ef
     UID        PID  PPID  C STIME TTY          TIME CMD
     root         1     0  0 20:34 ?        00:00:00 top
@@ -204,7 +203,7 @@ We are going to use the Docker CLI to run our first container.
 
     Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
-3. Access the nginx server on [localhost:8080](http://localhost:8080)   
+3. Access the nginx server on [localhost:8080](http://localhost:8080).
 
     ```console
     curl localhost:8080
@@ -212,7 +211,7 @@ We are going to use the Docker CLI to run our first container.
 
     will return the HTML home page of Nginx,
 
-    ```
+    ```console
     <!DOCTYPE html>
     <html>
     <head>
@@ -237,7 +236,7 @@ We are going to use the Docker CLI to run our first container.
 
     Now, run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo) from the Docker Hub. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.
 
-    ```sh
+    ```console
     $ docker container run --detach --publish 8081:27017 --name mongo mongo:4.4
     Unable to find image 'mongo:4.4' locally
     4.4: Pulling from library/mongo
@@ -259,7 +258,7 @@ We are going to use the Docker CLI to run our first container.
 
     Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo) on the Docker Hub to get more details about using the mongo image.
 
-6. Access [localhost:8081](http://localhost:8081) to see some output from mongo. 
+6. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
 
     ```console
     curl localhost:8081
@@ -267,7 +266,7 @@ We are going to use the Docker CLI to run our first container.
 
     which will return a warning from MongoDB,
 
-    ```
+    ```console
     It looks like you are trying to access MongoDB over HTTP on the native driver port.
     ```
 

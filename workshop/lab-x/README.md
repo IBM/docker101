@@ -4,7 +4,7 @@
 
 So far you have learned how to run applications using docker on your local machine, but what about running dockerized applications in production? There are a number of problems that come with building an application for production: scheduling services across distributed nodes, maintaining high availability, implementing reconciliation, scaling, and logging... just to name a few.
 
-There are several orchestration solutions out there that help you solve some of these problems. The most widely adopted orchestration platform is Kubernetes. The [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create) is a managed service of [Kubernetes](https://kubernetes.io/) to run containers in production. 
+There are several orchestration solutions out there that help you solve some of these problems. The most widely adopted orchestration platform is Kubernetes. The [IBM Kubernetes Service](https://cloud.ibm.com/kubernetes/catalog/create) is a managed service of [Kubernetes](https://kubernetes.io/) to run containers in production.
 
 Red Hat Openshift is an extension of Kubernetes with Enterprise grade services to provide a more secure and integrated extension of Kubernetes. [Red Hat OpenShift Kubernetes Service (ROKS)](https://cloud.ibm.com/kubernetes/catalog/create?platformType=openshift) on IBM Cloud is a managed service of OpenShift. You can also create a free 1-month, 1 node OpenShift cluster on [OpenShift Online](http://manage.openshift.com/).
 
@@ -237,15 +237,15 @@ After a few seconds, run `docker service ps nginx1` to see all the images have b
 ```sh
 $ docker service ps nginx1
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE             ERROR               PORTS
-l4s05d18j9ga        nginx1.1            nginx:1.19          node1               Ready               Ready 1 second ago                            
-zsm6as2ffq8g         \_ nginx1.1        nginx:1.18          node1               Shutdown            Running 1 second ago                          
-nk9awj3zercp        nginx1.2            nginx:1.19          node2               Running             Running 15 seconds ago                        
-21gxmjea135j         \_ nginx1.2        nginx:1.18          node3               Shutdown            Shutdown 16 seconds ago                       
-2cdadovtek2m        nginx1.3            nginx:1.19          node1               Running             Running 6 seconds ago                         
-ld0zgx5et2xy         \_ nginx1.3        nginx:1.18          node1               Shutdown            Shutdown 6 seconds ago                        
-p3gu8wcpmeax        nginx1.4            nginx:1.19          node3               Running             Running 1 second ago                          
-wo4ioe8lrju6         \_ nginx1.4        nginx:1.18          node2               Shutdown            Shutdown 2 seconds ago                        
-lpe6dkkr4osc        nginx1.5            nginx:1.19          node3               Running             Running 10 seconds ago                        
+l4s05d18j9ga        nginx1.1            nginx:1.19          node1               Ready               Ready 1 second ago
+zsm6as2ffq8g         \_ nginx1.1        nginx:1.18          node1               Shutdown            Running 1 second ago
+nk9awj3zercp        nginx1.2            nginx:1.19          node2               Running             Running 15 seconds ago
+21gxmjea135j         \_ nginx1.2        nginx:1.18          node3               Shutdown            Shutdown 16 seconds ago
+2cdadovtek2m        nginx1.3            nginx:1.19          node1               Running             Running 6 seconds ago
+ld0zgx5et2xy         \_ nginx1.3        nginx:1.18          node1               Shutdown            Shutdown 6 seconds ago
+p3gu8wcpmeax        nginx1.4            nginx:1.19          node3               Running             Running 1 second ago
+wo4ioe8lrju6         \_ nginx1.4        nginx:1.18          node2               Shutdown            Shutdown 2 seconds ago
+lpe6dkkr4osc        nginx1.5            nginx:1.19          node3               Running             Running 10 seconds ago
 6qvqfb6x77u4         \_ nginx1.5        nginx:1.18          node3               Shutdown            Shutdown 11 seconds ago
 ```
 
@@ -278,22 +278,21 @@ We are going to remove a node, and see tasks of our nginx1 service be reschedule
     ```sh
     Every 1.0s: docker service ps nginx2          2020-09-23 20:59:43
 
-    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT 
+    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT
     STATE            ERROR               PORTS
-    nveflkbbzhia        nginx2.1            nginx:1.18          node1               Running             Running 
+    nveflkbbzhia        nginx2.1            nginx:1.18          node1               Running             Running
     41 seconds ago                       
-    qlk6avfcjqft        nginx2.2            nginx:1.18          node2               Running             Running 
+    qlk6avfcjqft        nginx2.2            nginx:1.18          node2               Running             Running
     41 seconds ago                       
-    psizpiwxt1ta        nginx2.3            nginx:1.18          node3               Running             Running 
+    psizpiwxt1ta        nginx2.3            nginx:1.18          node3               Running             Running
+    41 seconds ago
+    0kmrqeneqztk        nginx2.4            nginx:1.18          node2               Running             Running
     41 seconds ago                       
-    0kmrqeneqztk        nginx2.4            nginx:1.18          node2               Running             Running 
-    41 seconds ago                       
-    zdg9j4aiqt8w        nginx2.5            nginx:1.18          node3               Running             Running 
-    41 seconds ago 
-   
+    zdg9j4aiqt8w        nginx2.5            nginx:1.18          node3               Running             Running
+    41 seconds ago
     ```
 
-2. Click on Node3, and type the command to leave the swarm cluster.
+1. Click on Node3, and type the command to leave the swarm cluster.
 
     ```sh
     $ docker swarm leave
@@ -302,7 +301,7 @@ We are going to remove a node, and see tasks of our nginx1 service be reschedule
 
     This is the "nice" way to leave the swarm, but you can also kill the node and the following behavior will be the same.
 
-3. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
+1. Click on Node1 to watch the reconciliation in action. You should see that the swarm will attempt to get back to the declared state by rescheduling the containers that were running on node3 to node1 and node2 automatically.
 
     ```sh
     $ docker service ps nginx2

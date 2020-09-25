@@ -10,7 +10,7 @@ None
 
 ## Use Theia - Cloud IDE (With Docker)
 
-1. Go to https://labs.cognitiveclass.ai ,
+1. Go to [https://labs.cognitiveclass.ai](https://labs.cognitiveclass.ai) ,
 2. Sign up for CognitiveClass.ai using your `IBM id` ,
 3. Login with your `IBM Id`,
 4. Select `Theia - Cloud IDE (With Docker)`,
@@ -33,10 +33,9 @@ docker version
     ![Get Docker](../.gitbook/images/get-docker.png)
 
 3. On this page you will find the installation for your operating systems. For example, if you are using a Mac, select "MacOS", to find the installation for the Mac platform.
-4. For Mac, you are re-directed to https://hub.docker.com/editions/community/docker-ce-desktop-mac/ where you can click the `Get Stable` edition,
+4. For Mac, you are re-directed to [https://hub.docker.com/editions/community/docker-ce-desktop-mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) where you can click the `Get Stable` edition,
 
     ![Get Stable for Mac](../.gitbook/images/get-stable-for-mac.png)
-
 
 ## **Optional:** Use play-with-docker
 
