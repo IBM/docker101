@@ -23,7 +23,7 @@ A `data volume` or `volume` is a directory that bypasses the `Union File System`
 There are three types of volumes:
 
 * anonymous volume,
-* named volume, and 
+* named volume, and
 * host volume.
 
 ### Anonymous Volume
