@@ -22,20 +22,22 @@ Originally, the `--mount` flag was used for Docker Swarm services and the `--vol
 
 OverlayFS is a union mount filesystem implementation for Linux. To understand what a Docker volume is, it helps to first understand how layers and the filesystem work in Docker.
 
-To start a container, Docker takes the read-only image and creates a new read-write layer on top, using a Union File System or OverlayFS (Overlay File System). Docker uses the `overlay2` storage driver.
+To start a container, Docker takes the read-only image and creates a new read-write layer on top. To view the layers as one, Docker uses a Union File System or OverlayFS (Overlay File System), specifically the `overlay2` storage driver.
 
-To see the Docker managed files, you need access to the Docker process file system. Using the `--privileged` and `--pid=host` flags you can access the host's process ID namespace from inside a container like `busybox`. You can then browse to Docker's `/var/lib/docker/overlay2` directory to see the downloaded layers.
+To see Docker host managed files, you need access to the Docker process file system. Using the `--privileged` and `--pid=host` flags you can access the host's process ID namespace from inside a container like `busybox`. You can then browse to Docker's `/var/lib/docker/overlay2` directory to see the downloaded layers that are managed by Docker.
 
-View the current list of layers in Docker,
+To view the current list of layers in Docker,
 
 ```console
-docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
+$ docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
+
 / # ls -l /var/lib/docker/overlay2
 total 16
 drwx------    3 root     root          4096 Sep 25 19:44 0e55ecaa4d17c353191e68022d9a17fde64fb5e9217b07b5c56eb4c74dad5b32
 drwx------    5 root     root          4096 Sep 25 19:44 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d
 drwx------    4 root     root          4096 Sep 25 19:44 187854d05ccd18980642e820b0d2be6a127ba85d8ed96315bb5ae37eb1add36d-init
 drwx------    2 root     root          4096 Sep 25 19:44 l
+
 / # exit
 ```
 
@@ -52,6 +54,7 @@ Digest: sha256:cbcf86d7781dbb3a6aa2bcea25403f6b0b443e20b9959165cf52d2cc9608e4b9
 Status: Downloaded newer image for ubuntu:latest
 
 $ docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
+
 / # ls -l /var/lib/docker/overlay2/
 total 36
 drwx------    3 root     root          4096 Sep 25 19:44 0e55ecaa4d17c353191e68022d9a17fde64fb5e9217b07b5c56eb4c74dad5b32
@@ -92,6 +95,13 @@ Finally, a `workdir` is a required, which is an empty directory used by overlay 
 The `overlay2` driver supports up to 128 lower OverlayFS layers. The `l` directory contains shortened layer identifiers as symbolic links.
 
 ![Overlay2 Storage Driver](../.gitbook/images/overlay2-driver.png)
+
+Cleanup,
+
+```console
+docker system prune -a
+clear
+```
 
 ## Volumes
 
@@ -185,12 +195,13 @@ hello from busybox1
 / # exit
 ```
 
-Docker created the anynomous volume that you were able to share using the `--volumes-from` option.
+Docker created the anynomous volume that you were able to share using the `--volumes-from` option, and created a new anonymous volume.
 
 ```console
 $ docker volume ls
 DRIVER    VOLUME NAME
 local    83a3275e889506f3e8ff12cd50f7d5b501c1ace95672334597f9a071df439493
+local               f4e6b9f9568eeb165a56b2946847035414f5f9c2cad9ff79f18e800277ae1ebd
 ```
 
 Cleanup the existing volumes and container.
@@ -201,6 +212,7 @@ docker rm my-couchdb
 docker rm busybox1
 docker volume rm $(docker volume ls -q)
 docker system prune -a
+clear
 ```
 
 ### Named Volume
@@ -227,6 +239,8 @@ Now create the CouchDB container using the `named volume`,
 docker run -d -p 5984:5984 --name my-couchdb -v my-couchdb-data-volume:/opt/couchdb/data -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=passw0rd1 couchdb:3.1
 ```
 
+Wait until the CouchDB container is running and the instance is available.
+
 Create a new database `mydb` and insert a new document with a `hello world` message.
 
 ```console
@@ -246,7 +260,7 @@ drwxr-xr-x    2 5984    5984    4096 Sep 24 17:11 .delete
 -rw-r--r--    1 5984    5984    8388 Sep 24 17:11 _dbs.couch
 -rw-r--r--    1 5984    5984    8385 Sep 24 17:11 _nodes.couch
 drwxr-xr-x    4 5984    5984    4096 Sep 24 17:11 shards
-/ #
+/ # exit
 ```
 
 Cleanup,
@@ -257,6 +271,7 @@ docker rm my-couchdb
 docker volume rm my-couchdb-data-volume
 docker system prune -a
 docker volume prune
+clear
 ```
 
 ### Host Volume
