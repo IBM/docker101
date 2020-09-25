@@ -8,13 +8,13 @@ We will be using a few Docker commands in this lab. For full documentation on av
 
 ### Prerequisites
 
-You must have docker installed, or be using [Katacoda Playground](https://www.katacoda.com/courses/docker/playground).
+Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from `Theia - Cloud IDE` at [https://labs.cognitiveclass.ai/tools/theiadocker](https://labs.cognitiveclass.ai/tools/theiadocker) or be using [Play with Docker](http://play-with-docker.com) for example.
 
 ## Step 1: Create a python app (without using Docker)
 
 Run the following command to create a file named `app.py` with a simple python program. (copy-paste the entire code block)
 
-```bash
+```console
 echo 'from flask import Flask
 
 app = Flask(__name__)
@@ -31,37 +31,48 @@ This is a simple python app that uses flask to expose a http web server on port 
 
 **Optional:** If you have python and pip installed, you can run this app locally. If not, move on to the next step.
 
-```sh
+```console
 $ python3 --version
-Python 3.6.1
+Python 3.6.9
 $ pip3 --version
-pip 9.0.1 from /usr/local/lib/python3.6/site-packages (python 3.6)
+pip 9.0.1 from /usr/lib/python3/dist-packages (python 3.6)
 $ pip3 install flask
-Requirement already satisfied: flask in /usr/local/lib/python3.6/site-packages
-Requirement already satisfied: Werkzeug>=0.7 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: itsdangerous>=0.21 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: Jinja2>=2.4 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: click>=2.0 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: MarkupSafe>=0.23 in /usr/local/lib/python3.6/site-packages (from Jinja2>=2.4->flask)
-johns-mbp:test johnzaccone$ pip3 install flask
-Requirement already satisfied: flask in /usr/local/lib/python3.6/site-packages
-Requirement already satisfied: itsdangerous>=0.21 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: Jinja2>=2.4 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: click>=2.0 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: Werkzeug>=0.7 in /usr/local/lib/python3.6/site-packages (from flask)
-Requirement already satisfied: MarkupSafe>=0.23 in /usr/local/lib/python3.6/site-packages (from Jinja2>=2.4->flask)
+Collecting flask
+  Downloading https://files.pythonhosted.org/packages/f2/28/2a03252dfb9ebf377f40fba6a7841b47083260bf8bd8e737b0c6952df83f/Flask-1.1.2-py2.py3-none-any.whl (94kB)
+    100% |████████████████████████████████| 102kB 6.2MB/s
+Collecting Werkzeug>=0.15 (from flask)
+  Downloading https://files.pythonhosted.org/packages/cc/94/5f7079a0e00bd6863ef8f1da638721e9da21e5bacee597595b318f71d62e/Werkzeug-1.0.1-py2.py3-none-any.whl (298kB)
+    100% |████████████████████████████████| 307kB 3.4MB/s
+Collecting itsdangerous>=0.24 (from flask)
+  Downloading https://files.pythonhosted.org/packages/76/ae/44b03b253d6fade317f32c24d100b3b35c2239807046a4c953c7b89fa49e/itsdangerous-1.1.0-py2.py3-none-any.whl
+Collecting click>=5.1 (from flask)
+  Downloading https://files.pythonhosted.org/packages/d2/3d/fa76db83bf75c4f8d338c2fd15c8d33fdd7ad23a9b5e57eb6c5de26b430e/click-7.1.2-py2.py3-none-any.whl (82kB)
+    100% |████████████████████████████████| 92kB 10.2MB/s
+Collecting Jinja2>=2.10.1 (from flask)
+  Downloading https://files.pythonhosted.org/packages/30/9e/f663a2aa66a09d838042ae1a2c5659828bb9b41ea3a6efa20a20fd92b121/Jinja2-2.11.2-py2.py3-none-any.whl (125kB)
+    100% |████████████████████████████████| 133kB 8.5MB/s
+Collecting MarkupSafe>=0.23 (from Jinja2>=2.10.1->flask)
+  Downloading https://files.pythonhosted.org/packages/b2/5f/23e0023be6bb885d00ffbefad2942bc51a620328ee910f64abe5a8d18dd1/MarkupSafe-1.1.1-cp36-cp36m-manylinux1_x86_64.whl
+Installing collected packages: Werkzeug, itsdangerous, click, MarkupSafe, Jinja2, flask
+Successfully installed Jinja2-2.11.2 MarkupSafe-1.1.1 Werkzeug-1.0.1 click-7.1.2 flask-1.1.2 itsdangerous-1.1.0
+
 $ python3 app.py
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 ```
 
 ## Step 2: Create and build the Docker Image
 
-If you don't have python install locally, don't worry! Because you don't need it. One of the advantages of using Docker containers is that you can build python into your containers, without having python installed on your host.
+Now, what if you don't have python installed locally? Don't worry! Because you don't need it. One of the advantages of using containers is that you can build python inside your containers, without having python installed on your host machine.
 
 1. Create a `Dockerfile` but running the following command. (copy-paste the entire code block)
 
     ```sh
-    echo 'FROM python:3.6.1-alpine
+    echo 'FROM python:3.8-alpine
     RUN pip install flask
     CMD ["python","app.py"]
     COPY app.py /app.py' > Dockerfile
@@ -69,14 +80,18 @@ If you don't have python install locally, don't worry! Because you don't need it
 
     A Dockerfile lists the instructions needed to build a docker image. Let's go through the above file line by line.
 
-    **FROM python:3.6.1-alpine**
-    This is the starting point for your Dockerfile. Every Dockerfile must start with a `FROM` line that is the starting image to build your layers on top of. In this case, we are selecting the `python:3.6.1-alpine` base layer since it already has the version of python and pip that we need to run our application. The `alpine` version means that it uses the alpine distribution, which is significantly smaller than an alternative flavor of linux. A smaller image means it will download (deploy) much faster, and it also has advantages for security because it has a smaller attack surface.
+    **FROM python:3.8-alpine**
+    This is the starting point for your Dockerfile. Every Dockerfile must start with a `FROM` line that is the starting image to build your layers on top of.
 
-    Here we are using the "3.6.1-alpine" tag for the python image. Take a look at the available tags for the official python image on the [Docker Hub](https://hub.docker.com/_/python/). It is best practice to use a specific tag when inheriting a parent image so that changes to the parent dependency are controlled. If no tag is specified, the "latest" tag takes into effect, which is acts as a dynamic pointer that points to the latest version of an image.
+    In this case, we are selecting the `python:3.8-alpine` base layer (see [Dockerfile for python3.8/alpine3.12](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile)) since it already has the version of python and pip that we need to run our application.
 
-    For security reasons, it is very important to understand the layers that you build your docker image on top of. For that reason, it is highly recommended to only use "official" images found in the [docker hub](https://hub.docker.com/), or non-community images found in the docker-store. These images are [vetted](https://docs.docker.com/docker-hub/official_repos/) to meet certain security requirements, and also have very good documentation for users to follow. You can find more information about this [python base image](https://store.docker.com/images/python), as well as all other images that you can use, on the [docker store](https://store.docker.com/).
+    The `alpine` version means that it uses the [Alpine Linux](https://en.wikipedia.org/wiki/Alpine_Linux) distribution, which is significantly smaller than many alternative flavors of Linux, around 8 MB in size, while a minimal installation to disk might be around 130 MB. A smaller image means it will download (deploy) much faster, and it also has advantages for security because it has a smaller attack surface. [Alpine Linux](https://alpinelinux.org/downloads/) is a Linux distribution based on musl and BusyBox.
 
-    For a more complex application you may find the need to use a`FROM` image that is higher up the chain. For example, the parent [Dockerfile](https://github.com/docker-library/python/blob/88ba87d31a3033d4dbefecf44ce25aa1b69ab3e5/3.6/alpine/Dockerfile) for our python app  starts with `FROM alpine`, then specifies a series of `CMD` and `RUN` commands for the image. If you needed more fine-grained control, you could start with `FROM alpine` (or a different distribution) and run those steps yourself. To start off though, I recommend using an official image that closely matches your needs.
+    Here we are using the "3.8-alpine" tag for the python image. Take a look at the available tags for the official python image on the [Docker Hub](https://hub.docker.com/_/python/). It is best practice to use a specific tag when inheriting a parent image so that changes to the parent dependency are controlled. If no tag is specified, the "latest" tag takes into effect, which is acts as a dynamic pointer that points to the latest version of an image.
+
+    For security reasons, it is very important to understand the layers that you build your docker image on top of. For that reason, it is highly recommended to only use "official" images found in the [docker hub](https://hub.docker.com/), or non-community images found in the docker-store. These images are [vetted](https://docs.docker.com/docker-hub/official_repos/) to meet certain security requirements, and also have very good documentation for users to follow. You can find more information about this [python base image](https://hub.docker.com/_/python), as well as all other images that you can use, on the [docker hub](https://hub.docker.com).
+
+    For a more complex application you may find the need to use a`FROM` image that is higher up the chain. For example, the parent [Dockerfile](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile) for our python app  starts with `FROM alpine`, then specifies a series of `CMD` and `RUN` commands for the image. If you needed more fine-grained control, you could start with `FROM alpine` (or a different distribution) and run those steps yourself. To start off though, I recommend using an official image that closely matches your needs.
 
     **RUN pip install flask**
     The `RUN` command executes commands needed to set up your image for your application, such as installing packages, editing files, or changing file permissions. In this case we are installing flask. The `RUN` commands are executed at build time, and are added to the layers of your image.
@@ -84,7 +99,7 @@ If you don't have python install locally, don't worry! Because you don't need it
     **CMD ["python","app.py"]**
     `CMD` is the command that is executed when you start a container. Here we are using `CMD` to run our python app.
 
-    There can be only one `CMD` per Dockerfile. If you specify more thane one `CMD`, then the last `CMD` will take effect. The parent python:3.6.1-alpine also specifies a `CMD` (`CMD python2`). You can find the Dockerfile for the official python:alpine image [here](https://github.com/docker-library/python/blob/88ba87d31a3033d4dbefecf44ce25aa1b69ab3e5/3.6/alpine/Dockerfile).
+    There can be only one `CMD` per Dockerfile. If you specify more thane one `CMD`, then the last `CMD` will take effect. The parent python:3.8-alpine also specifies a `CMD` (`CMD python3`). You can find the Dockerfile for the official python:alpine image [here](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile).
 
     You can use the official python image directly to run python scripts without installing python on your host. But today, we are creating a custom image to include our source, so that we can build an image with our application and ship it around to other environments.
 
@@ -95,70 +110,67 @@ If you don't have python install locally, don't worry! Because you don't need it
 
     And there you have it: a very simple Dockerfile. A full list of commands you can put into a Dockerfile can be found [here](https://docs.docker.com/engine/reference/builder/). Now that we defined our Dockerfile, let's use it to build our custom docker image.
 
-1. Build the docker image.
+2. Build the docker image.
 
     Pass in `-t` to name your image `python-hello-world`.
 
     ```sh
-    $ docker image build -t python-hello-world .
+    $  docker image build -t python-hello-world .
     Sending build context to Docker daemon  3.072kB
-    Step 1/4 : FROM python:3.6.1-alpine
-    3.6.1-alpine: Pulling from library/python
-    acb474fa8956: Pull complete
-    967ab02d1ea4: Pull complete
-    640064d26350: Pull complete
-    db0225fcac8f: Pull complete
-    5432cc692c60: Pull complete
-    Digest: sha256:768360b3fad01adffcf5ad9eccb4aa3ccc83bb0ed341bbdc45951e89335082ce
-    Status: Downloaded newer image for python:3.6.1-alpine
-    ---> c86415c03c37
+    Step 1/4 : FROM python:3.8-alpine
+    3.8-alpine: Pulling from library/python
+    df20fa9351a1: Pull complete
+    36b3adc4ff6f: Pull complete
+    3e7ef1bb9eba: Pull complete
+    78538f72d6a9: Pull complete
+    07bc731e0055: Pull complete
+    Digest: sha256:cbc08bfc4b1b732076742f52852ede090e960ab7470d0a60ee4f964cfa7c710a
+    Status: Downloaded newer image for python:3.8-alpine
+    ---> 0f03316d4a27
     Step 2/4 : RUN pip install flask
-    ---> Running in cac3222673a3
+    ---> Running in 1454bdd1ea98
     Collecting flask
-    Downloading Flask-0.12.2-py2.py3-none-any.whl (83kB)
-    Collecting itsdangerous>=0.21 (from flask)
-    Downloading itsdangerous-0.24.tar.gz (46kB)
-    Collecting click>=2.0 (from flask)
-    Downloading click-6.7-py2.py3-none-any.whl (71kB)
-    Collecting Werkzeug>=0.7 (from flask)
-    Downloading Werkzeug-0.12.2-py2.py3-none-any.whl (312kB)
-    Collecting Jinja2>=2.4 (from flask)
-    Downloading Jinja2-2.9.6-py2.py3-none-any.whl (340kB)
-    Collecting MarkupSafe>=0.23 (from Jinja2>=2.4->flask)
-    Downloading MarkupSafe-1.0.tar.gz
-    Building wheels for collected packages: itsdangerous, MarkupSafe
-    Running setup.py bdist_wheel for itsdangerous: started
-    Running setup.py bdist_wheel for itsdangerous: finished with status 'done'
-    Stored in directory: /root/.cache/pip/wheels/fc/a8/66/24d655233c757e178d45dea2de22a04c6d92766abfb741129a
-    Running setup.py bdist_wheel for MarkupSafe: started
-    Running setup.py bdist_wheel for MarkupSafe: finished with status 'done'
-    Stored in directory: /root/.cache/pip/wheels/88/a7/30/e39a54a87bcbe25308fa3ca64e8ddc75d9b3e5afa21ee32d57
-    Successfully built itsdangerous MarkupSafe
-    Installing collected packages: itsdangerous, click, Werkzeug, MarkupSafe, Jinja2, flask
-    Successfully installed Jinja2-2.9.6 MarkupSafe-1.0 Werkzeug-0.12.2 click-6.7 flask-0.12.2 itsdangerous-0.24
-    ---> ce41f2517c16
-    Removing intermediate container cac3222673a3
-    Step 3/4 : CMD python app.py
-    ---> Running in 2197e5263eff
-    ---> 0ab91286958b
-    Removing intermediate container 2197e5263eff
+    Downloading Flask-1.1.2-py2.py3-none-any.whl (94 kB)
+    Collecting itsdangerous>=0.24
+    Downloading itsdangerous-1.1.0-py2.py3-none-any.whl (16 kB)
+    Collecting Werkzeug>=0.15
+    Downloading Werkzeug-1.0.1-py2.py3-none-any.whl (298 kB)
+    Collecting click>=5.1
+    Downloading click-7.1.2-py2.py3-none-any.whl (82 kB)
+    Collecting Jinja2>=2.10.1
+    Downloading Jinja2-2.11.2-py2.py3-none-any.whl (125 kB)
+    Collecting MarkupSafe>=0.23
+    Downloading MarkupSafe-1.1.1.tar.gz (19 kB)
+    Building wheels for collected packages: MarkupSafe
+    Building wheel for MarkupSafe (setup.py): started
+    Building wheel for MarkupSafe (setup.py): finished with status 'done'
+    Created wheel for MarkupSafe: filename=MarkupSafe-1.1.1-py3-none-any.whl size=12627 sha256=155e3314602dfac3c8ea245edc217c235afb4c818932574d6d61529ef0c14ea4
+    Stored in directory: /root/.cache/pip/wheels/0c/61/d6/4db4f4c28254856e82305fdb1f752ed7f8482e54c384d8cb0e
+    Successfully built MarkupSafe
+    Installing collected packages: itsdangerous, Werkzeug, click, MarkupSafe, Jinja2, flask
+    Successfully installed Jinja2-2.11.2 MarkupSafe-1.1.1 Werkzeug-1.0.1 click-7.1.2 flask-1.1.2 itsdangerous-1.1.0
+    Removing intermediate container 1454bdd1ea98
+    ---> 97d747fc7771
+    Step 3/4 : CMD ["python","app.py"]
+    ---> Running in e2bf74801c81
+    Removing intermediate container e2bf74801c81
+    ---> d5adbccf5116
     Step 4/4 : COPY app.py /app.py
-    ---> f1b2781b3111
-    Removing intermediate container b92b506ee093
-    Successfully built f1b2781b3111
+    ---> 3c24958f29d3
+    Successfully built 3c24958f29d3
     Successfully tagged python-hello-world:latest
     ```
 
     Verify that your image shows up in your image list via `docker image ls`.
 
-```sh
-$ docker image ls
-REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
-python-hello-world   latest              f1b2781b3111        26 seconds ago      99.3MB
-python               3.6.1-alpine        c86415c03c37        8 days ago          88.7MB
-```
+    ```sh
+    $ docker image ls
+    REPOSITORY    TAG    IMAGE ID    CREATED    SIZE
+    python-hello-world   latest    3c24958f29d3    52 seconds ago      53.4MB
+    python    3.8-alpine    0f03316d4a27    2 weeks ago    42.7MB
+    ```
 
-Notice that your base image, python:3.6.1-alpine, is also in your list.
+Notice that your base image, python:3.8-alpine, is also in your list.
 
 ## Step 3: Run the Docker image
 
@@ -175,9 +187,11 @@ Now that you have built the image, you can run it to see that it works.
 
 1. Navigate to [localhost:5001](http://localhost:5001) in a browser to see the results.
 
+    In a terminal run `curl localhost:5001`, which returns `hello world!`.
+
     If you are using katacoda, click on the link in the left-hand pane that says: `View port at https://....environments.katacoda.com` then type in 5001 and click `Display Port`.
 
-    In play-with-docker, click the link `5001` that should appear near the top of your session. If all else fails: `curl localhost:5001` works...
+    In play-with-docker, click the link `5001` that should appear near the top of your session.
 
     You should see "hello world!" on your browser.
 
@@ -186,16 +200,24 @@ Now that you have built the image, you can run it to see that it works.
     If you want to see logs from your application you can use the `docker container logs` command. By default, `docker container logs` prints out what is sent to standard out by your application. Use `docker container ls` to find the id for your running container.
 
     ```sh
+    $ docker container ls
+    CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES
+    7b04d5320cb4    python-hello-world   "python app.py"     About a minute ago   Up About a minute   0.0.0.0:5001->5000/tcp   elastic_ganguly
     $ docker container logs [container id]
+    * Serving Flask app "app" (lazy loading)
+    * Environment: production
+      WARNING: This is a development server. Do not use it in a production deployment.
+      Use a production WSGI server instead.
+    * Debug mode: off
     * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-    172.17.0.1 - - [28/Jun/2017 19:35:33] "GET / HTTP/1.1" 200 -
+   172.17.0.1 - - [23/Sep/2020 22:00:33] "GET / HTTP/1.1" 200 -
     ```
 
     The Dockerfile is how you create reproducible builds for your application. A common workflow is to have your CI/CD automation run `docker image build` as part of its build process. Once images are built, they will be sent to a central registry, where it can be accessed by all environments (such as a test environment) that need to run instances of that application. In the next step, we will push our custom image to the public docker registry: the docker hub, where it can be consumed by other developers and operators.
 
 ## Step 4: Push to a central registry
 
-1. Navigate to [Docker Hub](https://hub.docker.com) and create an account if you haven't already
+1. Navigate to [Docker Hub](https://hub.docker.com) and create an account if you haven't already. Alternatively, you can also use [https://quay.io](https://quay.io) for instance.
 
     For this lab we will be using the docker hub as our central registry. Docker hub is a free service to store publicly available images, or you can pay to store private images. Go to the [Docker Hub](https://hub.docker.com) website and create a free account.
 
@@ -203,12 +225,17 @@ Now that you have built the image, you can run it to see that it works.
 
 1. Login
 
-    You can log into the docker registry account by typing `docker login` on your terminal.
+    You can log into the image registry account by typing `docker login` on your terminal, or if using podman, type `podman login`.
 
     ```sh
-    $ docker login
-    Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
-    Username:
+    $ export DOCKERHUB_USERNAME=<dockerhub-username>
+    $ docker login docker.io -u $DOCKERHUB_USERNAME
+    password:
+    WARNING! Your password will be stored unencrypted in /home/theia/.docker/config.json.
+    Configure a credential helper to remove this warning. See
+    https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+    Login Succeeded
     ```
 
 1. Tag your image with your username
@@ -216,8 +243,7 @@ Now that you have built the image, you can run it to see that it works.
     The Docker Hub naming convention is to tag your image with [dockerhub username]/[image name]. To do this, we are going to tag our previously created image `python-hello-world` to fit that format.
 
     ```sh
-    $ docker tag python-hello-world [dockerhub username]/python-hello-world
-    ok
+    docker tag python-hello-world $DOCKERHUB_USERNAME/python-hello-world
     ```
 
 1. Push your image to the registry
@@ -225,7 +251,7 @@ Now that you have built the image, you can run it to see that it works.
     Once we have a properly tagged image, we can use the `docker push` command to push our image to the Docker Hub registry.
 
     ```sh
-    $ docker push [dockerhub username]/python-hello-world
+    $ docker push $DOCKERHUB_USERNAME/python-hello-world
     The push refers to a repository [docker.io/jzaccone/python-hello-world]
     2bce026769ac: Pushed
     64d445ecbe93: Pushed
@@ -239,7 +265,7 @@ Now that you have built the image, you can run it to see that it works.
 
 1. Check out your image on docker hub in your browser
 
-    Navigate to [Docker Hub](https://hub.docker.com) and go to your profile to see your newly uploaded image.
+    Navigate to [Docker Hub](https://hub.docker.com) and go to your profile to see your newly uploaded image at `https://hub.docker.com/repository/docker/<dockerhub-username>/python-hello-world`.
 
     Now that your image is on Docker Hub, other developers and operations can use the `docker pull` command to deploy your image to other environments.
 
@@ -273,7 +299,7 @@ The "hello world!" application is overrated, let's update the app so that it say
     First rebuild, this time use your Docker Hub username in the build command:
 
     ```sh
-    $  docker image build -t [dockerhub username]/python-hello-world .
+    $  docker image build -t $DOCKERHUB_USERNAME/python-hello-world .
     Sending build context to Docker daemon  3.072kB
     Step 1/4 : FROM python:3.6.1-alpine
     ---> c86415c03c37
@@ -287,14 +313,14 @@ The "hello world!" application is overrated, let's update the app so that it say
     ---> 3e08b2eeace1
     Removing intermediate container 23a955e881fc
     Successfully built 3e08b2eeace1
-    Successfully tagged jzaccone/python-hello-world:latest
+    Successfully tagged <dockerhub-username>/python-hello-world:latest
     ```
 
     Notice the "Using cache" for steps 1-3. These layers of the Docker Image have already been built and `docker image build` will use these layers from the cache instead of rebuilding them.
 
     ```sh
-    $ docker push [dockerhub username]/python-hello-world
-    The push refers to a repository [docker.io/jzaccone/python-hello-world]
+    $ docker push $DOCKERHUB_USERNAME/python-hello-world
+    The push refers to a repository [docker.io/<dockerhub-username>/python-hello-world]
     94525867566e: Pushed
     64d445ecbe93: Layer already exists
     18b27eac38a1: Layer already exists
@@ -316,22 +342,22 @@ One of the major design properties of Docker is its use of the union file system
 Consider the Dockerfile that we created before:
 
 ```sh
-FROM python:3.6.1-alpine
+FROM python:3.8-alpine
 RUN pip install flask
 CMD ["python","app.py"]
 COPY app.py /app.py
 ```
 
-Each of these lines is a layer. Each layer contains only the delta, or changes from the layers before it. To put these layers together into a single running container, Docker makes use of the union file system to overlay layers transparently into a single view.
+Each of these lines is a layer. Each layer contains only the delta, diff or changes from the layers before it. To put these layers together into a single running container, Docker makes use of the `union file system` to overlay layers transparently into a single view.
 
-Each layer of the image is read-only, except for the very top layer which is created for the container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the `docker diff` command. More information about how to use `docker diff` can be found [here](https://docs.docker.com/engine/reference/commandline/diff/).
+Each layer of the image is `read-only`, except for the very top layer which is created for the running container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the running container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the `docker diff` command. More information about how to use `docker diff` can be found [here](https://docs.docker.com/engine/reference/commandline/diff/).
 
 ![understanding image layers](../.gitbook/images/lab2_understanding_image_layers_1.png)
 
-Since image layers are read-only, they can be shared by images and by running containers. For instance, creating a new python app with its own Dockerfile with similar base layers, would share all the layers that it had in common with the first python app.
+Since image layers are `read-only`, they can be shared by images and by running containers. For instance, creating a new python app with its own Dockerfile with similar base layers, would share all the layers that it had in common with the first python app.
 
 ```sh
-FROM python:3.6.1-alpine
+FROM python:3.8-alpine
 RUN pip install flask
 CMD ["python","app2.py"]
 COPY app2.py /app2.py
@@ -346,8 +372,8 @@ You may notice that there are duplicate lines in this Dockerfile and the Dockerf
 Image layering enables the docker caching mechanism for builds and pushes. For example, the output for your last `docker push` shows that some of the layers of your image already exists on the Docker Hub.
 
 ```sh
-$ docker push [dockerhub username]/python-hello-world
-The push refers to a repository [docker.io/jzaccone/python-hello-world]
+$ docker push $DOCKERHUB_USERNAME/python-hello-world
+The push refers to a repository [docker.io/<dockerhub-username>/python-hello-world]
 94525867566e: Pushed
 64d445ecbe93: Layer already exists
 18b27eac38a1: Layer already exists
@@ -360,24 +386,26 @@ latest: digest: sha256:91874e88c14f217b4cab1dd5510da307bf7d9364bd39860c9cc868857
 
 To look more closely at layers, you can use the `docker image history` command of the python image we created.
 
-```sh
+```console
 $ docker image history python-hello-world
 IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
-f1b2781b3111        5 minutes ago       /bin/sh -c #(nop) COPY file:0114358808a1bb...   159B
-0ab91286958b        5 minutes ago       /bin/sh -c #(nop)  CMD ["python" "app.py"]      0B
-ce41f2517c16        5 minutes ago       /bin/sh -c pip install flask                    10.6MB
-c86415c03c37        8 days ago          /bin/sh -c #(nop)  CMD ["python3"]              0B
-<missing>           8 days ago          /bin/sh -c set -ex;   apk add --no-cache -...   5.73MB
-<missing>           8 days ago          /bin/sh -c #(nop)  ENV PYTHON_PIP_VERSION=...   0B
-<missing>           8 days ago          /bin/sh -c cd /usr/local/bin  && ln -s idl...   32B
-<missing>           8 days ago          /bin/sh -c set -ex  && apk add --no-cache ...   77.5MB
-<missing>           8 days ago          /bin/sh -c #(nop)  ENV PYTHON_VERSION=3.6.1     0B
-<missing>           8 days ago          /bin/sh -c #(nop)  ENV GPG_KEY=0D96DF4D411...   0B
-<missing>           8 days ago          /bin/sh -c apk add --no-cache ca-certificates   618kB
-<missing>           8 days ago          /bin/sh -c #(nop)  ENV LANG=C.UTF-8             0B
-<missing>           8 days ago          /bin/sh -c #(nop)  ENV PATH=/usr/local/bin...   0B
-<missing>           9 days ago          /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B
-<missing>           9 days ago          /bin/sh -c #(nop) ADD file:cf1b74f7af8abcf...   4.81MB
+3c24958f29d3        17 minutes ago      /bin/sh -c #(nop) COPY file:5fef1b9a6220c0e3…   159B
+d5adbccf5116        17 minutes ago      /bin/sh -c #(nop)  CMD ["python" "app.py"]      0B
+97d747fc7771        17 minutes ago      /bin/sh -c pip install flask                    10.7MB
+0f03316d4a27        2 weeks ago         /bin/sh -c #(nop)  CMD ["python3"]              0B
+<missing>           2 weeks ago         /bin/sh -c set -ex;   wget -O get-pip.py "$P…   7.24MB
+<missing>           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_GET_PIP_SHA256…   0B
+<missing>           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_GET_PIP_URL=ht…   0B
+<missing>           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_PIP_VERSION=20…   0B
+<missing>           7 weeks ago         /bin/sh -c cd /usr/local/bin  && ln -s idle3…   32B
+<missing>           7 weeks ago         /bin/sh -c set -ex  && apk add --no-cache --…   29.3MB
+<missing>           2 months ago        /bin/sh -c #(nop)  ENV PYTHON_VERSION=3.8.5     0B
+<missing>           3 months ago        /bin/sh -c #(nop)  ENV GPG_KEY=E3FF2839C048B…   0B
+<missing>           3 months ago        /bin/sh -c apk add --no-cache ca-certificates   512kB
+<missing>           3 months ago        /bin/sh -c #(nop)  ENV LANG=C.UTF-8             0B
+<missing>           3 months ago        /bin/sh -c #(nop)  ENV PATH=/usr/local/bin:/…   0B
+<missing>           3 months ago        /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B
+<missing>           3 months ago        /bin/sh -c #(nop) ADD file:c92c248239f8c7b9b…   5.57MB
 ```
 
 Each line represents a layer of the image. You'll notice that the top lines match to your Dockerfile that you created, and the lines below are pulled from the parent python image. Don't worry about the "\<missing\>" tags. These are still normal layers; they have just not been given an ID by the docker system.
