@@ -45,8 +45,8 @@ Pull down a `ubi8/ubi-minimal` image and check again,
 $ docker pull registry.redhat.io/ubi8/ubi-minimal
 Using default tag: latest
 latest: Pulling from ubi8/ubi-minimal
-0fd3b5213a9b: Pull complete 
-aebb8c556853: Pull complete 
+0fd3b5213a9b: Pull complete
+aebb8c556853: Pull complete
 Digest: sha256:5cfbaf45ca96806917830c183e9f37df2e913b187aadb32e89fd83fa455ebaa6
 Status: Downloaded newer image for registry.redhat.io/ubi8/ubi-minimal:latest
 registry.redhat.io/ubi8/ubi-minimal:latest
