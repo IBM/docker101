@@ -52,6 +52,38 @@ Management Commands:
 
 The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the `container` command.
 
+If `podman` is installed, you can run the alternative command for comparison.
+
+```
+sudo podman -h
+```
+
+You can additionally review the version of your Docker installation,
+
+```
+docker version
+
+Client:
+  Version:      19.03.6
+  ...
+
+Server: Docker Engine - Community
+  Engine
+    Version:    19.03.5
+    ...
+```
+
+You note that Docker installs both a `Client` and a `Server: Docker Engine`. For instance, if you run the same command for podman, you will see only a CLI version, because podman runs daemonless and relies on an OCI compliant container runtime (runc, crun, runv etc) to interface with the OS to create the running containers.
+
+```
+sudo podman version --events-backend=none
+Version:      2.1.1
+API Version:  2.0.0
+Go Version:   go1.15.2
+Built:        Thu Jan  1 00:00:00 1970
+OS/Arch:      linux/amd64
+```
+
 ## Step 1: Run your first container
 
 We are going to use the Docker CLI to run our first container.
@@ -165,7 +197,15 @@ We are going to use the Docker CLI to run our first container.
 
     In addition to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer.
 
-1. Clean up the container running the `top` processes by typing: `<ctrl>-c.`
+    **Note**: if you run this exercise in a containerized terminal and execute the `ps -ef` command in the terminal, e.g. in `https://labs.cognitiveclass.ai`, you will still see a limited set of processes after exiting the `exec` command. You can try to run the `ps -ef` command in a terminal on your local machine to see all processes.
+
+2. Clean up the container running the `top` processes by typing: `<ctrl>-c`, list all containers and remove the containers by their id.
+
+    ```
+    docker ps -a
+
+    docker rm <CONTAINER ID>
+    ```
 
 ## Step 2: Run Multiple Containers
 
@@ -278,10 +318,10 @@ We are going to use the Docker CLI to run our first container.
 
     ```sh
     $ docker container ls
-    CONTAINER ID        IMAGE               COMMAND                  CREATED                  STATUS              PORTS                     NAMES
-    d6777df89fea        nginx               "nginx -g 'daemon ..."   Less than a second ago   Up 2 seconds        0.0.0.0:8080->80/tcp      nginx
-    ead80a0db505        mongo               "docker-entrypoint..."   17 seconds ago           Up 19 seconds       0.0.0.0:8081->27017/tcp   mongo
-    af549dccd5cf        ubuntu              "top"                    5 minutes ago            Up 5 minutes                                  priceless_kepler
+    CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES
+    d6777df89fea    nginx    "nginx -g 'daemon ..."    Less than a second ago    Up 2 seconds    0.0.0.0:8080->80/tcp    nginx
+    ead80a0db505    mongo    "docker-entrypoint..."    17 seconds ago    Up 19 seconds    0.0.0.0:8081->27017/tcp    mongo
+    af549dccd5cf    ubuntu    "top"    5 minutes ago    Up 5 minutes    priceless_kepler
     ```
 
     You should see that you have an Nginx web server container, and a MongoDB container running on your host. Note that we have not configured these containers to talk to each other.

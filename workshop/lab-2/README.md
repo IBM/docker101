@@ -170,7 +170,14 @@ Now, what if you don't have python installed locally? Don't worry! Because you d
     python    3.8-alpine    0f03316d4a27    2 weeks ago    42.7MB
     ```
 
-Notice that your base image, python:3.8-alpine, is also in your list.
+    **Note** that your base image `python:3.8-alpine` is also in your list.
+
+3. You can run a history command to show the history of an image and its layers,
+
+    ```
+    docker history python-hello-world
+    docker history python:3.8-alpine
+    ```
 
 ## Step 3: Run the Docker image
 
