@@ -199,7 +199,7 @@ We are going to use the Docker CLI to run our first container.
 
     **Note**: if you run this exercise in a containerized terminal and execute the `ps -ef` command in the terminal, e.g. in `https://labs.cognitiveclass.ai`, you will still see a limited set of processes after exiting the `exec` command. You can try to run the `ps -ef` command in a terminal on your local machine to see all processes.
 
-2. Clean up the container running the `top` processes by typing: `<ctrl>-c`, list all containers and remove the containers by their id.
+1. Clean up the container running the `top` processes by typing: `<ctrl>-c`, list all containers and remove the containers by their id.
 
     ```
     docker ps -a
@@ -217,7 +217,7 @@ We are going to use the Docker CLI to run our first container.
 
     In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Hub: nginx web server, and mongo database.
 
-2. Run an Nginx server
+1. Run an Nginx server
 
     Let's run a container using the [official Nginx image](https://hub.docker.com/_/nginx) from the Docker Hub.
 
@@ -243,15 +243,15 @@ We are going to use the Docker CLI to run our first container.
 
     Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
-3. Access the nginx server on [localhost:8080](http://localhost:8080).
+1. Access the nginx server on [localhost:8080](http://localhost:8080).
 
-    ```console
+    ```sh
     curl localhost:8080
     ```
 
     will return the HTML home page of Nginx,
 
-    ```console
+    ```sh
     <!DOCTYPE html>
     <html>
     <head>
@@ -268,11 +268,11 @@ We are going to use the Docker CLI to run our first container.
     <h1>Welcome to nginx!</h1>
     ```
 
-4. If you are using play-with-docker, look for the `8080` link near the top of the page, or if you run a Docker client with access to a local browser,
+1. If you are using play-with-docker, look for the `8080` link near the top of the page, or if you run a Docker client with access to a local browser,
 
     ![step 2 nginx](../.gitbook/images/lab1_step2_nginx.png)
 
-5. Run a mongo DB server
+1. Run a mongo DB server
 
     Now, run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo) from the Docker Hub. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.
 
@@ -298,7 +298,7 @@ We are going to use the Docker CLI to run our first container.
 
     Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo) on the Docker Hub to get more details about using the mongo image.
 
-6. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
+1. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
 
     ```sh
     curl localhost:8081
@@ -310,11 +310,11 @@ We are going to use the Docker CLI to run our first container.
     It looks like you are trying to access MongoDB over HTTP on the native driver port.
     ```
 
-7. If you are using play-with-docker, look for the `8080` link near the top of the page.
+1. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
     ![step 2 mongo](../.gitbook/images/lab1_step2_mongo.png)
 
-8. Check your running containers with `docker container ls`
+1. Check your running containers with `docker container ls`
 
     ```sh
     $ docker container ls
