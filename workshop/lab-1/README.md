@@ -52,6 +52,38 @@ Management Commands:
 
 The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the `container` command.
 
+If `podman` is installed, you can run the alternative command for comparison.
+
+```sh
+sudo podman -h
+```
+
+You can additionally review the version of your Docker installation,
+
+```sh
+docker version
+
+Client:
+  Version:      19.03.6
+  ...
+
+Server: Docker Engine - Community
+  Engine
+    Version:    19.03.5
+    ...
+```
+
+You note that Docker installs both a `Client` and a `Server: Docker Engine`. For instance, if you run the same command for podman, you will see only a CLI version, because podman runs daemonless and relies on an OCI compliant container runtime (runc, crun, runv etc) to interface with the OS to create the running containers.
+
+```sh
+sudo podman version --events-backend=none
+Version:      2.1.1
+API Version:  2.0.0
+Go Version:   go1.15.2
+Built:        Thu Jan  1 00:00:00 1970
+OS/Arch:      linux/amd64
+```
+
 ## Step 1: Run your first container
 
 We are going to use the Docker CLI to run our first container.
@@ -165,7 +197,15 @@ We are going to use the Docker CLI to run our first container.
 
     In addition to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer.
 
-1. Clean up the container running the `top` processes by typing: `<ctrl>-c.`
+    **Note**: if you run this exercise in a containerized terminal and execute the `ps -ef` command in the terminal, e.g. in `https://labs.cognitiveclass.ai`, you will still see a limited set of processes after exiting the `exec` command. You can try to run the `ps -ef` command in a terminal on your local machine to see all processes.
+
+1. Clean up the container running the `top` processes by typing: `<ctrl>-c`, list all containers and remove the containers by their id.
+
+    ```sh
+    docker ps -a
+
+    docker rm <CONTAINER ID>
+    ```
 
 ## Step 2: Run Multiple Containers
 
@@ -177,7 +217,7 @@ We are going to use the Docker CLI to run our first container.
 
     In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Hub: nginx web server, and mongo database.
 
-2. Run an Nginx server
+1. Run an Nginx server
 
     Let's run a container using the [official Nginx image](https://hub.docker.com/_/nginx) from the Docker Hub.
 
@@ -203,15 +243,15 @@ We are going to use the Docker CLI to run our first container.
 
     Nginx is a lightweight web server. You can access it on port 8080 on your localhost.
 
-3. Access the nginx server on [localhost:8080](http://localhost:8080).
+1. Access the nginx server on [localhost:8080](http://localhost:8080).
 
-    ```console
+    ```sh
     curl localhost:8080
     ```
 
     will return the HTML home page of Nginx,
 
-    ```console
+    ```sh
     <!DOCTYPE html>
     <html>
     <head>
@@ -228,17 +268,17 @@ We are going to use the Docker CLI to run our first container.
     <h1>Welcome to nginx!</h1>
     ```
 
-4. If you are using play-with-docker, look for the `8080` link near the top of the page, or if you run a Docker client with access to a local browser,
+1. If you are using play-with-docker, look for the `8080` link near the top of the page, or if you run a Docker client with access to a local browser,
 
     ![step 2 nginx](../.gitbook/images/lab1_step2_nginx.png)
 
-5. Run a mongo DB server
+1. Run a mongo DB server
 
     Now, run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo) from the Docker Hub. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.
 
-    ```console
+    ```sh
     $ docker container run --detach --publish 8081:27017 --name mongo mongo:4.4
-    Unable to find image 'mongo:4.4' locally
+    Unable to find image mongo:4.4 locally
     4.4: Pulling from library/mongo
     d13d02fa248d: Already exists
     bc8e2652ce92: Pull complete
@@ -258,30 +298,30 @@ We are going to use the Docker CLI to run our first container.
 
     Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the `--publish` flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the [official docs](https://hub.docker.com/_/mongo) on the Docker Hub to get more details about using the mongo image.
 
-6. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
+1. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
 
-    ```console
+    ```sh
     curl localhost:8081
     ```
 
     which will return a warning from MongoDB,
 
-    ```console
+    ```sh
     It looks like you are trying to access MongoDB over HTTP on the native driver port.
     ```
 
-7. If you are using play-with-docker, look for the `8080` link near the top of the page.
+1. If you are using play-with-docker, look for the `8080` link near the top of the page.
 
     ![step 2 mongo](../.gitbook/images/lab1_step2_mongo.png)
 
-8. Check your running containers with `docker container ls`
+1. Check your running containers with `docker container ls`
 
     ```sh
     $ docker container ls
-    CONTAINER ID        IMAGE               COMMAND                  CREATED                  STATUS              PORTS                     NAMES
-    d6777df89fea        nginx               "nginx -g 'daemon ..."   Less than a second ago   Up 2 seconds        0.0.0.0:8080->80/tcp      nginx
-    ead80a0db505        mongo               "docker-entrypoint..."   17 seconds ago           Up 19 seconds       0.0.0.0:8081->27017/tcp   mongo
-    af549dccd5cf        ubuntu              "top"                    5 minutes ago            Up 5 minutes                                  priceless_kepler
+    CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES
+    d6777df89fea    nginx    "nginx -g 'daemon ..."    Less than a second ago    Up 2 seconds    0.0.0.0:8080->80/tcp    nginx
+    ead80a0db505    mongo    "docker-entrypoint..."    17 seconds ago    Up 19 seconds    0.0.0.0:8081->27017/tcp    mongo
+    af549dccd5cf    ubuntu    "top"    5 minutes ago    Up 5 minutes    priceless_kepler
     ```
 
     You should see that you have an Nginx web server container, and a MongoDB container running on your host. Note that we have not configured these containers to talk to each other.
