@@ -82,14 +82,14 @@ curl -X PUT -u admin:passw0rd1 http://127.0.0.1:5984/mydb/1 -d '{"msg": "hello w
 
 Stop the container and start the container again,
 
-```
+```console
 docker stop my-couchdb
 docker start my-couchdb
 ```
 
 Retrieve the document in the database to test that the data was persisted,
 
-```
+```console
 $ curl -X GET -u admin:passw0rd1 http://127.0.0.1:5984/mydb/_all_docs
 {"total_rows":1,"offset":0,"rows":[
 {"id":"1","key":"1","value":{"rev":"1-c09289617e06b96bc747fb1201fea7f1"}}
@@ -201,7 +201,7 @@ drwxr-xr-x    4 5984    5984    4096 Sep 24 17:11 shards
 
 You can check the Docker managed filesystem for volumes by running a busybox container with privileged permission and set the process id to `host` to inspect the host system, and browse to the Docker managed directories.
 
-```
+```console
 docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
 / # ls -l /var/lib/docker/volumes
 total 28
@@ -263,7 +263,7 @@ docker volume ls
 
 and 
 
-```
+```console
 docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
 / # ls -l /var/lib/docker/volumes
 total 24
