@@ -201,7 +201,7 @@ We are going to use the Docker CLI to run our first container.
 
 1. Clean up the container running the `top` processes by typing: `<ctrl>-c`, list all containers and remove the containers by their id.
 
-    ```
+    ```sh
     docker ps -a
 
     docker rm <CONTAINER ID>
