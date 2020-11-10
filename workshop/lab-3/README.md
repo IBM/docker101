@@ -261,7 +261,7 @@ Also check that now, no managed volume was created by docker, because we are now
 docker volume ls
 ```
 
-and 
+and
 
 ```console
 docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh

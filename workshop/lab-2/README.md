@@ -174,7 +174,7 @@ Now, what if you don't have python installed locally? Don't worry! Because you d
 
 3. You can run a history command to show the history of an image and its layers,
 
-    ```
+    ```sh
     docker history python-hello-world
     docker history python:3.8-alpine
     ```

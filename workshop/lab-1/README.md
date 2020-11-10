@@ -54,13 +54,13 @@ The Docker command line can be used to manage several features of the Docker Eng
 
 If `podman` is installed, you can run the alternative command for comparison.
 
-```
+```sh
 sudo podman -h
 ```
 
 You can additionally review the version of your Docker installation,
 
-```
+```sh
 docker version
 
 Client:
@@ -75,7 +75,7 @@ Server: Docker Engine - Community
 
 You note that Docker installs both a `Client` and a `Server: Docker Engine`. For instance, if you run the same command for podman, you will see only a CLI version, because podman runs daemonless and relies on an OCI compliant container runtime (runc, crun, runv etc) to interface with the OS to create the running containers.
 
-```
+```sh
 sudo podman version --events-backend=none
 Version:      2.1.1
 API Version:  2.0.0
@@ -276,9 +276,9 @@ We are going to use the Docker CLI to run our first container.
 
     Now, run a mongoDB server. We will use the [official mongoDB image](https://hub.docker.com/_/mongo) from the Docker Hub. Instead of using the `latest` tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.
 
-    ```console
+    ```sh
     $ docker container run --detach --publish 8081:27017 --name mongo mongo:4.4
-    Unable to find image 'mongo:4.4' locally
+    Unable to find image mongo:4.4 locally
     4.4: Pulling from library/mongo
     d13d02fa248d: Already exists
     bc8e2652ce92: Pull complete
@@ -300,13 +300,13 @@ We are going to use the Docker CLI to run our first container.
 
 6. Access [localhost:8081](http://localhost:8081) to see some output from mongo.
 
-    ```console
+    ```sh
     curl localhost:8081
     ```
 
     which will return a warning from MongoDB,
 
-    ```console
+    ```sh
     It looks like you are trying to access MongoDB over HTTP on the native driver port.
     ```
 
