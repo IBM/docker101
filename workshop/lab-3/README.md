@@ -199,7 +199,7 @@ drwxr-xr-x    4 5984    5984    4096 Sep 24 17:11 shards
 / # exit
 ```
 
-You can check the Docker managed filesystem for volumes by running a busybox container with privileged permission to inspect the host system, and browse to the Docker managed directories.
+You can check the Docker managed filesystem for volumes by running a busybox container with privileged permission and set the process id to `host` to inspect the host system, and browse to the Docker managed directories.
 
 ```
 docker run -it --privileged --pid=host busybox nsenter -t 1 -m -u -n -i sh
@@ -347,7 +347,7 @@ cat data/hi.txt
 
 ## [Optional] OverlayFS
 
-OverlayFS is a union mount filesystem implementation for Linux. To understand what a Docker volume is, it helps to first understand how layers and the filesystem work in Docker.
+OverlayFS is a `union mount filesystem` implementation for Linux. To understand what a Docker volume is, it helps to understand how layers and the filesystem work in Docker.
 
 To start a container, Docker takes the read-only image and creates a new read-write layer on top. To view the layers as one, Docker uses a Union File System or OverlayFS (Overlay File System), specifically the `overlay2` storage driver.
 
