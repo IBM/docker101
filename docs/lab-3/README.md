@@ -1,4 +1,4 @@
-# Lab 3 - Manage data in containers
+# Lab 3 - Managing Data in Containers
 
 ## Overview
 
@@ -10,7 +10,7 @@ By default all files created inside a container are stored on a writable contain
 
 Docker provides two options to store files in the host machine: `volumes` and `bind mounts`. If you're running Docker on Linux, you can also use a `tmpfs mount`, and with Docker on Windows you can also use a `named pipe`.
 
-![Types of Mounts](../.gitbook/images/types-of-mounts.png)
+![Types of Mounts](../assets/images/types-of-mounts.png)
 
 * `Volumes` are stored in the host filesystem that is managed by Docker.
 * `Bind mounts` are stored anywhere on the host system.
@@ -421,7 +421,7 @@ Finally, a `workdir` is a required, which is an empty directory used by overlay 
 
 The `overlay2` driver supports up to 128 lower OverlayFS layers. The `l` directory contains shortened layer identifiers as symbolic links.
 
-![Overlay2 Storage Driver](../.gitbook/images/overlay2-driver.png)
+![Overlay2 Storage Driver](../assets/images/overlay2-driver.png)
 
 Cleanup,
 

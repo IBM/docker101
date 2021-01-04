@@ -333,7 +333,7 @@ COPY app.py /app.py
 
 イメージの各層は読み取り専用ですが、コンテナ用に作成された最上位の層はその例外です。この読み取り/書き込みコンテナ層は「コピー・オン・ライト」を実装します。つまり、下位のイメージ層に保管されたファイルが編集される場合にのみ、その下位層から読み取り/書き込みコンテナ層にファイルがプルされます。ファイルに加えられた変更はコンテナ層に保管されます。「コピー・オン・ライト」関数は非常に高速で、ほぼすべての場合において、パフォーマンスに目立った影響を与えません。`docker diff` コマンドを使用すると、どのファイルがコンテナ・レベルにプルされたのかを確認できます。`docker diff` の使用方法について詳しくは、[こちら](http://docs.docker.jp/engine/reference/commandline/diff.html)をご覧ください。
 
-![](../../.gitbook/images/lab2_understanding_image_layers_1.png)
+![](../../assets/images/lab2_understanding_image_layers_1.png)
 
 イメージ層は読み取り専用であることから、複数のイメージでも実行中の複数のコンテナでもイメージ層を共有できます。例えば、独自の Dockerfile で同様の基本層からなる新しい Python アプリを作成すると、そのアプリでは、最初の Python アプリと共通するすべての層が共有されることになります。
 
@@ -344,7 +344,7 @@ CMD ["python","app2.py"]
 COPY app2.py /app2.py
 ```
 
-![](../../.gitbook/images/lab2_understanding_image_layers_2.png)
+![](../../assets/images/lab2_understanding_image_layers_2.png)
 
 同じイメージから作成された複数のコンテナを起動する場合も、層が共有されることになります。これらコンテナは同じ読み取り専用のイメージ層を使用することを考えると、コンテナが極めて高速に起動され、ホスト上のフットプリントもごくわずかであることを想像できるはずです。
 
