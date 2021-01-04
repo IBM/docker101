@@ -30,12 +30,12 @@ docker version
     * Docker Desktop for Windows,
     * Docker for Linux,
 
-    ![Get Docker](../.gitbook/images/get-docker.png)
+    ![Get Docker](../assets/images/get-docker.png)
 
 3. On this page you will find the installation for your operating systems. For example, if you are using a Mac, select "MacOS", to find the installation for the Mac platform.
 4. For Mac, you are re-directed to [https://hub.docker.com/editions/community/docker-ce-desktop-mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) where you can click the `Get Stable` edition,
 
-    ![Get Stable for Mac](../.gitbook/images/get-stable-for-mac.png)
+    ![Get Stable for Mac](../assets/images/get-stable-for-mac.png)
 
 ## **Optional:** Use play-with-docker
 

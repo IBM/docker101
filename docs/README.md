@@ -10,10 +10,10 @@ This series has an additional presentation.
 
 |  |  |
 | :--- | :--- |
-| [Lab0](lab-0/README.md) | Pre-work |
-| [Lab1](lab-1/README.md) | Run your first container |
-| [Lab2](lab-2/README.md) | Add value with custom images |
-| [Lab3](lab-3/README.md) | Manage data in containers |
+| [Lab 0](lab-0/README.md) | Pre-work |
+| [Lab 1](lab-1/README.md) | Run your first container |
+| [Lab 2](lab-2/README.md) | Add value with custom images |
+| [Lab 3](lab-3/README.md) | Manage data in containers |
 
 ## Pre-requirements
 

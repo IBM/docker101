@@ -1,4 +1,4 @@
-# Lab 3- Introduction to Orchestration
+# Lab 3 - Introduction to Orchestration
 
 ## Overview
 
@@ -14,10 +14,10 @@ We will be using a few Docker commands in this lab. For full documentation on av
 
 ### Prerequisites
 
-In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.  
+In order to complete a lab about orchestrating an application that is deployed across multiple hosts, you need... well, multiple hosts.
 Therefor, for this lab you will be using the multi-node support provided by [Play with Docker](http://play-with-docker.com). This is the easiest way to test out Docker Swarm, without having to deal with installing docker on multiple hosts yourself.
 
-![Multiple Instances](../.gitbook/images/pwd-multi-instances.png)
+![Multiple Instances](../assets/images/pwd-multi-instances.png)
 
 ## Step 1: Create your first swarm
 
@@ -62,7 +62,7 @@ In this step, we will create our first swarm using play-with-docker.
     zdqbsoxa6x1bubg3jyjdmrnrn *   node1   Ready    Active    Leader
     ```
 
-    This command outputs the three nodes in our swarm. The * next to the ID of the node represents the node that handled that specific command (`docker node ls` in this case).  
+    This command outputs the three nodes in our swarm. The * next to the ID of the node represents the node that handled that specific command (`docker node ls` in this case).
 
     Our node consists of  1 manager node and 2 workers nodes. Managers handle commands and manage the state of the swarm. Workers cannot handle commands and are simply used to run containers at scale. By default, managers are also used to run containers.
 

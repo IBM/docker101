@@ -15,4 +15,3 @@
 ## Resources
 
 * [IBM Developer](https://developer.ibm.com)
-
