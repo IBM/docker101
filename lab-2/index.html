@@ -1,0 +1,1106 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <meta name="author" content="IBM Developer">
+      
+      
+        <link rel="canonical" href="https://ibm.github.io/docker101/lab-2/">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.3">
+    
+    
+      
+        <title>Lab 2. Adding Value with Custom Docker Images - Docker 101 Workshop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3b61ea93.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400,400i,700%7CIBM+Plex+Mono&display=fallback">
+        <style>body,input{font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"IBM Plex Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab-2-adding-value-with-custom-docker-images" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://ibm.github.io/docker101" title="Docker 101 Workshop" class="md-header-nav__button md-logo" aria-label="Docker 101 Workshop">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            Docker 101 Workshop
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Lab 2. Adding Value with Custom Docker Images
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/ibm/docker101/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docker101
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        Welcome
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../lab-0/" class="md-tabs__link md-tabs__link--active">
+        Workshop
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://ibm.github.io/docker101" title="Docker 101 Workshop" class="md-nav__button md-logo" aria-label="Docker 101 Workshop">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Docker 101 Workshop
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/ibm/docker101/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docker101
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+
+  
+  <li class="md-nav__item md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+    
+    <label class="md-nav__link" for="nav-1">
+      Welcome
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Welcome" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        <span class="md-nav__icon md-icon"></span>
+        Welcome
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href=".." class="md-nav__link">
+      About the workshop
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  
+
+
+  
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Workshop
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Workshop" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Workshop
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-0/" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-1/" class="md-nav__link">
+      Lab 1. Running Your First Container
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Lab 2. Adding Value with Custom Docker Images
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Lab 2. Adding Value with Custom Docker Images
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-create-a-python-app-without-using-docker" class="md-nav__link">
+    Step 1: Create a python app (without using Docker)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-create-and-build-the-docker-image" class="md-nav__link">
+    Step 2: Create and build the Docker Image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-run-the-docker-image" class="md-nav__link">
+    Step 3: Run the Docker image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-push-to-a-central-registry" class="md-nav__link">
+    Step 4: Push to a central registry
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-deploying-a-change" class="md-nav__link">
+    Step 5: Deploying a Change
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-understanding-image-layers" class="md-nav__link">
+    Step 6: Understanding Image Layers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-clean-up" class="md-nav__link">
+    Step 7: Clean up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-3/" class="md-nav__link">
+      Lab 3. Managing Data in Containers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-create-a-python-app-without-using-docker" class="md-nav__link">
+    Step 1: Create a python app (without using Docker)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-create-and-build-the-docker-image" class="md-nav__link">
+    Step 2: Create and build the Docker Image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-run-the-docker-image" class="md-nav__link">
+    Step 3: Run the Docker image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-push-to-a-central-registry" class="md-nav__link">
+    Step 4: Push to a central registry
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-deploying-a-change" class="md-nav__link">
+    Step 5: Deploying a Change
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-understanding-image-layers" class="md-nav__link">
+    Step 6: Understanding Image Layers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-clean-up" class="md-nav__link">
+    Step 7: Clean up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/ibm/docker101/edit/master/docs/lab-2/README.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="lab-2-adding-value-with-custom-docker-images">Lab 2 - Adding Value with Custom Docker Images<a class="headerlink" href="#lab-2-adding-value-with-custom-docker-images" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>In this lab, we build on our knowledge from lab 1 where we used Docker commands to run containers. We will create a custom Docker Image built from a Dockerfile. Once we build the image, we will push it to a central registry where it can be pulled to be deployed on other environments. Also, we will briefly describe image layers, and how Docker incorporates "copy-on-write" and the union file system to efficiently store images and run containers.</p>
+<p>We will be using a few Docker commands in this lab. For full documentation on available commands check out the <a href="https://docs.docker.com/">official documentation</a>.</p>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<p>Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from <code>Theia - Cloud IDE</code> at <a href="https://labs.cognitiveclass.ai/tools/theiadocker">https://labs.cognitiveclass.ai/tools/theiadocker</a> or be using <a href="http://play-with-docker.com">Play with Docker</a> for example.</p>
+<h2 id="step-1-create-a-python-app-without-using-docker">Step 1: Create a python app (without using Docker)<a class="headerlink" href="#step-1-create-a-python-app-without-using-docker" title="Permanent link">&para;</a></h2>
+<p>Run the following command to create a file named <code>app.py</code> with a simple python program. (copy-paste the entire code block)</p>
+<div class="highlight"><pre><span></span><code><span class="go">echo &#39;from flask import Flask</span>
+
+<span class="go">app = Flask(__name__)</span>
+
+<span class="go">@app.route(&quot;/&quot;)</span>
+<span class="go">def hello():</span>
+<span class="go">    return &quot;hello world!&quot;</span>
+
+<span class="go">if __name__ == &quot;__main__&quot;:</span>
+<span class="go">    app.run(host=&quot;0.0.0.0&quot;)&#39; &gt; app.py</span>
+</code></pre></div>
+<p>This is a simple python app that uses flask to expose a http web server on port 5000 (5000 is the default port for flask). Don't worry if you are not too familiar with python or flask, these concepts can be applied to an application written in any language.</p>
+<p><strong>Optional:</strong> If you have python and pip installed, you can run this app locally. If not, move on to the next step.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> python3 --version
+<span class="go">Python 3.6.9</span>
+<span class="gp">$</span> pip3 --version
+<span class="go">pip 9.0.1 from /usr/lib/python3/dist-packages (python 3.6)</span>
+<span class="gp">$</span> pip3 install flask
+<span class="go">Collecting flask</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/f2/28/2a03252dfb9ebf377f40fba6a7841b47083260bf8bd8e737b0c6952df83f/Flask-1.1.2-py2.py3-none-any.whl (94kB)</span>
+<span class="go">    100% |████████████████████████████████| 102kB 6.2MB/s</span>
+<span class="go">Collecting Werkzeug&gt;=0.15 (from flask)</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/cc/94/5f7079a0e00bd6863ef8f1da638721e9da21e5bacee597595b318f71d62e/Werkzeug-1.0.1-py2.py3-none-any.whl (298kB)</span>
+<span class="go">    100% |████████████████████████████████| 307kB 3.4MB/s</span>
+<span class="go">Collecting itsdangerous&gt;=0.24 (from flask)</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/76/ae/44b03b253d6fade317f32c24d100b3b35c2239807046a4c953c7b89fa49e/itsdangerous-1.1.0-py2.py3-none-any.whl</span>
+<span class="go">Collecting click&gt;=5.1 (from flask)</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/d2/3d/fa76db83bf75c4f8d338c2fd15c8d33fdd7ad23a9b5e57eb6c5de26b430e/click-7.1.2-py2.py3-none-any.whl (82kB)</span>
+<span class="go">    100% |████████████████████████████████| 92kB 10.2MB/s</span>
+<span class="go">Collecting Jinja2&gt;=2.10.1 (from flask)</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/30/9e/f663a2aa66a09d838042ae1a2c5659828bb9b41ea3a6efa20a20fd92b121/Jinja2-2.11.2-py2.py3-none-any.whl (125kB)</span>
+<span class="go">    100% |████████████████████████████████| 133kB 8.5MB/s</span>
+<span class="go">Collecting MarkupSafe&gt;=0.23 (from Jinja2&gt;=2.10.1-&gt;flask)</span>
+<span class="go">  Downloading https://files.pythonhosted.org/packages/b2/5f/23e0023be6bb885d00ffbefad2942bc51a620328ee910f64abe5a8d18dd1/MarkupSafe-1.1.1-cp36-cp36m-manylinux1_x86_64.whl</span>
+<span class="go">Installing collected packages: Werkzeug, itsdangerous, click, MarkupSafe, Jinja2, flask</span>
+<span class="go">Successfully installed Jinja2-2.11.2 MarkupSafe-1.1.1 Werkzeug-1.0.1 click-7.1.2 flask-1.1.2 itsdangerous-1.1.0</span>
+
+<span class="gp">$</span> python3 app.py
+<span class="go"> * Serving Flask app &quot;app&quot; (lazy loading)</span>
+<span class="go"> * Environment: production</span>
+<span class="go">   WARNING: This is a development server. Do not use it in a production deployment.</span>
+<span class="go">   Use a production WSGI server instead.</span>
+<span class="go"> * Debug mode: off</span>
+<span class="go"> * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)</span>
+</code></pre></div>
+<h2 id="step-2-create-and-build-the-docker-image">Step 2: Create and build the Docker Image<a class="headerlink" href="#step-2-create-and-build-the-docker-image" title="Permanent link">&para;</a></h2>
+<p>Now, what if you don't have python installed locally? Don't worry! Because you don't need it. One of the advantages of using containers is that you can build python inside your containers, without having python installed on your host machine.</p>
+<ol>
+<li>
+<p>Create a <code>Dockerfile</code> but running the following command. (copy-paste the entire code block)</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s1">&#39;FROM python:3.8-alpine</span>
+<span class="s1">RUN pip install flask</span>
+<span class="s1">CMD [&quot;python&quot;,&quot;app.py&quot;]</span>
+<span class="s1">COPY app.py /app.py&#39;</span> &gt; Dockerfile
+</code></pre></div>
+<p>A Dockerfile lists the instructions needed to build a docker image. Let's go through the above file line by line.</p>
+<p><strong>FROM python:3.8-alpine</strong>
+This is the starting point for your Dockerfile. Every Dockerfile must start with a <code>FROM</code> line that is the starting image to build your layers on top of.</p>
+<p>In this case, we are selecting the <code>python:3.8-alpine</code> base layer (see <a href="https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile">Dockerfile for python3.8/alpine3.12</a>) since it already has the version of python and pip that we need to run our application.</p>
+<p>The <code>alpine</code> version means that it uses the <a href="https://en.wikipedia.org/wiki/Alpine_Linux">Alpine Linux</a> distribution, which is significantly smaller than many alternative flavors of Linux, around 8 MB in size, while a minimal installation to disk might be around 130 MB. A smaller image means it will download (deploy) much faster, and it also has advantages for security because it has a smaller attack surface. <a href="https://alpinelinux.org/downloads/">Alpine Linux</a> is a Linux distribution based on musl and BusyBox.</p>
+<p>Here we are using the "3.8-alpine" tag for the python image. Take a look at the available tags for the official python image on the <a href="https://hub.docker.com/_/python/">Docker Hub</a>. It is best practice to use a specific tag when inheriting a parent image so that changes to the parent dependency are controlled. If no tag is specified, the "latest" tag takes into effect, which is acts as a dynamic pointer that points to the latest version of an image.</p>
+<p>For security reasons, it is very important to understand the layers that you build your docker image on top of. For that reason, it is highly recommended to only use "official" images found in the <a href="https://hub.docker.com/">docker hub</a>, or non-community images found in the docker-store. These images are <a href="https://docs.docker.com/docker-hub/official_repos/">vetted</a> to meet certain security requirements, and also have very good documentation for users to follow. You can find more information about this <a href="https://hub.docker.com/_/python">python base image</a>, as well as all other images that you can use, on the <a href="https://hub.docker.com">docker hub</a>.</p>
+<p>For a more complex application you may find the need to use a<code>FROM</code> image that is higher up the chain. For example, the parent <a href="https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile">Dockerfile</a> for our python app  starts with <code>FROM alpine</code>, then specifies a series of <code>CMD</code> and <code>RUN</code> commands for the image. If you needed more fine-grained control, you could start with <code>FROM alpine</code> (or a different distribution) and run those steps yourself. To start off though, I recommend using an official image that closely matches your needs.</p>
+<p><strong>RUN pip install flask</strong>
+The <code>RUN</code> command executes commands needed to set up your image for your application, such as installing packages, editing files, or changing file permissions. In this case we are installing flask. The <code>RUN</code> commands are executed at build time, and are added to the layers of your image.</p>
+<p><strong>CMD ["python","app.py"]</strong>
+<code>CMD</code> is the command that is executed when you start a container. Here we are using <code>CMD</code> to run our python app.</p>
+<p>There can be only one <code>CMD</code> per Dockerfile. If you specify more thane one <code>CMD</code>, then the last <code>CMD</code> will take effect. The parent python:3.8-alpine also specifies a <code>CMD</code> (<code>CMD python3</code>). You can find the Dockerfile for the official python:alpine image <a href="https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile">here</a>.</p>
+<p>You can use the official python image directly to run python scripts without installing python on your host. But today, we are creating a custom image to include our source, so that we can build an image with our application and ship it around to other environments.</p>
+<p><strong>COPY app.py /app.py</strong>
+This copies the app.py in the local directory (where you will run <code>docker image build</code>) into a new layer of the image. This instruction is the last line in the Dockerfile. Layers that change frequently, such as copying source code into the image, should be placed near the bottom of the file to take full advantage of the Docker layer cache. This allows us to avoid rebuilding layers that could otherwise be cached. For instance, if there was a change in the <code>FROM</code> instruction, it would invalidate the cache for all subsequent layers of this image. We will demonstrate a this little later in this lab.</p>
+<p>It seems counter-intuitive to put this after the <code>CMD ["python","app.py"]</code> line. Remember, the <code>CMD</code> line is executed only when the container is started, so we won't get a <code>file not found</code> error here.</p>
+<p>And there you have it: a very simple Dockerfile. A full list of commands you can put into a Dockerfile can be found <a href="https://docs.docker.com/engine/reference/builder/">here</a>. Now that we defined our Dockerfile, let's use it to build our custom docker image.</p>
+</li>
+<li>
+<p>Build the docker image.</p>
+<p>Pass in <code>-t</code> to name your image <code>python-hello-world</code>.</p>
+<div class="highlight"><pre><span></span><code>$  docker image build -t python-hello-world .
+Sending build context to Docker daemon  <span class="m">3</span>.072kB
+Step <span class="m">1</span>/4 : FROM python:3.8-alpine
+<span class="m">3</span>.8-alpine: Pulling from library/python
+df20fa9351a1: Pull <span class="nb">complete</span>
+36b3adc4ff6f: Pull <span class="nb">complete</span>
+3e7ef1bb9eba: Pull <span class="nb">complete</span>
+78538f72d6a9: Pull <span class="nb">complete</span>
+07bc731e0055: Pull <span class="nb">complete</span>
+Digest: sha256:cbc08bfc4b1b732076742f52852ede090e960ab7470d0a60ee4f964cfa7c710a
+Status: Downloaded newer image <span class="k">for</span> python:3.8-alpine
+---&gt; 0f03316d4a27
+Step <span class="m">2</span>/4 : RUN pip install flask
+---&gt; Running in 1454bdd1ea98
+Collecting flask
+Downloading Flask-1.1.2-py2.py3-none-any.whl <span class="o">(</span><span class="m">94</span> kB<span class="o">)</span>
+Collecting itsdangerous&gt;<span class="o">=</span><span class="m">0</span>.24
+Downloading itsdangerous-1.1.0-py2.py3-none-any.whl <span class="o">(</span><span class="m">16</span> kB<span class="o">)</span>
+Collecting Werkzeug&gt;<span class="o">=</span><span class="m">0</span>.15
+Downloading Werkzeug-1.0.1-py2.py3-none-any.whl <span class="o">(</span><span class="m">298</span> kB<span class="o">)</span>
+Collecting click&gt;<span class="o">=</span><span class="m">5</span>.1
+Downloading click-7.1.2-py2.py3-none-any.whl <span class="o">(</span><span class="m">82</span> kB<span class="o">)</span>
+Collecting Jinja2&gt;<span class="o">=</span><span class="m">2</span>.10.1
+Downloading Jinja2-2.11.2-py2.py3-none-any.whl <span class="o">(</span><span class="m">125</span> kB<span class="o">)</span>
+Collecting MarkupSafe&gt;<span class="o">=</span><span class="m">0</span>.23
+Downloading MarkupSafe-1.1.1.tar.gz <span class="o">(</span><span class="m">19</span> kB<span class="o">)</span>
+Building wheels <span class="k">for</span> collected packages: MarkupSafe
+Building wheel <span class="k">for</span> MarkupSafe <span class="o">(</span>setup.py<span class="o">)</span>: started
+Building wheel <span class="k">for</span> MarkupSafe <span class="o">(</span>setup.py<span class="o">)</span>: finished with status <span class="s1">&#39;done&#39;</span>
+Created wheel <span class="k">for</span> MarkupSafe: <span class="nv">filename</span><span class="o">=</span>MarkupSafe-1.1.1-py3-none-any.whl <span class="nv">size</span><span class="o">=</span><span class="m">12627</span> <span class="nv">sha256</span><span class="o">=</span>155e3314602dfac3c8ea245edc217c235afb4c818932574d6d61529ef0c14ea4
+Stored in directory: /root/.cache/pip/wheels/0c/61/d6/4db4f4c28254856e82305fdb1f752ed7f8482e54c384d8cb0e
+Successfully built MarkupSafe
+Installing collected packages: itsdangerous, Werkzeug, click, MarkupSafe, Jinja2, flask
+Successfully installed Jinja2-2.11.2 MarkupSafe-1.1.1 Werkzeug-1.0.1 click-7.1.2 flask-1.1.2 itsdangerous-1.1.0
+Removing intermediate container 1454bdd1ea98
+---&gt; 97d747fc7771
+Step <span class="m">3</span>/4 : CMD <span class="o">[</span><span class="s2">&quot;python&quot;</span>,<span class="s2">&quot;app.py&quot;</span><span class="o">]</span>
+---&gt; Running in e2bf74801c81
+Removing intermediate container e2bf74801c81
+---&gt; d5adbccf5116
+Step <span class="m">4</span>/4 : COPY app.py /app.py
+---&gt; 3c24958f29d3
+Successfully built 3c24958f29d3
+Successfully tagged python-hello-world:latest
+</code></pre></div>
+<p>Verify that your image shows up in your image list via <code>docker image ls</code>.</p>
+<div class="highlight"><pre><span></span><code>$ docker image ls
+REPOSITORY    TAG    IMAGE ID    CREATED    SIZE
+python-hello-world   latest    3c24958f29d3    <span class="m">52</span> seconds ago      <span class="m">53</span>.4MB
+python    <span class="m">3</span>.8-alpine    0f03316d4a27    <span class="m">2</span> weeks ago    <span class="m">42</span>.7MB
+</code></pre></div>
+<p><strong>Note</strong> that your base image <code>python:3.8-alpine</code> is also in your list.</p>
+</li>
+<li>
+<p>You can run a history command to show the history of an image and its layers,</p>
+<div class="highlight"><pre><span></span><code>docker <span class="nb">history</span> python-hello-world
+docker <span class="nb">history</span> python:3.8-alpine
+</code></pre></div>
+</li>
+</ol>
+<h2 id="step-3-run-the-docker-image">Step 3: Run the Docker image<a class="headerlink" href="#step-3-run-the-docker-image" title="Permanent link">&para;</a></h2>
+<p>Now that you have built the image, you can run it to see that it works.</p>
+<ol>
+<li>
+<p>Run the Docker image</p>
+<div class="highlight"><pre><span></span><code>$ docker run -p <span class="m">5001</span>:5000 -d python-hello-world
+0b2ba61df37fb4038d9ae5d145740c63c2c211ae2729fc27dc01b82b5aaafa26
+</code></pre></div>
+<p>The <code>-p</code> flag maps a port running inside the container to your host. In this case, we are mapping the python app running on port 5000 inside the container, to port 5001 on your host. Note that if port 5001 is already in use by another application on your host, you may have to replace 5001 with another value, such as 5002.</p>
+</li>
+<li>
+<p>Navigate to <a href="http://localhost:5001">localhost:5001</a> in a browser to see the results.</p>
+<p>In a terminal run <code>curl localhost:5001</code>, which returns <code>hello world!</code>.</p>
+<p>If you are using katacoda, click on the link in the left-hand pane that says: <code>View port at https://....environments.katacoda.com</code> then type in 5001 and click <code>Display Port</code>.</p>
+<p>In play-with-docker, click the link <code>5001</code> that should appear near the top of your session.</p>
+<p>You should see "hello world!" on your browser.</p>
+</li>
+<li>
+<p>Check the log output of the container.</p>
+<p>If you want to see logs from your application you can use the <code>docker container logs</code> command. By default, <code>docker container logs</code> prints out what is sent to standard out by your application. Use <code>docker container ls</code> to find the id for your running container.</p>
+<p><code>sh
+$ docker container ls
+CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES
+7b04d5320cb4    python-hello-world   "python app.py"     About a minute ago   Up About a minute   0.0.0.0:5001-&gt;5000/tcp   elastic_ganguly
+$ docker container logs [container id]
+* Serving Flask app "app" (lazy loading)
+* Environment: production
+  WARNING: This is a development server. Do not use it in a production deployment.
+  Use a production WSGI server instead.
+* Debug mode: off
+* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+   172.17.0.1 - - [23/Sep/2020 22:00:33] "GET / HTTP/1.1" 200 -</code></p>
+<p>The Dockerfile is how you create reproducible builds for your application. A common workflow is to have your CI/CD automation run <code>docker image build</code> as part of its build process. Once images are built, they will be sent to a central registry, where it can be accessed by all environments (such as a test environment) that need to run instances of that application. In the next step, we will push our custom image to the public docker registry: the docker hub, where it can be consumed by other developers and operators.</p>
+</li>
+</ol>
+<h2 id="step-4-push-to-a-central-registry">Step 4: Push to a central registry<a class="headerlink" href="#step-4-push-to-a-central-registry" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p>Navigate to <a href="https://hub.docker.com">Docker Hub</a> and create an account if you haven't already. Alternatively, you can also use <a href="https://quay.io">https://quay.io</a> for instance.</p>
+<p>For this lab we will be using the docker hub as our central registry. Docker hub is a free service to store publicly available images, or you can pay to store private images. Go to the <a href="https://hub.docker.com">Docker Hub</a> website and create a free account.</p>
+<p>Most organizations that use docker heavily will set up their own registry internally. To simplify things, we will be using the Docker Hub, but the following concepts apply to any registry.</p>
+</li>
+<li>
+<p>Login</p>
+<p>You can log into the image registry account by typing <code>docker login</code> on your terminal, or if using podman, type <code>podman login</code>.</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">DOCKERHUB_USERNAME</span><span class="o">=</span>&lt;dockerhub-username&gt;
+$ docker login docker.io -u <span class="nv">$DOCKERHUB_USERNAME</span>
+password:
+WARNING! Your password will be stored unencrypted in /home/theia/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+</code></pre></div>
+</li>
+<li>
+<p>Tag your image with your username</p>
+<p>The Docker Hub naming convention is to tag your image with [dockerhub username]/[image name]. To do this, we are going to tag our previously created image <code>python-hello-world</code> to fit that format.</p>
+<div class="highlight"><pre><span></span><code>docker tag python-hello-world <span class="nv">$DOCKERHUB_USERNAME</span>/python-hello-world
+</code></pre></div>
+</li>
+<li>
+<p>Push your image to the registry</p>
+<p>Once we have a properly tagged image, we can use the <code>docker push</code> command to push our image to the Docker Hub registry.</p>
+<div class="highlight"><pre><span></span><code>$ docker push <span class="nv">$DOCKERHUB_USERNAME</span>/python-hello-world
+The push refers to a repository <span class="o">[</span>docker.io/jzaccone/python-hello-world<span class="o">]</span>
+2bce026769ac: Pushed
+64d445ecbe93: Pushed
+18b27eac38a1: Mounted from library/python
+3f6f25cd8b1e: Mounted from library/python
+b7af9d602a0f: Mounted from library/python
+ed06208397d5: Mounted from library/python
+5accac14015f: Mounted from library/python
+latest: digest: sha256:508238f264616bf7bf962019d1a3826f8487ed6a48b80bf41fd3996c7175fd0f size: <span class="m">1786</span>
+</code></pre></div>
+</li>
+<li>
+<p>Check out your image on docker hub in your browser</p>
+<p>Navigate to <a href="https://hub.docker.com">Docker Hub</a> and go to your profile to see your newly uploaded image at <code>https://hub.docker.com/repository/docker/&lt;dockerhub-username&gt;/python-hello-world</code>.</p>
+<p>Now that your image is on Docker Hub, other developers and operations can use the <code>docker pull</code> command to deploy your image to other environments.</p>
+<p><strong>Note:</strong> Docker images contain all the dependencies that it needs to run an application within the image. This is useful because we no longer have deal with environment drift (version differences) when we rely on dependencies that are install on every environment we deploy to. We also don't have to go through additional steps to provision these environments. Just one step: install docker, and you are good to go.</p>
+</li>
+</ol>
+<h2 id="step-5-deploying-a-change">Step 5: Deploying a Change<a class="headerlink" href="#step-5-deploying-a-change" title="Permanent link">&para;</a></h2>
+<p>The "hello world!" application is overrated, let's update the app so that it says "Hello Beautiful World!" instead.</p>
+<ol>
+<li>
+<p>Update <code>app.py</code></p>
+<p>Replace the string "Hello World" with "Hello Beautiful World!" in <code>app.py</code>. You can update the file with the following command. (copy-paste the entire code block)</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s1">&#39;from flask import Flask</span>
+
+<span class="s1">app = Flask(__name__)</span>
+
+<span class="s1">@app.route(&quot;/&quot;)</span>
+<span class="s1">def hello():</span>
+<span class="s1">    return &quot;hello beautiful world!&quot;</span>
+
+<span class="s1">if __name__ == &quot;__main__&quot;:</span>
+<span class="s1">    app.run(host=&quot;0.0.0.0&quot;)&#39;</span> &gt; app.py
+</code></pre></div>
+</li>
+<li>
+<p>Rebuild and push your image</p>
+<p>Now that your app is updated, you need repeat the steps above to rebuild your app and push it to the Docker Hub registry.</p>
+<p>First rebuild, this time use your Docker Hub username in the build command:</p>
+<div class="highlight"><pre><span></span><code>$  docker image build -t <span class="nv">$DOCKERHUB_USERNAME</span>/python-hello-world .
+Sending build context to Docker daemon  <span class="m">3</span>.072kB
+Step <span class="m">1</span>/4 : FROM python:3.6.1-alpine
+---&gt; c86415c03c37
+Step <span class="m">2</span>/4 : RUN pip install flask
+---&gt; Using cache
+---&gt; ce41f2517c16
+Step <span class="m">3</span>/4 : CMD python app.py
+---&gt; Using cache
+---&gt; 0ab91286958b
+Step <span class="m">4</span>/4 : COPY app.py /app.py
+---&gt; 3e08b2eeace1
+Removing intermediate container 23a955e881fc
+Successfully built 3e08b2eeace1
+Successfully tagged &lt;dockerhub-username&gt;/python-hello-world:latest
+</code></pre></div>
+<p>Notice the "Using cache" for steps 1-3. These layers of the Docker Image have already been built and <code>docker image build</code> will use these layers from the cache instead of rebuilding them.</p>
+<div class="highlight"><pre><span></span><code>$ docker push <span class="nv">$DOCKERHUB_USERNAME</span>/python-hello-world
+The push refers to a repository <span class="o">[</span>docker.io/&lt;dockerhub-username&gt;/python-hello-world<span class="o">]</span>
+94525867566e: Pushed
+64d445ecbe93: Layer already exists
+18b27eac38a1: Layer already exists
+3f6f25cd8b1e: Layer already exists
+b7af9d602a0f: Layer already exists
+ed06208397d5: Layer already exists
+5accac14015f: Layer already exists
+latest: digest: sha256:91874e88c14f217b4cab1dd5510da307bf7d9364bd39860c9cc8688573ab1a3a size: <span class="m">1786</span>
+</code></pre></div>
+<p>There is a caching mechanism in place for pushing layers too. Docker Hub already has all but one of the layers from an earlier push, so it only pushes the one layer that has changed.</p>
+<p>When you change a layer, every layer built on top of that will have to be rebuilt. Each line in a Dockerfile builds a new layer that is built on the layer created from the lines before it. This is why the order of the lines in our Dockerfile is important. We optimized our Dockerfile so that the layer that is most likely to change (<code>COPY app.py /app.py</code>) is the last line of the Dockerfile. Generally for an application, your code changes at the most frequent rate. This optimization is particularly important for CI/CD processes, where you want your automation to run as fast as possible.</p>
+</li>
+</ol>
+<h2 id="step-6-understanding-image-layers">Step 6: Understanding Image Layers<a class="headerlink" href="#step-6-understanding-image-layers" title="Permanent link">&para;</a></h2>
+<p>One of the major design properties of Docker is its use of the union file system.</p>
+<p>Consider the Dockerfile that we created before:</p>
+<div class="highlight"><pre><span></span><code>FROM python:3.8-alpine
+RUN pip install flask
+CMD <span class="o">[</span><span class="s2">&quot;python&quot;</span>,<span class="s2">&quot;app.py&quot;</span><span class="o">]</span>
+COPY app.py /app.py
+</code></pre></div>
+<p>Each of these lines is a layer. Each layer contains only the delta, diff or changes from the layers before it. To put these layers together into a single running container, Docker makes use of the <code>union file system</code> to overlay layers transparently into a single view.</p>
+<p>Each layer of the image is <code>read-only</code>, except for the very top layer which is created for the running container. The read/write container layer implements "copy-on-write" which means that files that are stored in lower image layers are pulled up to the read/write container layer only when edits are being made to those files. Those changes are then stored in the running container layer. The "copy-on-write" function is very fast, and in almost all cases, does not have a noticeable effect on performance. You can inspect which files have been pulled up to the container level with the <code>docker diff</code> command. More information about how to use <code>docker diff</code> can be found <a href="https://docs.docker.com/engine/reference/commandline/diff/">here</a>.</p>
+<p><img alt="understanding image layers" src="../assets/images/lab2_understanding_image_layers_1.png" /></p>
+<p>Since image layers are <code>read-only</code>, they can be shared by images and by running containers. For instance, creating a new python app with its own Dockerfile with similar base layers, would share all the layers that it had in common with the first python app.</p>
+<div class="highlight"><pre><span></span><code>FROM python:3.8-alpine
+RUN pip install flask
+CMD <span class="o">[</span><span class="s2">&quot;python&quot;</span>,<span class="s2">&quot;app2.py&quot;</span><span class="o">]</span>
+COPY app2.py /app2.py
+</code></pre></div>
+<p><img alt="understanding image layers" src="../assets/images/lab2_understanding_image_layers_2.png" /></p>
+<p>You can also experience the sharing of layers when you start multiple containers from the same image. Since the containers use the same read-only layers, you can imagine that starting up containers is very fast and has a very low footprint on the host.</p>
+<p>You may notice that there are duplicate lines in this Dockerfile and the Dockerfile you created earlier in this lab. Although this is a very trivial example, you can pull common lines of both Dockerfiles into a "base" Dockerfile, that you can then point to with each of your child Dockerfiles using the <code>FROM</code> command.</p>
+<p>Image layering enables the docker caching mechanism for builds and pushes. For example, the output for your last <code>docker push</code> shows that some of the layers of your image already exists on the Docker Hub.</p>
+<div class="highlight"><pre><span></span><code>$ docker push <span class="nv">$DOCKERHUB_USERNAME</span>/python-hello-world
+The push refers to a repository <span class="o">[</span>docker.io/&lt;dockerhub-username&gt;/python-hello-world<span class="o">]</span>
+94525867566e: Pushed
+64d445ecbe93: Layer already exists
+18b27eac38a1: Layer already exists
+3f6f25cd8b1e: Layer already exists
+b7af9d602a0f: Layer already exists
+ed06208397d5: Layer already exists
+5accac14015f: Layer already exists
+latest: digest: sha256:91874e88c14f217b4cab1dd5510da307bf7d9364bd39860c9cc8688573ab1a3a size: <span class="m">1786</span>
+</code></pre></div>
+<p>To look more closely at layers, you can use the <code>docker image history</code> command of the python image we created.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> docker image <span class="nb">history</span> python-hello-world
+<span class="go">IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT</span>
+<span class="go">3c24958f29d3        17 minutes ago      /bin/sh -c #(nop) COPY file:5fef1b9a6220c0e3…   159B</span>
+<span class="go">d5adbccf5116        17 minutes ago      /bin/sh -c #(nop)  CMD [&quot;python&quot; &quot;app.py&quot;]      0B</span>
+<span class="go">97d747fc7771        17 minutes ago      /bin/sh -c pip install flask                    10.7MB</span>
+<span class="go">0f03316d4a27        2 weeks ago         /bin/sh -c #(nop)  CMD [&quot;python3&quot;]              0B</span>
+<span class="go">&lt;missing&gt;           2 weeks ago         /bin/sh -c set -ex;   wget -O get-pip.py &quot;$P…   7.24MB</span>
+<span class="go">&lt;missing&gt;           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_GET_PIP_SHA256…   0B</span>
+<span class="go">&lt;missing&gt;           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_GET_PIP_URL=ht…   0B</span>
+<span class="go">&lt;missing&gt;           2 weeks ago         /bin/sh -c #(nop)  ENV PYTHON_PIP_VERSION=20…   0B</span>
+<span class="go">&lt;missing&gt;           7 weeks ago         /bin/sh -c cd /usr/local/bin  &amp;&amp; ln -s idle3…   32B</span>
+<span class="go">&lt;missing&gt;           7 weeks ago         /bin/sh -c set -ex  &amp;&amp; apk add --no-cache --…   29.3MB</span>
+<span class="go">&lt;missing&gt;           2 months ago        /bin/sh -c #(nop)  ENV PYTHON_VERSION=3.8.5     0B</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c #(nop)  ENV GPG_KEY=E3FF2839C048B…   0B</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c apk add --no-cache ca-certificates   512kB</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c #(nop)  ENV LANG=C.UTF-8             0B</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c #(nop)  ENV PATH=/usr/local/bin:/…   0B</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c #(nop)  CMD [&quot;/bin/sh&quot;]              0B</span>
+<span class="go">&lt;missing&gt;           3 months ago        /bin/sh -c #(nop) ADD file:c92c248239f8c7b9b…   5.57MB</span>
+</code></pre></div>
+<p>Each line represents a layer of the image. You'll notice that the top lines match to your Dockerfile that you created, and the lines below are pulled from the parent python image. Don't worry about the "\&lt;missing>" tags. These are still normal layers; they have just not been given an ID by the docker system.</p>
+<h2 id="step-7-clean-up">Step 7: Clean up<a class="headerlink" href="#step-7-clean-up" title="Permanent link">&para;</a></h2>
+<p>Completing this lab results in a bunch of running containers on your host. Let's clean these up.</p>
+<ol>
+<li>
+<p>Run <code>docker container stop [container id]</code> for each container that is running</p>
+<p>First get a list of the containers running using <code>docker container ls</code>.</p>
+<div class="highlight"><pre><span></span><code>$ docker container ls
+CONTAINER ID        IMAGE                COMMAND             CREATED             STATUS              PORTS                    NAMES
+0b2ba61df37f        python-hello-world   <span class="s2">&quot;python app.py&quot;</span>     <span class="m">7</span> minutes ago       Up <span class="m">7</span> minutes        <span class="m">0</span>.0.0.0:5001-&gt;5000/tcp   practical_kirch
+</code></pre></div>
+<p>Then run <code>docker container stop [container id]</code> for each container in the list.</p>
+<div class="highlight"><pre><span></span><code>$ docker container stop 0b2
+0b2
+</code></pre></div>
+</li>
+<li>
+<p>Remove the stopped containers</p>
+<p><code>docker system prune</code> is a really handy command to clean up your system. It will remove any stopped containers, unused volumes and networks, and dangling images.</p>
+<div class="highlight"><pre><span></span><code>$ docker system prune
+WARNING! This will remove:
+        - all stopped containers
+        - all volumes not used by at least one container
+        - all networks not used by at least one container
+        - all dangling images
+Are you sure you want to <span class="k">continue</span>? <span class="o">[</span>y/N<span class="o">]</span> y
+Deleted Containers:
+0b2ba61df37fb4038d9ae5d145740c63c2c211ae2729fc27dc01b82b5aaafa26
+
+Total reclaimed space: <span class="m">300</span>.3kB
+</code></pre></div>
+</li>
+</ol>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>In this lab, you started adding value by creating your own custom docker containers.</p>
+<p>Key Takeaways:</p>
+<ul>
+<li>The Dockerfile is how you create reproducible builds for your application and how you integrate your application with Docker into the CI/CD pipeline</li>
+<li>Docker images can be made available to all of your environments through a central registry. The Docker Hub is one example of a registry, but you can deploy your own registry on servers you control.</li>
+<li>Docker images contain all the dependencies that it needs to run an application within the image. This is useful because we no longer have deal with environment drift (version differences) when we rely on dependencies that are install on every environment we deploy to.</li>
+<li>Docker makes use of the union file system and "copy on write" to reuse layers of images. This lowers the footprint of storing images and significantly increases the performance of starting containers.</li>
+<li>Image layers are cached by the Docker build and push system. No need to rebuild or repush image layers that are already present on the desired system.</li>
+<li>Each line in a Dockerfile creates a new layer, and because of the layer cache, the lines that change more frequently (e.g. adding source code to an image) should be listed near the bottom of the file.</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../lab-1/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Lab 1. Running Your First Container
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../lab-3/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Lab 3. Managing Data in Containers
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2020 IBM Developer
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/ibm" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/ibmdeveloper" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://www.linkedin.com/company/ibm/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://www.youtube.com/user/developerworks" target="_blank" rel="noopener" title="www.youtube.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://dev.to/ibmdeveloper" target="_blank" rel="noopener" title="dev.to" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120.12 208.29c-3.88-2.9-7.77-4.35-11.65-4.35H91.03v104.47h17.45c3.88 0 7.77-1.45 11.65-4.35 3.88-2.9 5.82-7.25 5.82-13.06v-69.65c-.01-5.8-1.96-10.16-5.83-13.06zM404.1 32H43.9C19.7 32 .06 51.59 0 75.8v360.4C.06 460.41 19.7 480 43.9 480h360.2c24.21 0 43.84-19.59 43.9-43.8V75.8c-.06-24.21-19.7-43.8-43.9-43.8zM154.2 291.19c0 18.81-11.61 47.31-48.36 47.25h-46.4V172.98h47.38c35.44 0 47.36 28.46 47.37 47.28l.01 70.93zm100.68-88.66H201.6v38.42h32.57v29.57H201.6v38.41h53.29v29.57h-62.18c-11.16.29-20.44-8.53-20.72-19.69V193.7c-.27-11.15 8.56-20.41 19.71-20.69h63.19l-.01 29.52zm103.64 115.29c-13.2 30.75-36.85 24.63-47.44 0l-38.53-144.8h32.57l29.71 113.72 29.57-113.72h32.58l-38.46 144.8z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.08c56446.min.js"></script>
+      <script src="../assets/javascripts/bundle.6ced434e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: ['navigation.tabs'],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

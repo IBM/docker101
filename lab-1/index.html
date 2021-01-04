@@ -1,0 +1,990 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <meta name="author" content="IBM Developer">
+      
+      
+        <link rel="canonical" href="https://ibm.github.io/docker101/lab-1/">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.3">
+    
+    
+      
+        <title>Lab 1. Running Your First Container - Docker 101 Workshop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3b61ea93.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400,400i,700%7CIBM+Plex+Mono&display=fallback">
+        <style>body,input{font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"IBM Plex Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab-1-running-your-first-container" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://ibm.github.io/docker101" title="Docker 101 Workshop" class="md-header-nav__button md-logo" aria-label="Docker 101 Workshop">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            Docker 101 Workshop
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Lab 1. Running Your First Container
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/ibm/docker101/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docker101
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        Welcome
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../lab-0/" class="md-tabs__link md-tabs__link--active">
+        Workshop
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://ibm.github.io/docker101" title="Docker 101 Workshop" class="md-nav__button md-logo" aria-label="Docker 101 Workshop">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Docker 101 Workshop
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/ibm/docker101/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docker101
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+
+  
+  <li class="md-nav__item md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+    
+    <label class="md-nav__link" for="nav-1">
+      Welcome
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Welcome" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        <span class="md-nav__icon md-icon"></span>
+        Welcome
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href=".." class="md-nav__link">
+      About the workshop
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  
+
+
+  
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Workshop
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Workshop" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Workshop
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-0/" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Lab 1. Running Your First Container
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Lab 1. Running Your First Container
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-started" class="md-nav__link">
+    Get Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-run-your-first-container" class="md-nav__link">
+    Step 1: Run your first container
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-run-multiple-containers" class="md-nav__link">
+    Step 2: Run Multiple Containers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-clean-up" class="md-nav__link">
+    Step 3: Clean Up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-2/" class="md-nav__link">
+      Lab 2. Adding Value with Custom Docker Images
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../lab-3/" class="md-nav__link">
+      Lab 3. Managing Data in Containers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-started" class="md-nav__link">
+    Get Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-run-your-first-container" class="md-nav__link">
+    Step 1: Run your first container
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-run-multiple-containers" class="md-nav__link">
+    Step 2: Run Multiple Containers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-clean-up" class="md-nav__link">
+    Step 3: Clean Up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/ibm/docker101/edit/master/docs/lab-1/README.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="lab-1-running-your-first-container">Lab 1 - Running Your First Container<a class="headerlink" href="#lab-1-running-your-first-container" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>In this lab, you will run your first Docker container.</p>
+<p>Containers are just a process (or a group of processes) running in isolation. Isolation is achieved via linux namespaces, control groups (cgroups), seccomp and SELinux. Note that linux namespaces and control groups are built into the linux kernel! Other than the linux kernel itself, there is nothing special about containers.</p>
+<p>What makes containers useful is the tooling that surrounds it. For these labs, we will be using Docker, which has been a widely adopted tool for using containers to build applications. Docker provides developers and operators with a friendly interface to build, ship and run containers on any environment with a Docker engine. Because Docker client requires a Docker engine, an alternative is to use <a href="https://podman.io/">Podman</a>, which is a deamonless container engine to develop, manage and run <a href="https://opencontainers.org/">OCI</a> containers and is able to run containers as root or in rootless mode. For those reasons, we recommend Podman but because of adoption, this lab still uses Docker.</p>
+<p>The first part of this lab, we will run our first container, and learn how to inspect it. We will be able to witness the namespace isolation that we acquire from the linux kernel.</p>
+<p>After we run our first container, we will dive into other uses of containers. You can find many examples of these on the Docker Store, and we will run several different types of containers on the same host. This will allow us to see the benefit of isolation- where we can run multiple containers on the same host without conflicts.</p>
+<p>We will be using a few Docker commands in this lab. For full documentation on available commands check out the <a href="https://docs.docker.com/">official documentation</a>.</p>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<p>Completed Lab 0: You must have access to a docker client, either on localhost, use a terminal from <code>Theia - Cloud IDE</code> at <a href="https://labs.cognitiveclass.ai/tools/theiadocker">https://labs.cognitiveclass.ai/tools/theiadocker</a> or be using <a href="http://play-with-docker.com">Play with Docker</a> for example.</p>
+<h2 id="get-started">Get Started<a class="headerlink" href="#get-started" title="Permanent link">&para;</a></h2>
+<p>Run <code>docker -h</code>,</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> docker -h
+<span class="go">Flag shorthand -h has been deprecated, please use --help</span>
+
+<span class="go">Usage:  docker [OPTIONS] COMMAND</span>
+
+<span class="go">A self-sufficient runtime for containers</span>
+
+<span class="go">...</span>
+
+<span class="go">Management Commands:</span>
+<span class="go">  builder     Manage builds</span>
+<span class="go">  config      Manage Docker configs</span>
+<span class="go">  container   Manage containers</span>
+<span class="go">  engine      Manage the docker engine</span>
+<span class="go">  image       Manage images</span>
+<span class="go">  network     Manage networks</span>
+<span class="go">  node        Manage Swarm nodes</span>
+<span class="go">  plugin      Manage plugins</span>
+<span class="go">  secret      Manage Docker secrets</span>
+<span class="go">  service     Manage services</span>
+<span class="go">  stack       Manage Docker stacks</span>
+<span class="go">  swarm       Manage Swarm</span>
+<span class="go">  system      Manage Docker</span>
+<span class="go">  trust       Manage trust on Docker images</span>
+<span class="go">  volume      Manage volumes</span>
+</code></pre></div>
+<p>The Docker command line can be used to manage several features of the Docker Engine. In this lab, we will mainly focus on the <code>container</code> command.</p>
+<p>If <code>podman</code> is installed, you can run the alternative command for comparison.</p>
+<div class="highlight"><pre><span></span><code>sudo podman -h
+</code></pre></div>
+<p>You can additionally review the version of your Docker installation,</p>
+<div class="highlight"><pre><span></span><code>docker version
+
+Client:
+  Version:      <span class="m">19</span>.03.6
+  ...
+
+Server: Docker Engine - Community
+  Engine
+    Version:    <span class="m">19</span>.03.5
+    ...
+</code></pre></div>
+<p>You note that Docker installs both a <code>Client</code> and a <code>Server: Docker Engine</code>. For instance, if you run the same command for podman, you will see only a CLI version, because podman runs daemonless and relies on an OCI compliant container runtime (runc, crun, runv etc) to interface with the OS to create the running containers.</p>
+<div class="highlight"><pre><span></span><code>sudo podman version --events-backend<span class="o">=</span>none
+Version:      <span class="m">2</span>.1.1
+API Version:  <span class="m">2</span>.0.0
+Go Version:   go1.15.2
+Built:        Thu Jan  <span class="m">1</span> <span class="m">00</span>:00:00 <span class="m">1970</span>
+OS/Arch:      linux/amd64
+</code></pre></div>
+<h2 id="step-1-run-your-first-container">Step 1: Run your first container<a class="headerlink" href="#step-1-run-your-first-container" title="Permanent link">&para;</a></h2>
+<p>We are going to use the Docker CLI to run our first container.</p>
+<ol>
+<li>
+<p>Open a terminal on your local computer</p>
+</li>
+<li>
+<p>Run <code>docker container run -t ubuntu top</code></p>
+<p>Use the <code>docker container run</code> command to run a container with the ubuntu image using the <code>top</code> command. The <code>-t</code> flags allocate a pseudo-TTY which we need for the <code>top</code> to work correctly.</p>
+<div class="highlight"><pre><span></span><code>$ docker container run -it ubuntu top
+Unable to find image <span class="s1">&#39;ubuntu:latest&#39;</span> locally
+latest: Pulling from library/ubuntu
+aafe6b5e13de: Pull <span class="nb">complete</span>
+0a2b43a72660: Pull <span class="nb">complete</span>
+18bdd1e546d2: Pull <span class="nb">complete</span>
+8198342c3e05: Pull <span class="nb">complete</span>
+f56970a44fd4: Pull <span class="nb">complete</span>
+Digest: sha256:f3a61450ae43896c4332bda5e78b453f4a93179045f20c8181043b26b5e79028
+Status: Downloaded newer image <span class="k">for</span> ubuntu:latest
+</code></pre></div>
+<p>The <code>docker run</code> command will result first in a <code>docker pull</code> to download the ubuntu image onto your host. Once it is downloaded, it will start the container. The output for the running container should look like this:</p>
+<div class="highlight"><pre><span></span><code>top - <span class="m">20</span>:32:46 up <span class="m">3</span> days, <span class="m">17</span>:40,  <span class="m">0</span> users,  load average: <span class="m">0</span>.00, <span class="m">0</span>.01, <span class="m">0</span>.00
+Tasks:   <span class="m">1</span> total,   <span class="m">1</span> running,   <span class="m">0</span> sleeping,   <span class="m">0</span> stopped,   <span class="m">0</span> zombie
+%Cpu<span class="o">(</span>s<span class="o">)</span>:  <span class="m">0</span>.0 us,  <span class="m">0</span>.1 sy,  <span class="m">0</span>.0 ni, <span class="m">99</span>.9 id,  <span class="m">0</span>.0 wa,  <span class="m">0</span>.0 hi,  <span class="m">0</span>.0 si,  <span class="m">0</span>.0 st
+KiB Mem :  <span class="m">2046768</span> total,   <span class="m">173308</span> free,   <span class="m">117248</span> used,  <span class="m">1756212</span> buff/cache
+KiB Swap:  <span class="m">1048572</span> total,  <span class="m">1048572</span> free,        <span class="m">0</span> used.  <span class="m">1548356</span> avail Mem
+
+PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+    <span class="m">1</span> root      <span class="m">20</span>   <span class="m">0</span>   <span class="m">36636</span>   <span class="m">3072</span>   <span class="m">2640</span> R   <span class="m">0</span>.3  <span class="m">0</span>.2   <span class="m">0</span>:00.04 top
+</code></pre></div>
+<p><code>top</code> is a linux utility that prints the processes on a system and orders them by resource consumption. Notice that there is only a single process in this output: it is the <code>top</code> process itself. We don't see other processes from our host in this list because of the PID namespace isolation.</p>
+<p>Containers use linux namespaces to provide isolation of system resources from other containers or the host. The PID namespace provides isolation for process IDs. If you run <code>top</code> while inside the container, you will notice that it shows the processes within the PID namespace of the container, which is much different than what you can see if you ran <code>top</code> on the host.</p>
+<p>Even though we are using the <code>ubuntu</code> image, it is important to note that our container does not have its own kernel. Its uses the kernel of the host and the <code>ubuntu</code> image is used only to provide the file system and tools available on an ubuntu system.</p>
+</li>
+<li>
+<p>Inspect the container with <code>docker container exec</code></p>
+<p>The <code>docker container exec</code> command is a way to "enter" a running container's namespaces with a new process.</p>
+<p>Open a new terminal. On cognitiveclass.ai, select <code>Terminal</code> &gt; <code>New Terminal</code>.</p>
+<p>Using play-with-docker.com, to open a new terminal connected to node1, click "Add New Instance" on the lefthand side, then ssh from node2 into node1 using the IP that is listed by 'node1  '. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="go">[node2] (local) root@192.168.0.17 ~</span>
+<span class="gp">$</span> ssh <span class="m">192</span>.168.0.18
+<span class="go">[node1] (local) root@192.168.0.18 ~</span>
+<span class="gp">$</span>
+</code></pre></div>
+<p>In the new terminal, use the <code>docker container ls</code> command to get the ID of the running container you just created.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> docker container ls
+<span class="go">CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS                         PORTS                       NAMES</span>
+<span class="go">b3ad2a23fab3        ubuntu                     &quot;top&quot;                    29 minutes ago      Up 29 minutes                                              goofy_nobel</span>
+</code></pre></div>
+<p>Then use that id to run <code>bash</code> inside that container using the <code>docker container exec</code> command. Since we are using bash and want to interact with this container from our terminal, use <code>-it</code> flags to run using interactive mode while allocating a psuedo-terminal.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> docker container <span class="nb">exec</span> -it b3ad2a23fab3 bash
+<span class="gp">root@b3ad2a23fab3:/#</span>
+</code></pre></div>
+<p>And Voila! We just used the <code>docker container exec</code> command to "enter" our container's namespaces with our bash process. Using <code>docker container exec</code> with <code>bash</code> is a common pattern to inspect a docker container.</p>
+<p>Notice the change in the prefix of your terminal. e.g. <code>root@b3ad2a23fab3:/</code>. This is an indication that we are running bash "inside" of our container.</p>
+<p><strong>Note</strong>: This is not the same as ssh'ing into a separate host or a VM. We don't need an ssh server to connect with a bash process. Remember that containers use kernel-level features to achieve isolation and that containers run on top of the kernel. Our container is just a group of processes running in isolation on the same host, and we can use <code>docker container exec</code> to enter that isolation with the <code>bash</code> process. After running <code>docker container exec</code>, the group of processes running in isolation (i.e. our container) include <code>top</code> and <code>bash</code>.</p>
+<p>From the same termina, run <code>ps -ef</code> to inspect the running processes.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">root@b3ad2a23fab3:/#</span> ps -ef
+<span class="go">UID        PID  PPID  C STIME TTY          TIME CMD</span>
+<span class="go">root         1     0  0 20:34 ?        00:00:00 top</span>
+<span class="go">root        17     0  0 21:06 ?        00:00:00 bash</span>
+<span class="go">root        27    17  0 21:14 ?        00:00:00 ps -ef</span>
+</code></pre></div>
+<p>You should see only the <code>top</code> process, <code>bash</code> process and our <code>ps</code> process.</p>
+<p>For comparison, exit the container, and run <code>ps -ef</code> or <code>top</code> on the host. These commands will work on linux or mac. For windows, you can inspect the running processes using <code>tasklist</code>.</p>
+<div class="highlight"><pre><span></span><code>root@b3ad2a23fab3:/# <span class="nb">exit</span>
+<span class="nb">exit</span>
+$ ps -ef
+<span class="c1"># Lots of processes!</span>
+</code></pre></div>
+<p><em>Technical Deep Dive</em>
+PID is just one of the linux namespaces that provides containers with isolation to system resources. Other linux namespaces include:
+- MNT - Mount and unmount directories without affecting other namespaces
+- NET - Containers have their own network stack
+- IPC - Isolated interprocess communication mechanisms such as message queues.
+- User - Isolated view of users on the system
+- UTC - Set hostname and domain name per container</p>
+<p>These namespaces together provide the isolation for containers that allow them to run together securely and without conflict with other containers running on the same system. Next, we will demonstrate different uses of containers. and the benefit of isolation as we run multiple containers on the same host.</p>
+<p><strong>Note</strong>: Namespaces are a feature of the <strong>linux</strong> kernel. But Docker allows you to run containers on Windows and Mac... how does that work? The secret is that embedded in the Docker product or Docker engine is a linux subsystem. Docker open-sourced this linux subsystem to a new project: <a href="https://github.com/linuxkit/linuxkit">LinuxKit</a>. Being able to run containers on many different platforms is one advantage of using the Docker tooling with containers.</p>
+<p>In addition to running linux containers on Windows using a linux subsystem, native Windows containers are now possible due the creation of container primitives on the Windows OS. Native Windows containers can be run on Windows 10 or Windows Server 2016 or newer.</p>
+<p><strong>Note</strong>: if you run this exercise in a containerized terminal and execute the <code>ps -ef</code> command in the terminal, e.g. in <code>https://labs.cognitiveclass.ai</code>, you will still see a limited set of processes after exiting the <code>exec</code> command. You can try to run the <code>ps -ef</code> command in a terminal on your local machine to see all processes.</p>
+</li>
+<li>
+<p>Clean up the container running the <code>top</code> processes by typing: <code>&lt;ctrl&gt;-c</code>, list all containers and remove the containers by their id.</p>
+<div class="highlight"><pre><span></span><code>docker ps -a
+
+docker rm &lt;CONTAINER ID&gt;
+</code></pre></div>
+</li>
+</ol>
+<h2 id="step-2-run-multiple-containers">Step 2: Run Multiple Containers<a class="headerlink" href="#step-2-run-multiple-containers" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p>Explore the Docker Hub</p>
+<p>The <a href="https://hub.docker.com/explore/">Docker Hub</a> is the public central registry for Docker images, which contains community and official images.</p>
+<p>When searching for images you will find filters for "Docker Certified", "Verified Publisher" and "Official Images" images. Select the "Docker Certified" filter, to find images that are deemed enterprise-ready and are tested with Docker Enterprise Edition product. It is important to avoid using unverified content from the Docker Store when developing your own images that are intended to be deployed into the production environment. These unverified images may contain security vulnerabilities or possibly even malicious software.</p>
+<p>In Step 2 of this lab, we will start a couple of containers using some verified images from the Docker Hub: nginx web server, and mongo database.</p>
+</li>
+<li>
+<p>Run an Nginx server</p>
+<p>Let's run a container using the <a href="https://hub.docker.com/_/nginx">official Nginx image</a> from the Docker Hub.</p>
+<div class="highlight"><pre><span></span><code>$ docker container run --detach --publish <span class="m">8080</span>:80 --name nginx nginx
+Unable to find image <span class="s1">&#39;nginx:latest&#39;</span> locally
+latest: Pulling from library/nginx
+36a46ebd5019: Pull <span class="nb">complete</span>
+57168433389f: Pull <span class="nb">complete</span>
+332ec8285c50: Pull <span class="nb">complete</span>
+Digest: sha256:c15f1fb8fd55c60c72f940a76da76a5fccce2fefa0dd9b17967b9e40b0355316
+Status: Downloaded newer image <span class="k">for</span> nginx:latest
+5e1bf0e6b926bd73a66f98b3cbe23d04189c16a43d55dd46b8486359f6fdf048
+</code></pre></div>
+<p>We are using a couple of new flags here. The <code>--detach</code> flag will run this container in the background. The <code>publish</code> flag publishes port 80 in the container (the default port for nginx), via port 8080 on our host. Remember that the NET namespace gives processes of the container their own network stack. The <code>--publish</code> flag is a feature that allows us to expose networking through the container onto the host.</p>
+<p>How do you know port 80 is the default port for nginx? Because it is listed in the <a href="https://hub.docker.com/_/nginx">documentation</a> on the Docker Hub. In general, the documentation for the verified images is very good, and you will want to refer to them when running containers using those images.</p>
+<p>We are also specifying the <code>--name</code> flag, which names the container. Every container has a name, if you don't specify one, Docker will randomly assign one for you. Specifying your own name makes it easier to run subsequent commands on your container since you can reference the name instead of the id of the container. For example: <code>docker container inspect nginx</code> instead of <code>docker container inspect 5e1</code>.</p>
+<p>Since this is the first time you are running the nginx container, it will pull down the nginx image from the Docker Store. Subsequent containers created from the Nginx image will use the existing image located on your host.</p>
+<p>Nginx is a lightweight web server. You can access it on port 8080 on your localhost.</p>
+</li>
+<li>
+<p>Access the nginx server on <a href="http://localhost:8080">localhost:8080</a>.</p>
+<div class="highlight"><pre><span></span><code>curl localhost:8080
+</code></pre></div>
+<p>will return the HTML home page of Nginx,</p>
+<div class="highlight"><pre><span></span><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body <span class="o">{</span>
+        width: 35em<span class="p">;</span>
+        margin: <span class="m">0</span> auto<span class="p">;</span>
+        font-family: Tahoma, Verdana, Arial, sans-serif<span class="p">;</span>
+    <span class="o">}</span>
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
+</code></pre></div>
+</li>
+<li>
+<p>If you are using play-with-docker, look for the <code>8080</code> link near the top of the page, or if you run a Docker client with access to a local browser,</p>
+<p><img alt="step 2 nginx" src="../assets/images/lab1_step2_nginx.png" /></p>
+</li>
+<li>
+<p>Run a mongo DB server</p>
+<p>Now, run a mongoDB server. We will use the <a href="https://hub.docker.com/_/mongo">official mongoDB image</a> from the Docker Hub. Instead of using the <code>latest</code> tag (which is the default if no tag is specified), we will use a specific version of the mongo image: 4.4.</p>
+<div class="highlight"><pre><span></span><code>$ docker container run --detach --publish <span class="m">8081</span>:27017 --name mongo mongo:4.4
+Unable to find image mongo:4.4 locally
+<span class="m">4</span>.4: Pulling from library/mongo
+d13d02fa248d: Already exists
+bc8e2652ce92: Pull <span class="nb">complete</span>
+3cc856886986: Pull <span class="nb">complete</span>
+c319e9ec4517: Pull <span class="nb">complete</span>
+b4cbf8808f94: Pull <span class="nb">complete</span>
+cb98a53e6676: Pull <span class="nb">complete</span>
+f0485050cd8a: Pull <span class="nb">complete</span>
+ac36cdc414b3: Pull <span class="nb">complete</span>
+61814e3c487b: Pull <span class="nb">complete</span>
+523a9f1da6b9: Pull <span class="nb">complete</span>
+3b4beaef77a2: Pull <span class="nb">complete</span>
+Digest: sha256:d13c897516e497e898c229e2467f4953314b63e48d4990d3215d876ef9d1fc7c
+Status: Downloaded newer image <span class="k">for</span> mongo:4.4
+d8f614a4969fb1229f538e171850512f10f490cb1a96fca27e4aa89ac082eba5
+</code></pre></div>
+<p>Again, since this is the first time we are running a mongo container, we will pull down the mongo image from the Docker Store. We are using the <code>--publish</code> flag to expose the 27017 mongo port on our host. We have to use a port other than 8080 for the host mapping, since that port is already exposed on our host. Again refer to the <a href="https://hub.docker.com/_/mongo">official docs</a> on the Docker Hub to get more details about using the mongo image.</p>
+</li>
+<li>
+<p>Access <a href="http://localhost:8081">localhost:8081</a> to see some output from mongo.</p>
+<div class="highlight"><pre><span></span><code>curl localhost:8081
+</code></pre></div>
+<p>which will return a warning from MongoDB,</p>
+<div class="highlight"><pre><span></span><code>It looks like you are trying to access MongoDB over HTTP on the native driver port.
+</code></pre></div>
+</li>
+<li>
+<p>If you are using play-with-docker, look for the <code>8080</code> link near the top of the page.</p>
+<p><img alt="step 2 mongo" src="../assets/images/lab1_step2_mongo.png" /></p>
+</li>
+<li>
+<p>Check your running containers with <code>docker container ls</code></p>
+<div class="highlight"><pre><span></span><code>$ docker container ls
+CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES
+d6777df89fea    nginx    <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>    Less than a second ago    Up <span class="m">2</span> seconds    <span class="m">0</span>.0.0.0:8080-&gt;80/tcp    nginx
+ead80a0db505    mongo    <span class="s2">&quot;docker-entrypoint...&quot;</span>    <span class="m">17</span> seconds ago    Up <span class="m">19</span> seconds    <span class="m">0</span>.0.0.0:8081-&gt;27017/tcp    mongo
+af549dccd5cf    ubuntu    <span class="s2">&quot;top&quot;</span>    <span class="m">5</span> minutes ago    Up <span class="m">5</span> minutes    priceless_kepler
+</code></pre></div>
+<p>You should see that you have an Nginx web server container, and a MongoDB container running on your host. Note that we have not configured these containers to talk to each other.</p>
+<p>You can see the "nginx" and "mongo" names that we gave to our containers, and the random name (in my case "priceless_kepler") that was generated for the ubuntu container. You can also see that the port mappings that we specified with the <code>--publish</code> flag. For more details information on these running containers you can use the <code>docker container inspect [container id</code> command.</p>
+<p>One thing you might notice is that the mongo container is running the <code>docker-entrypoint</code> command. This is the name of the executable that is run when the container is started. The mongo image requires some prior configuration before kicking off the DB process. You can see exactly what the script does by looking at it on <a href="https://github.com/docker-library/mongo/blob/master/4.4/docker-entrypoint.sh">github</a>. Typically, you can find the link to the github source from the image description page on the Docker Store website.</p>
+<p>Containers are self-contained and isolated, which means we can avoid potential conflicts between containers with different system or runtime dependencies. For example: deploying an app that uses Java 7 and another app that uses Java 8 on the same host. Or running multiple nginx containers that all have port 80 as their default listening ports (if exposing on the host using the <code>--publish</code> flag, the ports selected for the host will need to be unique). Isolation benefits are possible because of Linux Namespaces.</p>
+<p><strong>Note</strong>: You didn't have to install anything on your host (other than Docker) to run these processes! Each container includes the dependencies that it needs within the container, so you don't need to install anything on your host directly.</p>
+<p>Running multiple containers on the same host gives us the ability to fully utilize the resources (cpu, memory, etc) available on single host. This can result in huge cost savings for an enterprise.</p>
+<p>While running images directly from the Docker Hub can be useful at times, it is more useful to create custom images, and refer to official images as the starting point for these images. We will dive into building our own custom images in Lab 2.</p>
+</li>
+</ol>
+<h2 id="step-3-clean-up">Step 3: Clean Up<a class="headerlink" href="#step-3-clean-up" title="Permanent link">&para;</a></h2>
+<p>Completing this lab results in a bunch of running containers on your host. Let's clean these up.</p>
+<ol>
+<li>
+<p>First get a list of the containers running using <code>docker container ls</code>.</p>
+<div class="highlight"><pre><span></span><code>$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                     NAMES
+d6777df89fea        nginx               <span class="s2">&quot;nginx -g &#39;daemon ...&quot;</span>   <span class="m">3</span> minutes ago       Up <span class="m">3</span> minutes        <span class="m">0</span>.0.0.0:8080-&gt;80/tcp      nginx
+ead80a0db505        mongo               <span class="s2">&quot;docker-entrypoint...&quot;</span>   <span class="m">3</span> minutes ago       Up <span class="m">3</span> minutes        <span class="m">0</span>.0.0.0:8081-&gt;27017/tcp   mongo
+af549dccd5cf        ubuntu              <span class="s2">&quot;top&quot;</span>                    <span class="m">8</span> minutes ago       Up <span class="m">8</span> minutes                                  priceless_kepler
+</code></pre></div>
+</li>
+<li>
+<p>Next,  run <code>docker container stop [container id]</code> for each container in the list. You can also use the names of the containers that you specified before.</p>
+<div class="highlight"><pre><span></span><code>$ docker container stop d67 ead af5
+d67
+ead
+af5
+</code></pre></div>
+<p><strong>Note</strong>: You only have to reference enough digits of the ID to be unique. Three digits is almost always enough.</p>
+</li>
+<li>
+<p>Remove the stopped containers</p>
+<p><code>docker system prune</code> is a really handy command to clean up your system. It will remove any stopped containers, unused volumes and networks, and dangling images.</p>
+<div class="highlight"><pre><span></span><code>$ docker system prune
+WARNING! This will remove:
+        - all stopped containers
+        - all volumes not used by at least one container
+        - all networks not used by at least one container
+        - all dangling images
+Are you sure you want to <span class="k">continue</span>? <span class="o">[</span>y/N<span class="o">]</span> y
+Deleted Containers:
+7872fd96ea4695795c41150a06067d605f69702dbcb9ce49492c9029f0e1b44b
+60abd5ee65b1e2732ddc02b971a86e22de1c1c446dab165462a08b037ef7835c
+31617fdd8e5f584c51ce182757e24a1c9620257027665c20be75aa3ab6591740
+
+Total reclaimed space: 12B
+</code></pre></div>
+</li>
+</ol>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>In this lab, you created your first Ubuntu, Nginx and MongoDB containers.</p>
+<p>Key Takeaways</p>
+<ul>
+<li>Containers are composed of linux namespaces and control groups that provide isolation from other containers and the host.</li>
+<li>Because of the isolation properties of containers, you can schedule many containers on a single host without worrying about conflicting dependencies. This makes it easier to run multiple containers on a single host: fully utilizing resources allocated to that host, and ultimately saving some money on server costs.</li>
+<li>Avoid using unverified content from the Docker Store when developing your own images because these images may contain security vulnerabilities or possibly even malicious software.</li>
+<li>Containers include everything they need to run the processes within them, so there is no need to install additional dependencies directly on your host.</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../lab-0/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Getting Started
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../lab-2/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Lab 2. Adding Value with Custom Docker Images
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2020 IBM Developer
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/ibm" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/ibmdeveloper" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://www.linkedin.com/company/ibm/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://www.youtube.com/user/developerworks" target="_blank" rel="noopener" title="www.youtube.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://dev.to/ibmdeveloper" target="_blank" rel="noopener" title="dev.to" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120.12 208.29c-3.88-2.9-7.77-4.35-11.65-4.35H91.03v104.47h17.45c3.88 0 7.77-1.45 11.65-4.35 3.88-2.9 5.82-7.25 5.82-13.06v-69.65c-.01-5.8-1.96-10.16-5.83-13.06zM404.1 32H43.9C19.7 32 .06 51.59 0 75.8v360.4C.06 460.41 19.7 480 43.9 480h360.2c24.21 0 43.84-19.59 43.9-43.8V75.8c-.06-24.21-19.7-43.8-43.9-43.8zM154.2 291.19c0 18.81-11.61 47.31-48.36 47.25h-46.4V172.98h47.38c35.44 0 47.36 28.46 47.37 47.28l.01 70.93zm100.68-88.66H201.6v38.42h32.57v29.57H201.6v38.41h53.29v29.57h-62.18c-11.16.29-20.44-8.53-20.72-19.69V193.7c-.27-11.15 8.56-20.41 19.71-20.69h63.19l-.01 29.52zm103.64 115.29c-13.2 30.75-36.85 24.63-47.44 0l-38.53-144.8h32.57l29.71 113.72 29.57-113.72h32.58l-38.46 144.8z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.08c56446.min.js"></script>
+      <script src="../assets/javascripts/bundle.6ced434e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: ['navigation.tabs'],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
