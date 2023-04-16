@@ -10,7 +10,7 @@ None
 
 ## Use Theia - Cloud IDE (With Docker)
 
-1. Go to theia-ide (https://theia-ide.org/),
+1. Go to [https://labs.cognitiveclass.ai](https://labs.cognitiveclass.ai) ,
 2. Sign up for CognitiveClass.ai using your `IBM id` ,
 3. Login with your `IBM Id`,
 4. Select `Theia - Cloud IDE (With Docker)`,
