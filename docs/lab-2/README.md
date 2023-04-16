@@ -99,7 +99,7 @@ Now, what if you don't have python installed locally? Don't worry! Because you d
     **CMD ["python","app.py"]**
     `CMD` is the command that is executed when you start a container. Here we are using `CMD` to run our python app.
 
-    There can be only one `CMD` per Dockerfile. If you specify more thane one `CMD`, then the last `CMD` will take effect. The parent python:3.8-alpine also specifies a `CMD` (`CMD python3`). You can find the Dockerfile for the official python:alpine image [here](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile).
+    There can be only one `CMD` per Dockerfile. If you specify more than one `CMD`, then the last `CMD` will take effect. The parent python:3.8-alpine also specifies a `CMD` (`CMD python3`). You can find the Dockerfile for the official python:alpine image [here](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile).
 
     You can use the official python image directly to run python scripts without installing python on your host. But today, we are creating a custom image to include our source, so that we can build an image with our application and ship it around to other environments.
 
